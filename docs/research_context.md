@@ -68,13 +68,29 @@ Given telemetry collected from a Kafka + Spark Structured Streaming pipeline (br
 **Correction:** an earlier version of this document assumed prior scaffolding was reusable and estimated a shorter timeline on that basis. That assumption was checked directly (`kind get clusters`, `docker ps -a`) and found false — no Kind cluster, Kafka, or Spark infrastructure exists on this machine. Full infrastructure cost is paid from zero: Kind (Kubernetes-in-Docker) cluster running a Kafka broker, a Spark Structured Streaming job consuming from it, and Prometheus scraping Kafka's JMX exporter plus Spark's metrics endpoint and node-level resource metrics — all built in Phase 0 below, not assumed pre-existing.
 
 ### 6.2 Fault Taxonomy and Injection
-Controlled, repeated injection of each fault class, with injection timestamp and observed failure/degradation-onset timestamp recorded as ground truth:
-- Broker kill / restart (pod delete)
-- Executor OOM-kill (memory pressure induction)
+
+**LOCKED (2026-07-08, Weeks 2-3 gate):** 5 fault classes, all confirmed feasible on the current
+single-node Kind + single-broker Kafka topology built in Phase 0:
+- Broker kill / restart (pod delete) — already proven end-to-end (Phase 0 pilot, `results/phase0-pilot-fault/`)
+- Executor OOM-kill (memory pressure induction on the Spark executor)
 - Backpressure cascade (throttle downstream sink / slow consumer)
 - Disk-pressure on broker (fill disk toward threshold)
-- Network degradation (latency/packet-loss injection via `tc netem`, or Chaos Mesh if time permits)
-- Partition leader churn (forced leader re-election)
+- Network degradation (latency/packet-loss injection via `tc netem`, pod/interface-level — feasible single-node, unlike a true network *partition*)
+
+**Dropped, documented as an accepted limitation, not forced:** Partition leader churn (forced
+leader re-election). Requires a multi-broker Kafka cluster to have any leader to re-elect — the
+Phase 0 topology is a single combined controller+broker node by design (`infra/kafka/kafka-single-broker.yaml`,
+`replicas: 1`), and it stays that way rather than scaling up mid-campaign to chase one fault class,
+consistent with Section 11's own guidance to prioritize fault types Kind can genuinely emulate over
+forcing ones it can't. If time permits after the 5 locked classes are done, this can be revisited as
+stretch scope — not blocking.
+
+**Tooling, LOCKED:** manual scripts (`kubectl` for pod-level faults, `tc netem` for network
+degradation), not Chaos Mesh. This is Section 11's own pre-authorized fallback, adopted as the first
+choice rather than after a Chaos Mesh setup failure: the Phase 0 pilot already proved the manual
+approach end-to-end with strong evidence quality, it's trivially scriptable for the N≥15-20 repeated
+runs needed per class, and it avoids adding an operator/CRD/webhook layer on a node already running
+Kafka+Spark+Prometheus+node-exporter+producer on a 5-CPU/10GB budget.
 
 Each fault repeated N times (target N≥15–20 per class for a usable sample) at randomized injection points during steady-state load, to avoid the model learning injection-schedule artifacts instead of genuine pre-failure signal.
 
@@ -136,10 +152,10 @@ IEEE Access, MDPI Electronics or Applied Sciences (rolling submission, consisten
 
 ## 11. Risk Register (project-execution risks, not paper-review risks)
 
-- **Fault-injection tooling friction** (Chaos Mesh setup complexity on Kind) — budget a dedicated week; fallback to manual `kubectl delete pod` / `tc netem` scripts if Chaos Mesh proves too heavy for the timeline.
-- **Class imbalance** (normal windows vastly outnumber pre-failure windows) — plan for class-weighting or SMOTE from the start, report as an explicit methodological step, not an afterthought.
-- **Some fault types don't reproduce realistically in a single-node Kind cluster** (e.g., true network partition needs multiple physical nodes) — prioritize fault types that Kind can genuinely emulate (broker kill, OOM, backpressure, disk pressure) over ones it can't; document the limitation rather than force it.
-- **Someone publishes this exact intersection first** — the AIOps space is active (2025 payment-systems paper found in this pass alone). Mitigation: no infra head-start exists anymore (verified false, see Section 6.1) — this risk is now real, not hedged. Treat Phase 0 as urgent, not a formality.
+- **Fault-injection tooling friction** (Chaos Mesh setup complexity on Kind) — RESOLVED 2026-07-08: adopted manual `kubectl` / `tc netem` scripts as the locked choice from the start (see Section 6.2), not a reactive fallback. The Phase 0 pilot already proved this approach end-to-end with strong evidence quality, so there was no reason to pay Chaos Mesh's setup cost first and fall back later.
+- **Class imbalance** (normal windows vastly outnumber pre-failure windows) — plan for class-weighting or SMOTE from the start, report as an explicit methodological step, not an afterthought. Still open, applies at the ML-modeling phase (Weeks 8-9).
+- **Some fault types don't reproduce realistically in a single-node Kind cluster** (e.g., true network partition needs multiple physical nodes) — RESOLVED 2026-07-08: partition leader churn dropped from the locked taxonomy for exactly this reason (see Section 6.2); the other 5 fault classes are all confirmed feasible single-node.
+- **Someone publishes this exact intersection first** — the AIOps space is active (2025 payment-systems paper found in this pass alone). Re-checked 2026-07-08 (Weeks 2-3 saturation re-check, Section 3): gap still open, closest hit (DEBS 2024) answers a different question (recovery speed, not predictive lead time). Still an active risk — re-check again before the writing phase (Weeks 13-16).
 
 ## 12. References — verification status
 
