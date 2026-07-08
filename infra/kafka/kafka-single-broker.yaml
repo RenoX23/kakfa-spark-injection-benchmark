@@ -1,8 +1,17 @@
-# Phase 0 pilot: single Kafka broker (KRaft, combined controller+broker role).
+# Single Kafka broker (KRaft, combined controller+broker role).
 # Adapted from Strimzi 1.1.0 examples/metrics/kafka-metrics.yaml — original example
-# used 3 controller + 3 broker replicas; reduced to 1 combined node for the pilot,
-# and replication factors dropped from 3 to 1 (a factor of 3 cannot be satisfied
-# with only one broker — topic creation would fail under-replicated).
+# used 3 controller + 3 broker replicas; reduced to 1 combined node, and replication
+# factors dropped from 3 to 1 (a factor of 3 cannot be satisfied with only one broker
+# — topic creation would fail under-replicated).
+#
+# Storage: persistent-claim, not ephemeral. Ephemeral was used through the Phase 0
+# pilot but caused a real cascading failure once Weeks 2-3 fault-injection testing
+# started: broker-kill (pod delete) on ephemeral storage wipes all topic data and
+# committed offsets on every restart, which Spark's Kafka source correctly detects as
+# data loss and hard-fails the whole streaming query on (failOnDataLoss=true, the
+# correct default). No real Kafka deployment runs on ephemeral storage; persistent
+# storage makes broker-kill a realistic "pod restart, data survives" fault instead of
+# an unrealistic full data wipe every time.
 apiVersion: kafka.strimzi.io/v1
 kind: KafkaNodePool
 metadata:
@@ -18,8 +27,10 @@ spec:
     type: jbod
     volumes:
       - id: 0
-        type: ephemeral
+        type: persistent-claim
+        size: 5Gi
         kraftMetadata: shared
+        deleteClaim: false
 ---
 apiVersion: kafka.strimzi.io/v1
 kind: Kafka

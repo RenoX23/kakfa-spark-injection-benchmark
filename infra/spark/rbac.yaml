@@ -16,8 +16,14 @@ metadata:
   namespace: spark
 rules:
   - apiGroups: [""]
+    # deletecollection is a distinct verb from delete in K8s RBAC -- Spark's own
+    # shutdown-cleanup bulk-deletes leftover executor pods/services/configmaps by
+    # label selector, which requires deletecollection specifically. Missing it here
+    # didn't stop the driver's own failure, but caused a cascade of additional
+    # cleanup errors on every app exit and would leak orphaned resources over repeated
+    # fault-injection runs (found during Weeks 2-3 broker-kill testing).
     resources: ["pods", "services", "configmaps", "persistentvolumeclaims"]
-    verbs: ["get", "list", "watch", "create", "delete", "update", "patch"]
+    verbs: ["get", "list", "watch", "create", "delete", "deletecollection", "update", "patch"]
   - apiGroups: [""]
     resources: ["pods/log"]
     verbs: ["get", "list"]

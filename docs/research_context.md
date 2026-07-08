@@ -94,6 +94,41 @@ Kafka+Spark+Prometheus+node-exporter+producer on a 5-CPU/10GB budget.
 
 Each fault repeated N times (target N≥15–20 per class for a usable sample) at randomized injection points during steady-state load, to avoid the model learning injection-schedule artifacts instead of genuine pre-failure signal.
 
+**Reusable injection tooling built and verified (2026-07-08):** `fault_injection/common.py` +
+`fault_injection/broker_kill.py`. Not a one-off script -- `common.py` provides shared plumbing
+(dynamic port-forwarding, Prometheus health/query helpers, ground-truth JSON recording) that every
+locked fault class's script reuses. Verified by running the broker-kill script three times
+end-to-end against the live cluster (`results/fault-runs/`), not just written and assumed correct.
+
+**A real bug was found and fixed in the process, not glossed over:** the first two script runs
+(`broker_kill_pod_delete_runtest1.json`, `runtest2.json`) exposed a genuine cascading-failure chain
+that manual testing in Phase 0 hadn't surfaced (Phase 0's single pilot fault didn't repeat the
+injection, so it never hit this): Kafka's broker storage was `type: ephemeral`, so the pod-delete
+fault wiped all topic data and committed offsets on every restart. Spark's Kafka source correctly
+detected this as data loss and hard-failed the whole streaming query
+(`KafkaIllegalStateException: Some data may have been lost...`, `failOnDataLoss=true` is the
+correct default, not a bug in Spark). A second, independent bug surfaced during the same
+investigation: Spark's own shutdown-cleanup bulk-deletes leftover resources by label selector,
+which needs the `deletecollection` RBAC verb -- `infra/spark/rbac.yaml` only granted `delete`,
+a distinct verb in Kubernetes RBAC, causing a cascade of additional cleanup errors on every app exit.
+
+**Fix, and proof the fix works:** switched Kafka broker storage to `persistent-claim` (5Gi PVC --
+`infra/kafka/kafka-single-broker.yaml`), which also matches real production Kafka (no real
+deployment runs on ephemeral storage). Added `deletecollection` to the Spark RBAC role. Then re-ran
+broker-kill a third time (`runtest3-persistent.json`) against the fixed topology and confirmed via
+driver logs (`results/weeks2-3-tooling/spark_survives_broker_kill_batches.txt`) that the Structured
+Streaming query kept processing real batches with non-zero windowed event counts continuously
+through the fault window -- no crash, no restart. This is the standard this project holds itself to:
+a fix isn't "done" until it's demonstrated working under the same conditions that exposed the bug,
+not just applied and assumed correct.
+
+A secondary, unrelated issue also surfaced and was fixed during this recovery: the console producer
+(`infra/kafka/producer-loadgen.yaml`) uses idempotent-producer semantics by default, which got into
+a confused epoch state across the broker recreation (`OUT_OF_ORDER_SEQUENCE_NUMBER` /
+`InvalidProducerEpochException`). Fixed by disabling idempotence for this synthetic load generator
+(`enable.idempotence=false`) -- exactly-once guarantees aren't a requirement for background load
+generation, and idempotence was adding failure surface with no research-relevant benefit.
+
 ### 6.3 Labeling
 Sliding-window supervised framing, following the standard AIOps approach (Notaro et al., 2021): telemetry windows at multiple horizons before recorded failure onset (e.g., t-30s, t-60s, t-120s) are labeled "pre-failure"; windows during confirmed steady-state operation are labeled "normal." Window size and horizon are hyperparameters to sweep, not fixed a priori — report sensitivity.
 
