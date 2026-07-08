@@ -1,6 +1,12 @@
 # One-off client that runs `spark-submit --deploy-mode cluster`. This process itself just
 # talks to the K8s API once to launch the actual driver pod; the driver then creates its
 # own executor pod(s) using the spark ServiceAccount's RBAC (infra/spark/rbac.yaml).
+#
+# Apply order for a from-scratch rebuild:
+#   kubectl apply -f infra/spark/rbac.yaml
+#   kubectl apply -f infra/spark/configmap-script.yaml
+#   kubectl apply -f infra/spark/configmap-driver-pod-template.yaml
+#   kubectl apply -f infra/spark/submit-pod.yaml
 apiVersion: v1
 kind: Pod
 metadata:

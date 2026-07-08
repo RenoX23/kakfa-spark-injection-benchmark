@@ -1,4 +1,4 @@
-# Single-node Kind cluster for Phase 0 (Kafka + Prometheus only, no Spark yet).
+# Single-node Kind cluster for Phase 0 (Kafka, Spark, Prometheus).
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 name: kspfail
