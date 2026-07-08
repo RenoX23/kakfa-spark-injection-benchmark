@@ -1,0 +1,13 @@
+26/07/08 17:32:03 WARN ExecutorPodsLifecycleManager: 1 new failed executors.
+26/07/08 17:32:03 ERROR TaskSchedulerImpl: Lost executor 2 on 10.244.0.29: 
+The executor with id 2 exited with exit code 137(SIGKILL, possible container OOM).
+
+
+
+--
+26/07/08 17:33:59 WARN ExecutorPodsLifecycleManager: 1 new failed executors.
+26/07/08 17:33:59 ERROR TaskSchedulerImpl: Lost executor 3 on 10.244.0.30: 
+The executor with id 3 exited with exit code 137(SIGKILL, possible container OOM).
+
+
+

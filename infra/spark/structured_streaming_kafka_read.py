@@ -1,10 +1,18 @@
-# Phase 0 pilot: minimal Structured Streaming job proving a real consumer reads from the
-# Kafka broker built earlier in Phase 0. Not the final feature-engineering pipeline --
-# that comes with the fault-injection campaign (RO2). This just proves the wiring works
-# and gives Spark real, moving data so its own metrics (processedRowsPerSecond etc.) are
-# non-trivial when scraped by Prometheus.
+# Phase 0 / Weeks 2-3 pilot: minimal Structured Streaming job proving a real consumer reads
+# from the Kafka broker. Not the final feature-engineering pipeline -- that comes with the
+# fault-injection campaign (RO2), which will make its own deliberate decision about
+# windowing/state persistence rather than inheriting this pilot's.
+#
+# Deliberately stateless (no groupBy/window aggregation). An earlier version did a windowed
+# count, which is a stateful operator -- Spark keeps that state as delta files on the
+# executor's local disk. During Weeks 2-3 executor-OOM-kill fault testing, killing the
+# executor destroyed its state-store files, and the replacement executor had no way to
+# reconstruct them, crashing the whole query (CANNOT_READ_DELTA_FILE_NOT_EXISTS). That
+# fragility isn't something this connectivity pilot needs to solve; removing the
+# aggregation removes the whole failure class and still proves the same thing (Kafka to
+# Spark data flow) just as validly.
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, from_json, window, count, to_timestamp
+from pyspark.sql.functions import col, from_json
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
 spark = SparkSession.builder.appName("kspfail-streaming-pilot").getOrCreate()
@@ -24,22 +32,11 @@ raw = (
     .load()
 )
 
-parsed = (
-    raw.select(from_json(col("value").cast("string"), schema).alias("data"))
-    .select("data.*")
-    .withColumn("ts", to_timestamp(col("ts")))
-)
-
-windowed_counts = (
-    parsed
-    .withWatermark("ts", "0 seconds")
-    .groupBy(window(col("ts"), "10 seconds"))
-    .agg(count("*").alias("event_count"))
-)
+parsed = raw.select(from_json(col("value").cast("string"), schema).alias("data")).select("data.*")
 
 query = (
-    windowed_counts.writeStream
-    .outputMode("update")
+    parsed.writeStream
+    .outputMode("append")
     .format("console")
     .option("truncate", "false")
     .option("checkpointLocation", "/tmp/kspfail-checkpoint")

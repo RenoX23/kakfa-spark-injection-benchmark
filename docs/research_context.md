@@ -129,6 +129,39 @@ a confused epoch state across the broker recreation (`OUT_OF_ORDER_SEQUENCE_NUMB
 (`enable.idempotence=false`) -- exactly-once guarantees aren't a requirement for background load
 generation, and idempotence was adding failure surface with no research-relevant benefit.
 
+**Second fault class built and verified (2026-07-08): `fault_injection/executor_oom.py`.**
+Induction: `kubectl exec` into the running Spark executor container, allocate memory well past its
+1152Mi resource limit, forcing the kernel OOM-killer. This one took four iterations to get right --
+documented in full because each iteration is a real, distinct finding, not noise to hide:
+
+1. First run crashed the *script itself* -- `find_executor_pod` raised `subprocess.CalledProcessError`
+   (kubectl errors, doesn't return empty, when a jsonpath indexes an empty pod list), not the
+   `RuntimeError` the calling code was catching. Fixed by making that kubectl call non-raising and
+   checking its output directly.
+2. Second run (`runtest2-stateless.json`) revealed a **second, more fundamental bug**, this one in the
+   pilot Spark script itself, not the injection tooling: the original script did a stateful windowed
+   aggregation (`groupBy(window(...))`), and Structured Streaming's state store for that lives on the
+   executor's local ephemeral disk. Killing the executor destroyed its state-store delta files, and
+   the replacement executor had no way to reconstruct them -- the query crashed with
+   `CANNOT_READ_DELTA_FILE_NOT_EXISTS`. Fixed by removing the aggregation entirely
+   (`infra/spark/structured_streaming_kafka_read.py`, `infra/spark/configmap-script.yaml`): the
+   stateful windowing was never required to prove Kafka-to-Spark connectivity (Phase 0's actual goal),
+   it was an unnecessary addition that introduced a whole failure class this pilot didn't need to
+   solve. Real windowing/state-persistence is a deliberate decision for the RO2 feature-engineering
+   pipeline later, not inherited from this connectivity pilot.
+3. Third run (`runtest3-driverlog.json`) still showed `oomkilled=False` even after switching detection
+   to check the driver's log instead of the executor pod's own status (the pod-status approach raced
+   against Spark's driver actively deleting the dead executor pod object almost immediately -- a
+   genuine, useful finding in itself: **executor identity churns and disappears fast**, similar in
+   spirit to broker_kill's instance-IP churn finding, so ground truth has to come from a durable
+   source, not the ephemeral pod object). The driver-log switch was the right call, but had its own
+   bug: the regex spanned `.*` across what are actually two separate log lines
+   (`"Lost executor N ..."` then `"...exit code 137..."` on the next line), and `.` doesn't match
+   newlines by default in Python regex -- so it silently never matched.
+4. Fourth run (`runtest4-fixed.json`), all three fixes applied: `oomkilled=True` confirmed 5s after
+   injection, new executor recovered 6s after injection, streaming job kept processing real data
+   throughout with 0 driver restarts. Evidence: `results/weeks2-3-tooling/executor_oom_driver_log_excerpt.txt`.
+
 ### 6.3 Labeling
 Sliding-window supervised framing, following the standard AIOps approach (Notaro et al., 2021): telemetry windows at multiple horizons before recorded failure onset (e.g., t-30s, t-60s, t-120s) are labeled "pre-failure"; windows during confirmed steady-state operation are labeled "normal." Window size and horizon are hyperparameters to sweep, not fixed a priori — report sensitivity.
 
