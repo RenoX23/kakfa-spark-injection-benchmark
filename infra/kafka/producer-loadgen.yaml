@@ -1,0 +1,31 @@
+# Lightweight continuous producer so downstream consumers (Spark Structured Streaming)
+# have real message flow to process, not an empty topic. Reuses the Strimzi Kafka image
+# (already pulled onto the node) rather than adding a new image dependency.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgen-producer
+  namespace: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loadgen-producer
+  template:
+    metadata:
+      labels:
+        app: loadgen-producer
+    spec:
+      containers:
+        - name: producer
+          image: quay.io/strimzi/kafka:1.1.0-kafka-4.3.0
+          command:
+            - /bin/bash
+            - -c
+            - |
+              i=0
+              while true; do
+                i=$((i+1))
+                echo "{\"seq\":$i,\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"value\":$((RANDOM % 1000))}"
+                sleep 1
+              done | bin/kafka-console-producer.sh --topic pipeline-events --bootstrap-server kspfail-kafka-bootstrap.kafka.svc.cluster.local:9092

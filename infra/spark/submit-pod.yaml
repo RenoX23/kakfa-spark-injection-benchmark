@@ -1,0 +1,38 @@
+# One-off client that runs `spark-submit --deploy-mode cluster`. This process itself just
+# talks to the K8s API once to launch the actual driver pod; the driver then creates its
+# own executor pod(s) using the spark ServiceAccount's RBAC (infra/spark/rbac.yaml).
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spark-submit-runner
+  namespace: spark
+spec:
+  serviceAccountName: spark
+  restartPolicy: Never
+  containers:
+    - name: spark-submit
+      image: apache/spark:4.1.2-scala2.13-java17-python3-ubuntu
+      command:
+        - /opt/spark/bin/spark-submit
+        - --master=k8s://https://kubernetes.default.svc
+        - --deploy-mode=cluster
+        - --name=kspfail-streaming-pilot
+        - --conf=spark.kubernetes.namespace=spark
+        - --conf=spark.kubernetes.authenticate.driver.serviceAccountName=spark
+        - --conf=spark.kubernetes.container.image=apache/spark:4.1.2-scala2.13-java17-python3-ubuntu
+        - --conf=spark.executor.instances=1
+        - --conf=spark.driver.memory=768m
+        - --conf=spark.executor.memory=768m
+        - --conf=spark.kubernetes.driver.podTemplateFile=/opt/spark-conf/driver-pod-template.yaml
+        - --conf=spark.ui.prometheus.enabled=true
+        - --conf=spark.sql.streaming.metricsEnabled=true
+        - --conf=spark.jars.ivy=/tmp/ivy2
+        - --packages=org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.2
+        - local:///opt/spark-scripts/structured_streaming_kafka_read.py
+      volumeMounts:
+        - name: driver-pod-template-vol
+          mountPath: /opt/spark-conf
+  volumes:
+    - name: driver-pod-template-vol
+      configMap:
+        name: spark-driver-pod-template

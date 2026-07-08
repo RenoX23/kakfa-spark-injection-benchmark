@@ -1,10 +1,11 @@
-# Phase 0 minimal Prometheus: server only, no Alertmanager/pushgateway/node-exporter yet.
+# Phase 0 minimal Prometheus: server + node exporter. No Alertmanager/pushgateway/
+# kube-state-metrics -- not needed for the pilot fault signal or RO1-RO2 telemetry.
 alertmanager:
   enabled: false
 prometheus-pushgateway:
   enabled: false
 prometheus-node-exporter:
-  enabled: false
+  enabled: true
 kube-state-metrics:
   enabled: false
 
@@ -31,6 +32,27 @@ extraScrapeConfigs: |
         action: replace
         regex: '(.+)'
         replacement: '${1}:9404'
+        target_label: __address__
+      - source_labels: [__meta_kubernetes_pod_name]
+        target_label: kubernetes_pod_name
+
+  - job_name: 'spark-driver'
+    metrics_path: /metrics/executors/prometheus/
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+            names: ["spark"]
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_spark_role]
+        action: keep
+        regex: driver
+      - source_labels: [__meta_kubernetes_pod_container_port_name]
+        action: keep
+        regex: spark-ui
+      - source_labels: [__meta_kubernetes_pod_ip]
+        action: replace
+        regex: '(.+)'
+        replacement: '${1}:4040'
         target_label: __address__
       - source_labels: [__meta_kubernetes_pod_name]
         target_label: kubernetes_pod_name
