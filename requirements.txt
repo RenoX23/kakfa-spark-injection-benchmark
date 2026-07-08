@@ -1,0 +1,3 @@
+# Pin versions here as they're actually used -- don't pre-install speculative deps.
+# Nothing needed yet (Phase 0 used only Python stdlib: json). Populate starting with
+# the fault-injection tooling / feature-engineering phase (RO2 onward).
