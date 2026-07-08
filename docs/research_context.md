@@ -102,6 +102,11 @@ SHAP or permutation feature importance per fault class, to show *which* signals 
 | Weeks | Phase | Deliverable |
 |---|---|---|
 | 0–1 | **Infra build (new — not previously scoped)** | Kind cluster up; Kafka broker running; Spark Structured Streaming job consuming from it; Prometheus scraping Kafka JMX + Spark metrics + node exporter. Gate: a single pilot fault (broker kill) shows a real signal change in Grafana/Prometheus — verified visually, not just "command ran." |
+
+**Phase 0 execution status (as of 2026-07-08, updated live — not retroactively):**
+- DONE, verified: Kind cluster, single-broker KRaft Kafka (Strimzi Kafka Operator, `infra/kafka/`), Prometheus scraping the broker's JMX exporter via pod-based service discovery (`infra/prometheus/`). Bitnami's Kafka image is confirmed dead (Broadcom paywall, 0 public tags) — pivoted to Strimzi per the pivot rule, same session.
+- DONE, verified: pilot fault injection (broker pod delete) with a real, independently-corroborated signal change captured in Prometheus and Kubernetes events — see `results/phase0-pilot-fault/`. This satisfies the gate condition's literal text ("pilot fault shows a real signal change, verified visually") for the Kafka+Prometheus scope built so far.
+- NOT YET DONE: Spark Structured Streaming, Prometheus scraping Spark metrics, node exporter. Deliberately sequenced after the Kafka+Prometheus+fault-signal checkpoint (explicit instruction, not an oversight or scope drift). Full Phase 0 per the deliverable list in this row is not complete until these are added.
 | 2–3 | Saturation re-check + fault taxonomy lock + injection tooling | Confirmed gap still open; fault-injection scripts working end-to-end for at least one fault class |
 | 4–5 | Full fault-injection campaign | Labeled dataset across all fault classes, N≥15–20 repetitions each, ground-truth timestamps recorded |
 | 6–7 | Baseline implementation | Static-threshold detector reproducing real alerting rules, evaluated on the dataset |

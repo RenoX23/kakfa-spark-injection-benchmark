@@ -1,0 +1,17 @@
+{
+  "fault_class": "broker_kill_pod_delete",
+  "target": "kafka namespace, pod kspfail-single-0 (Strimzi single-broker KRaft Kafka)",
+  "injection_method": "kubectl -n kafka delete pod kspfail-single-0 --wait=false",
+  "injection_timestamp_utc": "2026-07-08T14:53:47Z",
+  "readiness_probe_first_failure_utc_approx": "2026-07-08T14:54:14Z",
+  "new_pod_instance_first_scraped_utc_approx": "2026-07-08T14:54:57Z",
+  "prometheus_target_health_recovered_utc": "2026-07-08T14:55:06Z",
+  "pod_ip_before": "10.244.0.6",
+  "pod_ip_after": "10.244.0.8",
+  "corroborating_evidence": [
+    "kubectl events: Killing -> Scheduled -> Created -> Pulled(cached) -> Started -> 3x Unhealthy(readiness probe) -> Ready",
+    "Prometheus /api/v1/targets: kafka-broker-jmx target health unknown from 14:54:09Z to 14:55:03Z, up from 14:55:06Z",
+    "Prometheus query_range up{job=\"kafka-broker-jmx\"}: new instance label (10.244.0.8:9404) first appears ~70s post-injection"
+  ],
+  "methodological_note": "up{} for the OLD instance (10.244.0.6) does not drop to 0 within the observed window because Kubernetes pod-based service discovery drops the dead target from the active list entirely rather than continuing to scrape-and-fail it; PromQL's 5-minute staleness lookback then forward-fills the last real sample (1) for the old series until it formally goes stale. The reliable, K8s-native ground-truth signal for a pod-recreate fault is therefore NOT a clean up==0 dip but (a) target instance-label churn (old IP disappears, new IP appears) and (b) the old series going absent only after the ~5 min staleness window elapses. This is a documented finding for the labeling methodology (Section 6.3 of research_context.md): sliding-window feature construction for this fault class must account for instance-identity churn on pod recreation, not assume a stable single time series per broker across a restart."
+}

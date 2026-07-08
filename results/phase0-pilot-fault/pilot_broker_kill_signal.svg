@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" font-family="ui-monospace,monospace" font-size="12">
+<rect x="0" y="0" width="900" height="320" fill="#0d1117"/>
+<rect x="160.4" y="40" width="132.2" height="230" fill="#f5a62333" />
+<text x="226.5" y="30" fill="#f5a623" text-anchor="middle">observed outage (target health != up)</text>
+<line x1="109.4" y1="40" x2="109.4" y2="270" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4,3"/>
+<text x="109.4" y="290" fill="#ffffff" text-anchor="middle">pod delete (t=0)</text>
+<line x1="70" y1="270" x2="870" y2="270" stroke="#8b949e"/>
+<text x="70.0" y="305" fill="#8b949e" text-anchor="middle">t-17s</text>
+<text x="269.4" y="305" fill="#8b949e" text-anchor="middle">t+69s</text>
+<text x="468.8" y="305" fill="#8b949e" text-anchor="middle">t+155s</text>
+<text x="668.3" y="305" fill="#8b949e" text-anchor="middle">t+241s</text>
+<text x="870.0" y="305" fill="#8b949e" text-anchor="middle">t+328s</text>
+<line x1="70.0" y1="97.5" x2="237.0" y2="97.5" stroke="#e06c75" stroke-width="6" stroke-linecap="round"/>
+<text x="60" y="101.5" fill="#e06c75" text-anchor="end">10.244.0.6:9404</text>
+<line x1="271.7" y1="212.5" x2="870.0" y2="212.5" stroke="#61afef" stroke-width="6" stroke-linecap="round"/>
+<text x="60" y="216.5" fill="#61afef" text-anchor="end">10.244.0.8:9404</text>
+<text x="450.0" y="20" fill="#e6edf3" text-anchor="middle" font-size="14">Phase 0 pilot fault: broker pod delete — up{job="kafka-broker-jmx"} by instance</text>
+</svg>
