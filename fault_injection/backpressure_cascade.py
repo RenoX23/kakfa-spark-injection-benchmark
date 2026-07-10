@@ -6,8 +6,13 @@ takes anything down -- the pipeline stays "up" the whole time, it just falls beh
 Ground truth reuses the existing `ts` field already in every message (no new
 instrumentation): burst-produce far more messages than Spark's 5s trigger interval can
 absorb, then measure the gap between wall-clock now() and the `ts` of the most recent
-record Spark has actually printed. While backlogged, that gap is large (Spark is still
-working through old messages); it shrinks back to near-zero once Spark catches up.
+*steady-stream* record Spark has printed. While backlogged, that gap is large (Spark is
+still working through old messages); it shrinks back to near-zero once Spark catches up.
+
+Note: TS_ROW_RE matches `\d+` for seq, which doesn't match the burst's negative-seq
+marker rows (`-$i`) -- lag is read off the regular positive-seq producer's stream, not
+the burst records themselves. Still a valid lag proxy (the steady stream is equally
+backlogged behind the burst), just worth being precise about which stream is measured.
 """
 import argparse
 import datetime
