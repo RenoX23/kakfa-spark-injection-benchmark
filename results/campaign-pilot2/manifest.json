@@ -1,0 +1,43 @@
+{
+  "campaign_start_utc": "2026-07-10T16:52:26Z",
+  "reps_per_class": 2,
+  "runs": [
+    {
+      "fault_class": "executor_oom",
+      "rep": 1,
+      "run_id": "campaign1",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 6.5,
+      "started_utc": "2026-07-10T16:52:33Z"
+    },
+    {
+      "fault_class": "executor_oom",
+      "rep": 2,
+      "run_id": "campaign2",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 6.2,
+      "started_utc": "2026-07-10T16:53:37Z"
+    },
+    {
+      "fault_class": "backpressure_cascade",
+      "rep": 1,
+      "run_id": "campaign1",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 16.0,
+      "started_utc": "2026-07-10T16:55:16Z"
+    },
+    {
+      "fault_class": "backpressure_cascade",
+      "rep": 2,
+      "run_id": "campaign2",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 16.8,
+      "started_utc": "2026-07-10T16:56:42Z"
+    }
+  ],
+  "campaign_end_utc": "2026-07-10T16:56:42Z"
+}

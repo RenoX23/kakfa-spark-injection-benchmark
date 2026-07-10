@@ -246,6 +246,40 @@ the `spark-driver` scrape job and node-exporter -- both already correctly presen
 back to the git-committed source of truth, not a rebuild. This is the infra-as-code discipline paying
 for itself a second time this project.
 
+**Weeks 4-5 campaign orchestrator built (`fault_injection/campaign.py`) and pilot-tested before
+committing to the full N>=15-20 run -- and the pilot caught a serious, genuinely important bug.**
+Reuses each fault class's `run()` function directly, sequential by class (not interleaved), randomized
+steady-state gaps (45-90s) between repetitions per Section 6.2's own methodology requirement, manifest
+written incrementally so an interrupted campaign loses at most the in-flight repetition.
+
+A first N=2-per-class pilot (`results/campaign-pilot/`) ran broker_kill clean (2/2 ok, ~63-70s/rep),
+then executor_oom and backpressure_cascade both failed immediately (4/4 errors) -- "no running
+executor/driver pod found." Investigation found the actual root cause was much more serious than a
+campaign-design issue: **the live Kafka broker's storage type had silently reverted to `ephemeral`**
+(confirmed via `kubectl get kafkanodepool single -o jsonpath='{.spec.storage}'`), even though the
+committed `infra/kafka/kafka-single-broker.yaml` correctly specifies `persistent-claim` and had never
+been wrong. The reverted CR's own `creationTimestamp` traced back to the *original* Phase-0 deployment
+from before the persistent-storage fix was ever made -- live cluster state had drifted back to an
+earlier point without the git-committed source of truth ever changing, the same class of problem as
+the Prometheus Helm-release reversion found during the same session's environment recovery, just
+undetected until a real `broker_kill` repetition exposed it by wiping the topic (offset dropped from
+23920 to 33) and crashing the Spark query on the resulting data-loss exception. Fixed the same way as
+the original Weeks 2-3 fix: delete and recreate the Kafka broker from the committed manifest, relaunch
+Spark. A second pilot targeting just the two previously-failed classes (`results/campaign-pilot2/`)
+then ran clean: 4/4 ok, executor_oom ~6.2-6.5s/rep, backpressure_cascade ~16.0-16.8s/rep.
+
+This is a significant methodological lesson beyond just "another bug fixed": **being checked into git
+is necessary but not sufficient for infrastructure correctness.** Live cluster state can silently drift
+from the committed source of truth in ways that stay completely invisible until a specific operation
+exercises the drifted part -- Kafka looked "Running" with genuine, growing offsets for over an hour of
+subsequent work before this happened, giving no signal anything was wrong. Added a `preflight_check()`
+to `campaign.py` that verifies live state (Kafka storage type, Kafka/Spark pod health) actually matches
+what's committed *before* spending hours running a campaign on top of it, so this class of drift fails
+fast with one clear error instead of silently burning through a chunk of the campaign's repetitions.
+Real per-repetition timing from the validated pilots, used to size the full N=15-20 run: broker_kill
+~134s (fault+gap), executor_oom ~74s, backpressure_cascade ~84s, disk_pressure ~159s, network_degradation
+~166s -- full campaign at N=15/class is ~2.6 hours, N=20/class is ~3.4 hours.
+
 ### 6.3 Labeling
 Sliding-window supervised framing, following the standard AIOps approach (Notaro et al., 2021): telemetry windows at multiple horizons before recorded failure onset (e.g., t-30s, t-60s, t-120s) are labeled "pre-failure"; windows during confirmed steady-state operation are labeled "normal." Window size and horizon are hyperparameters to sweep, not fixed a priori — report sensitivity.
 

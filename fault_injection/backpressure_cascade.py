@@ -1,4 +1,4 @@
-"""Fault class: backpressure cascade (burst producer rate past consumer capacity).
+r"""Fault class: backpressure cascade (burst producer rate past consumer capacity).
 Section 6.2, locked taxonomy.
 
 Unlike broker_kill/executor_oom (kill something, watch it recover), this fault never
@@ -81,7 +81,9 @@ def run(run_id, burst_size=3000, kafka_namespace="kafka", broker_pod="kspfail-si
     driver_pod = find_driver_pod(spark_namespace)
 
     baseline_lag = lag_seconds(spark_namespace, driver_pod)
-    if baseline_lag is None or baseline_lag > CAUGHT_UP_THRESHOLD_SECONDS:
+    if baseline_lag is None:
+        raise RuntimeError("refusing to inject: no processed records found in driver log yet")
+    if baseline_lag > CAUGHT_UP_THRESHOLD_SECONDS:
         raise RuntimeError(
             f"refusing to inject: baseline lag is {baseline_lag}s, not caught up before injection"
         )
