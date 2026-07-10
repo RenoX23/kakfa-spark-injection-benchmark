@@ -1,0 +1,19 @@
+{
+  "fault_class": "network_degradation",
+  "run_id": "test4-longer",
+  "namespace": "kafka",
+  "target_pod": "kspfail-single-0",
+  "interface": "eth0",
+  "delay_ms": 500,
+  "jitter_ms": 50,
+  "loss_pct": 20,
+  "duration_s": 90,
+  "injection_timestamp_utc": "2026-07-10T16:09:04Z",
+  "netem_removal_exit_code": 0,
+  "removal_confirmed": true,
+  "baseline_scrape_duration_seconds": 0.786981889,
+  "peak_scrape_duration_seconds_during_fault": 6.650968567,
+  "degraded_health_detected_utc": null,
+  "target_recovered_utc": "2026-07-10T16:10:42Z",
+  "recovered": true
+}

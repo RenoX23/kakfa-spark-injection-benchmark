@@ -70,12 +70,14 @@ Given telemetry collected from a Kafka + Spark Structured Streaming pipeline (br
 ### 6.2 Fault Taxonomy and Injection
 
 **LOCKED (2026-07-08, Weeks 2-3 gate):** 5 fault classes, all confirmed feasible on the current
-single-node Kind + single-broker Kafka topology built in Phase 0:
-- Broker kill / restart (pod delete) — already proven end-to-end (Phase 0 pilot, `results/phase0-pilot-fault/`)
-- Executor OOM-kill (memory pressure induction on the Spark executor)
-- Backpressure cascade (throttle downstream sink / slow consumer)
-- Disk-pressure on broker (fill disk toward threshold)
-- Network degradation (latency/packet-loss injection via `tc netem`, pod/interface-level — feasible single-node, unlike a true network *partition*)
+single-node Kind + single-broker Kafka topology built in Phase 0. **All five now have working,
+verified injection tooling as of 2026-07-10** (`fault_injection/`) -- Weeks 2-3's deliverable
+("scripts working end-to-end for at least one fault class") is done for all five, not just one:
+- Broker kill / restart (pod delete) — proven end-to-end, `fault_injection/broker_kill.py`
+- Executor OOM-kill (memory pressure induction on the Spark executor) — `fault_injection/executor_oom.py`
+- Backpressure cascade (burst producer past consumer capacity) — `fault_injection/backpressure_cascade.py`
+- Disk-pressure on broker (bounded fill of the broker's real data volume) — `fault_injection/disk_pressure.py`
+- Network degradation (latency/packet-loss via `tc netem`, pod/interface-level — feasible single-node, unlike a true network *partition*) — `fault_injection/network_degradation.py`
 
 **Dropped, documented as an accepted limitation, not forced:** Partition leader churn (forced
 leader re-election). Requires a multi-broker Kafka cluster to have any leader to re-elect — the
@@ -161,6 +163,88 @@ documented in full because each iteration is a real, distinct finding, not noise
 4. Fourth run (`runtest4-fixed.json`), all three fixes applied: `oomkilled=True` confirmed 5s after
    injection, new executor recovered 6s after injection, streaming job kept processing real data
    throughout with 0 driver restarts. Evidence: `results/weeks2-3-tooling/executor_oom_driver_log_excerpt.txt`.
+
+**Third, fourth, and fifth fault classes built and verified (2026-07-10, after a 2-day gap in the
+session -- see the environment-recovery note below): `fault_injection/backpressure_cascade.py`,
+`disk_pressure.py`, `network_degradation.py`.** All five locked fault classes now have working,
+evidenced tooling -- Weeks 2-3's deliverable is fully done, not just "at least one."
+
+**Backpressure cascade.** Ground truth reuses the existing `ts` field already in every message
+(no new instrumentation): burst-produce far more messages than Spark's 5s trigger interval can
+absorb, then measure the gap between wall-clock now() and the `ts` of the most recent record Spark
+has actually printed. Verified twice at different burst sizes, and the signal scales correctly with
+severity -- exactly what a defensible methodology needs, not just "it fired once":
+3000-message burst -> 17.1s peak lag (`runtest1.json`); 8000-message burst -> 24.0s peak lag
+(`runtest2-bigger.json`). Confirmed the bursts genuinely landed and were processed (not just a lag
+number floating free of evidence) by finding the burst's negative-seq marker rows in the driver log,
+batched in oversized groups exactly as expected -- `results/weeks2-3-tooling/backpressure_burst_rows_excerpt.txt`.
+
+**Disk-pressure on broker -- the injection mechanism changed mid-implementation, and the reason
+matters.** Originally planned as a Kubernetes ephemeral-storage resource limit (fill past a small,
+explicit limit, let kubelet's real eviction mechanism fire, entirely bounded and safe). Turned out not
+to apply: ephemeral-storage limits govern a container's writable layer and un-sized `emptyDir`s, NOT
+PersistentVolumeClaim-backed volumes -- and the broker's data directory is deliberately a PVC (the
+Weeks 2-3 broker_kill fix). Switching the data volume back to `emptyDir` to make that limit apply
+would have undone that fix. A second, separate discovery compounded this: Kind's default storage
+provisioner (`local-path-provisioner`) doesn't enforce PVC size quotas at all -- `df` inside the
+broker showed the real host disk (1007G total, 929G free at the time), not a bounded 5Gi volume, and
+this machine runs other unrelated projects' containers, so filling toward real disk exhaustion to
+trigger genuine Kubernetes disk-pressure eviction was never a safe option here regardless.
+Reframed with the user's explicit sign-off: fill the broker's real (PVC-backed) data directory with a
+small, bounded amount (3GB, trivial against 929GB free) and observe the drop via node-exporter's
+`node_filesystem_avail_bytes` (already scraped by Prometheus since Phase 0). This doesn't trigger a
+full Kubernetes eviction, but is arguably a better fit for what this dissertation actually measures --
+gradual degradation telemetry (RO4's lead-time framing), not just binary crash/recovery, which
+broker_kill and executor_oom already cover. Verified end-to-end (`runtest4-fixed.json`): baseline
+996,570,152,960 bytes available -> 993,348,444,160 after a 3GB fill (a 3.22GB drop, matching
+filesystem block overhead on top of the requested 3GB), detected within 5s, fully reclaimed and
+confirmed within ~63s of cleanup. Two smaller bugs on the way: the mountpoint label in this
+node-exporter's view isn't `"/"` (Kind's node container doesn't expose one) -- the large disk shows up
+as `"/var"` instead, found by querying the metric's actual label values rather than guessing; and the
+first cleanup-confirmation poll used too short a timeout (60s) against node-exporter's own scrape
+interval, timing out even though `df` directly confirmed the space had already been reclaimed.
+
+**Network degradation -- three real technical findings, not a clean first pass.** The Strimzi Kafka
+image has no `tc`/iproute2 at all (`which tc`: "executable file not found"). Fixed with the standard
+approach: an ephemeral debug container (`nicolaka/netshoot`) attached to the broker pod via
+`--target`, sharing its network namespace, using Kubernetes's built-in `netadmin` debug profile to
+grant CAP_NET_ADMIN to the debug container specifically -- the broker's own container and security
+posture are untouched. Three findings surfaced building this:
+1. A design bug caught before it could produce misleading results: the injection script's first draft
+   called `kubectl debug` synchronously, which blocks for the fault's entire duration (its own `sleep`
+   runs inside the debug session) -- meaning a synchronous call wouldn't return until *after* the fault
+   already ended, so any poll for degradation starting afterward would always measure a healthy
+   pipeline and silently prove nothing. Fixed by running the debug session as a background process and
+   polling while it's still active.
+2. Removal verification was unreliable when based on parsing the debug session's captured stdout for a
+   `"NETEM_REMOVED"` marker -- a run came back with that check failing even though the Kubernetes-
+   reported ephemeral container status showed a clean `exitCode: 0` for the same session. Switched to
+   querying `ephemeralContainerStatuses` directly (the authoritative source) instead of a side-channel
+   string match, which then needed a short poll of its own: the K8s API's ephemeral-container status
+   lags a few seconds behind the container actually exiting.
+3. **Binary target health (up/down) never flipped at any severity tested, including 500ms delay + 20%
+   loss for 90s.** This is a genuine methodological finding, not a failed injection: this pipeline's
+   Prometheus scrape is tolerant enough (generous default timeout) that network degradation at
+   realistic severities doesn't cross the up/down threshold. `scrape_duration_seconds` is the metric
+   that actually carries the signal -- confirmed clearly once fault duration exceeded Prometheus's own
+   60s scrape interval (a 30s fault is a coin-flip on whether any scrape happens during the window at
+   all -- `runtest2-mild.json` happened to catch one, 0.75s -> 2.27s; `runtest3-verified.json` didn't,
+   same value before and after; `runtest4-longer.json` at 90s duration removed the coin-flip entirely,
+   0.79s -> 6.65s, an unambiguous 8.5x spike). This directly informs the Weeks 4-5 campaign: network
+   degradation fault durations must exceed the scrape interval, and `scrape_duration_seconds` belongs
+   in the feature set for this fault class specifically -- target health alone would train a model that
+   never learns to see this fault.
+
+**Environment recovery, same session, after a 2-day gap in wall-clock time between turns.** The Kind
+cluster's container survived (Docker/WSL2 restart policy held this time, unlike the earlier full wipe),
+but with real drift: kubeconfig pointed at a stale host port (Kind reassigns a new one on container
+restart unless pinned -- fixed with `kind export kubeconfig`), Spark's namespace was completely empty
+(bare Pods, unlike Kafka's Strimzi-managed/PVC-backed pods, don't survive a node-level restart and
+nothing recreates them), and the Prometheus Helm release had reverted to an earlier revision missing
+the `spark-driver` scrape job and node-exporter -- both already correctly present in the committed
+`infra/prometheus/values.yaml`, so the fix was a single `helm upgrade` reconciling the live release
+back to the git-committed source of truth, not a rebuild. This is the infra-as-code discipline paying
+for itself a second time this project.
 
 ### 6.3 Labeling
 Sliding-window supervised framing, following the standard AIOps approach (Notaro et al., 2021): telemetry windows at multiple horizons before recorded failure onset (e.g., t-30s, t-60s, t-120s) are labeled "pre-failure"; windows during confirmed steady-state operation are labeled "normal." Window size and horizon are hyperparameters to sweep, not fixed a priori — report sensitivity.
