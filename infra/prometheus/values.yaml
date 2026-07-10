@@ -10,8 +10,15 @@ kube-state-metrics:
   enabled: false
 
 server:
+  # Persistence enabled starting Weeks 4-5 (was disabled through Phase 0/Weeks 2-3,
+  # where losing history on a pod restart didn't matter for one-off verification runs).
+  # A multi-hour, N>=15-20-repetition fault-injection campaign is a different story --
+  # losing the TSDB to a restart mid-campaign would lose the raw telemetry needed for
+  # labeling, not just a convenience. Same lesson as the Kafka broker's ephemeral->
+  # persistent-claim fix in Weeks 2-3.
   persistentVolume:
-    enabled: false
+    enabled: true
+    size: 4Gi
 
 # NOTE: extraScrapeConfigs is a TOP-LEVEL chart value, not nested under server: —
 # nesting it silently no-ops (helm applies without error, config just never renders).
