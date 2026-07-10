@@ -253,9 +253,12 @@ steady-state gaps (45-90s) between repetitions per Section 6.2's own methodology
 written incrementally so an interrupted campaign loses at most the in-flight repetition.
 
 A first N=2-per-class pilot (`results/campaign-pilot/`) ran broker_kill clean (2/2 ok, ~63-70s/rep),
-then executor_oom and backpressure_cascade both failed immediately (4/4 errors) -- "no running
-executor/driver pod found." Investigation found the actual root cause was much more serious than a
-campaign-design issue: **the live Kafka broker's storage type had silently reverted to `ephemeral`**
+then executor_oom and backpressure_cascade both failed immediately (4/4 errors) -- executor_oom with
+"no running executor/driver pod found" (no Spark pod existed at all), backpressure_cascade with
+"refusing to inject: baseline lag is Nones..." (a driver pod existed but the query wasn't processing,
+so lag came back `None`). Different error strings, same root cause. Investigation found the actual
+root cause was much more serious than a campaign-design issue: **the live Kafka broker's storage type
+had silently reverted to `ephemeral`**
 (confirmed via `kubectl get kafkanodepool single -o jsonpath='{.spec.storage}'`), even though the
 committed `infra/kafka/kafka-single-broker.yaml` correctly specifies `persistent-claim` and had never
 been wrong. The reverted CR's own `creationTimestamp` traced back to the *original* Phase-0 deployment
