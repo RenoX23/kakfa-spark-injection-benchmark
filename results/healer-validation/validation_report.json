@@ -1,0 +1,29 @@
+{
+  "started_utc": "2026-07-11T14:41:03Z",
+  "max_attempts": 8,
+  "gap_s": 15,
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "ok",
+      "elapsed_s": 6.5,
+      "driver_phase_after": "Running",
+      "driver_crashed": false
+    },
+    {
+      "attempt": 2,
+      "status": "ok",
+      "elapsed_s": 122.9,
+      "driver_phase_after": "Failed",
+      "driver_crashed": true
+    }
+  ],
+  "crash_reproduced": true,
+  "stages": {
+    "stage1_detection": true,
+    "stage2_log_survival": true,
+    "stage3_recreate": true,
+    "stage4_recovery_confirmed": true,
+    "stage5_checkpoint_logged": true
+  }
+}

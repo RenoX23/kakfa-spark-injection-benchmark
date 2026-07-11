@@ -1,0 +1,7 @@
+--- SPARK CRASH RECOVERY --- 2026-07-11T14:41:02Z
+fault_class_active: executor_oom
+rep_lost: healercheck2
+signature_matched ('[INTERNAL_ERROR]'): True
+log_snippet: 'hed\n26/07/11 14:37:20 ERROR MicroBatchExecution: Query [id = 76ff510a-3f04-4830-acf2-2c3215ce9a89, runId = 7a6bd924-0776-4427-8e0e-4202539e2fb8] terminated with error\norg.apache.spark.SparkException: [INTERNAL_ERROR] The Spark SQL phase optimization failed with an internal error. You hit a bug in Spark or the Spark plugins you use. Please, report this bug to the corresponding communities or vendors, and provide the full stack trace. SQLSTATE: XX000\n\tat org.apache.spark.SparkException$.internalError(SparkException.scala:107)\n\tat org.apache.spark.sql.execution.QueryExecution$.toInternalError(Que'
+action: driver+executor+submit-runner deleted, submit-pod.yaml reapplied, healthy again as of 2026-07-11T14:41:02Z
+
