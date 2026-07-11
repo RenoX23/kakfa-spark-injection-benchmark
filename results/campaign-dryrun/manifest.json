@@ -1,0 +1,194 @@
+{
+  "campaign_start_utc": "2026-07-11T09:53:53Z",
+  "reps_per_class": 3,
+  "runs": [
+    {
+      "fault_class": "broker_kill",
+      "rep": 1,
+      "run_id": "campaign1",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 47.9,
+      "started_utc": "2026-07-11T09:54:41Z"
+    },
+    {
+      "fault_class": "broker_kill",
+      "rep": 2,
+      "run_id": "campaign2",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 17.5,
+      "started_utc": "2026-07-11T09:55:45Z"
+    },
+    {
+      "fault_class": "broker_kill",
+      "rep": 3,
+      "run_id": "campaign3",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 67.7,
+      "started_utc": "2026-07-11T09:57:45Z"
+    },
+    {
+      "fault_class": "executor_oom",
+      "rep": 1,
+      "run_id": "campaign1",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 5.6,
+      "started_utc": "2026-07-11T09:58:42Z"
+    },
+    {
+      "fault_class": "executor_oom",
+      "rep": 2,
+      "run_id": "campaign2",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 5.8,
+      "started_utc": "2026-07-11T10:00:10Z"
+    },
+    {
+      "fault_class": "executor_oom",
+      "rep": 3,
+      "run_id": "campaign3",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 5.6,
+      "started_utc": "2026-07-11T10:01:42Z"
+    },
+    {
+      "fault_class": "backpressure_cascade",
+      "rep": 1,
+      "run_id": "campaign1",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 16.2,
+      "started_utc": "2026-07-11T10:03:06Z"
+    },
+    {
+      "fault_class": "backpressure_cascade",
+      "rep": 2,
+      "run_id": "campaign2",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 15.9,
+      "started_utc": "2026-07-11T10:04:45Z"
+    },
+    {
+      "fault_class": "backpressure_cascade",
+      "rep": 3,
+      "run_id": "campaign3",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 16.0,
+      "started_utc": "2026-07-11T10:06:15Z"
+    },
+    {
+      "fault_class": "disk_pressure",
+      "rep": 1,
+      "run_id": "campaign1",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 126.4,
+      "started_utc": "2026-07-11T10:09:14Z"
+    },
+    {
+      "fault_class": "disk_pressure",
+      "rep": 2,
+      "run_id": "campaign2",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 103.3,
+      "started_utc": "2026-07-11T10:12:17Z"
+    },
+    {
+      "fault_class": "disk_pressure",
+      "rep": 3,
+      "run_id": "campaign3",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 117.6,
+      "started_utc": "2026-07-11T10:15:16Z"
+    },
+    {
+      "fault_class": "network_degradation",
+      "rep": 1,
+      "run_id": "campaign1",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 93.8,
+      "started_utc": "2026-07-11T10:18:15Z"
+    },
+    {
+      "fault_class": "network_degradation",
+      "rep": 2,
+      "run_id": "campaign2",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 93.6,
+      "started_utc": "2026-07-11T10:20:51Z"
+    },
+    {
+      "fault_class": "network_degradation",
+      "rep": 3,
+      "run_id": "campaign3",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 93.6,
+      "started_utc": "2026-07-11T10:23:34Z"
+    }
+  ],
+  "checkpoints": [
+    {
+      "fault_class": "broker_kill",
+      "record_count": 3,
+      "expected_reps": 3,
+      "storage_type": "persistent-claim",
+      "storage_ok": true,
+      "prom_ok": true,
+      "prom_detail": "4 series, 19 data points for 'up{job=\"kafka-broker-jmx\"}' over 2026-07-11T09:53:53Z..2026-07-11T09:58:36Z",
+      "status": "PASS"
+    },
+    {
+      "fault_class": "executor_oom",
+      "record_count": 3,
+      "expected_reps": 3,
+      "storage_type": "persistent-claim",
+      "storage_ok": true,
+      "prom_ok": true,
+      "prom_detail": "1 series, 17 data points for 'up{job=\"spark-driver\"}' over 2026-07-11T09:58:36Z..2026-07-11T10:02:50Z",
+      "status": "PASS"
+    },
+    {
+      "fault_class": "backpressure_cascade",
+      "record_count": 3,
+      "expected_reps": 3,
+      "storage_type": "persistent-claim",
+      "storage_ok": true,
+      "prom_ok": true,
+      "prom_detail": "1 series, 18 data points for 'up{job=\"spark-driver\"}' over 2026-07-11T10:02:50Z..2026-07-11T10:07:08Z",
+      "status": "PASS"
+    },
+    {
+      "fault_class": "disk_pressure",
+      "record_count": 3,
+      "expected_reps": 3,
+      "storage_type": "persistent-claim",
+      "storage_ok": true,
+      "prom_ok": true,
+      "prom_detail": "1 series, 39 data points for 'node_filesystem_avail_bytes{mountpoint=\"/var\"}' over 2026-07-11T10:07:08Z..2026-07-11T10:16:41Z",
+      "status": "PASS"
+    },
+    {
+      "fault_class": "network_degradation",
+      "record_count": 3,
+      "expected_reps": 3,
+      "storage_type": "persistent-claim",
+      "storage_ok": true,
+      "prom_ok": true,
+      "prom_detail": "1 series, 28 data points for 'scrape_duration_seconds{job=\"kafka-broker-jmx\"}' over 2026-07-11T10:16:41Z..2026-07-11T10:23:34Z",
+      "status": "PASS"
+    }
+  ],
+  "campaign_end_utc": "2026-07-11T10:23:34Z"
+}

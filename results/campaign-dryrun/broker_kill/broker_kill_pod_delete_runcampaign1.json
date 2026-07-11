@@ -1,0 +1,10 @@
+{
+  "fault_class": "broker_kill_pod_delete",
+  "run_id": "campaign1",
+  "namespace": "kafka",
+  "target_pod": "kspfail-single-0",
+  "injection_timestamp_utc": "2026-07-11T09:53:54Z",
+  "target_unhealthy_detected_utc": "2026-07-11T09:53:56Z",
+  "target_recovered_utc": "2026-07-11T09:54:41Z",
+  "recovered": true
+}
