@@ -28,6 +28,15 @@ first attempt showed a clean exitCode=0 in the K8s-reported ephemeral container 
 while the locally-captured stdout string match still came back false). It queries the pod's
 ephemeralContainerStatuses directly after the process completes and checks the
 Kubernetes-reported exit code -- the authoritative source, not a side channel.
+
+hit_timeout (2026-07-11): the campaign's N=8 run at delay_ms=500/loss_pct=20 showed 5/8
+reps land in a 9.8-10.01s band, hard against Prometheus's then-10s scrape_timeout for
+this job -- not what an unbounded degraded-network distribution looks like, that's a
+measurement ceiling silently right-censoring the magnitude label. infra/prometheus/
+values.yaml now sets scrape_timeout: 20s for this job specifically. This field records
+whether a given rep's peak measurement was itself still hard against that ceiling (has a
+false-negative risk if severity is dialed up further later) so a censored data point is
+visible in the ground truth, not silently indistinguishable from a genuine peak.
 """
 import argparse
 import json
@@ -48,6 +57,16 @@ from common import (
 )
 
 FAULT_CLASS = "network_degradation"
+
+# Must match infra/prometheus/values.yaml's scrape_timeout for job 'kafka-broker-jmx'.
+# Not queryable from Prometheus's HTTP API at run time (per-job scrape_timeout isn't
+# exposed as a metric), so this is a mirrored constant, not a live lookup -- if the
+# infra value changes, this must change with it.
+SCRAPE_TIMEOUT_S = 20.0
+# Margin below the configured timeout: old-ceiling data clustered within ~0.2s of the
+# 10s timeout, but that margin isn't guaranteed to hold at a different timeout value or
+# under different injection severity, so this stays generous rather than tuned tight.
+TIMEOUT_MARGIN_S = 1.0
 
 
 def latest_ephemeral_exit_code(namespace, pod, after_iso_ts):
@@ -144,6 +163,11 @@ def run(run_id, namespace="kafka", pod="kspfail-single-0", scrape_pool="kafka-br
             interval=3,
         )
 
+        hit_timeout = (
+            peak_scrape_duration is not None
+            and peak_scrape_duration >= (SCRAPE_TIMEOUT_S - TIMEOUT_MARGIN_S)
+        )
+
         record = {
             "fault_class": FAULT_CLASS,
             "run_id": run_id,
@@ -159,6 +183,8 @@ def run(run_id, namespace="kafka", pod="kspfail-single-0", scrape_pool="kafka-br
             "removal_confirmed": removal_exit_code == 0,
             "baseline_scrape_duration_seconds": baseline_scrape_duration,
             "peak_scrape_duration_seconds_during_fault": peak_scrape_duration,
+            "scrape_timeout_s_configured": SCRAPE_TIMEOUT_S,
+            "hit_timeout": hit_timeout,
             "degraded_health_detected_utc": degraded_detected_ts,
             "target_recovered_utc": recovered_ts,
             "recovered": recovered_ts is not None,
@@ -167,7 +193,7 @@ def run(run_id, namespace="kafka", pod="kspfail-single-0", scrape_pool="kafka-br
         print(
             f"wrote {path}: removal_exit_code={removal_exit_code}, "
             f"scrape_duration {baseline_scrape_duration} -> {peak_scrape_duration}, "
-            f"health_flipped={degraded_detected_ts is not None}"
+            f"hit_timeout={hit_timeout}, health_flipped={degraded_detected_ts is not None}"
         )
         return record
     finally:

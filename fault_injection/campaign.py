@@ -27,6 +27,7 @@ import json
 import os
 import random
 import statistics
+import subprocess
 import sys
 import time
 
@@ -237,6 +238,61 @@ def heal_spark(namespace="spark", timeout=180):
     raise RuntimeError(f"heal_spark: Spark not healthy {timeout}s after relaunch -- giving up")
 
 
+def _current_driver_pod(namespace="spark"):
+    return kubectl(
+        "-n", namespace, "get", "pods", "-l", "spark-role=driver",
+        "-o", "jsonpath={.items[0].metadata.name}", check=False,
+    ).stdout.strip() or None
+
+
+def start_driver_log_capture(driver_log_dir, namespace="spark"):
+    """Pipe `kubectl logs -f <driver-pod>` to a file on local disk for the life of the
+    pod. This is what was missing during the N=8 run: the crashed driver pod's log
+    lived only inside the pod and was gone the moment it was deleted during recovery,
+    and by the time anyone went looking, kubelet had also GC'd the node-level log file
+    and the K8s events had expired. Streaming to local disk as it happens means the
+    trace survives pod deletion regardless of what cleans up the pod afterwards.
+    Returns None if there's no driver pod up yet to attach to (caller should retry via
+    ensure_driver_log_capture once one exists)."""
+    pod_name = _current_driver_pod(namespace)
+    if not pod_name:
+        return None
+    os.makedirs(driver_log_dir, exist_ok=True)
+    path = os.path.join(driver_log_dir, f"{pod_name}_{now_iso().replace(':', '')}.log")
+    f = open(path, "w")
+    proc = subprocess.Popen(
+        ["kubectl", "-n", namespace, "logs", "-f", pod_name],
+        stdout=f, stderr=subprocess.STDOUT,
+    )
+    print(f"  [driver-log-capture] streaming {pod_name} -> {path}")
+    return {"proc": proc, "file": f, "pod_name": pod_name, "path": path}
+
+
+def stop_driver_log_capture(capture):
+    if not capture:
+        return
+    capture["proc"].terminate()
+    try:
+        capture["proc"].wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        capture["proc"].kill()
+    capture["file"].close()
+
+
+def ensure_driver_log_capture(capture, driver_log_dir, namespace="spark"):
+    """(Re)start capture if there's no active capture, the captured pod no longer
+    matches the live driver pod (heal_spark recreated it), or the capture process has
+    exited on its own (e.g. the pod died out from under `kubectl logs -f`). Call this
+    at the start of every spark-dependent class's rep loop and right after every
+    heal_spark() -- both are points where the live driver pod can have changed."""
+    live_pod = _current_driver_pod(namespace)
+    if capture and capture["pod_name"] == live_pod and capture["proc"].poll() is None:
+        return capture
+    if capture:
+        stop_driver_log_capture(capture)
+    return start_driver_log_capture(driver_log_dir, namespace)
+
+
 def handle_spark_crash(cls, rep, crash_events, checkpoint_path=CHECKPOINT_LOG_DEFAULT):
     """Called when Spark is found unhealthy (either proactively before a rep, or
     reactively after a rep raised). Captures evidence, heals, logs a block into the
@@ -379,15 +435,17 @@ FAULT_RUNNERS = {
 
 def run_campaign(reps_per_class, classes=None, min_gap_s=45, max_gap_s=90,
                   outdir="results/campaign", manifest_path=None, skip_preflight=False,
-                  checkpoint_path=CHECKPOINT_LOG_DEFAULT):
+                  checkpoint_path=CHECKPOINT_LOG_DEFAULT, driver_log_dir=None):
     if not skip_preflight:
         preflight_check()
     classes = classes or list(FAULT_RUNNERS.keys())
     os.makedirs(outdir, exist_ok=True)
+    driver_log_dir = driver_log_dir or os.path.join(outdir, "driver_logs")
     manifest_path = manifest_path or os.path.join(outdir, "manifest.json")
     manifest = {"campaign_start_utc": now_iso(), "reps_per_class": reps_per_class, "runs": [],
                 "checkpoints": [], "spark_crashes": []}
     crash_events = manifest["spark_crashes"]
+    capture = None
 
     # Fresh log per campaign invocation, not appended across unrelated runs -- a stale
     # checkpoint block from a previous campaign sitting above this run's would be
@@ -402,6 +460,10 @@ def run_campaign(reps_per_class, classes=None, min_gap_s=45, max_gap_s=90,
         runner = FAULT_RUNNERS[cls]
         class_outdir = os.path.join(outdir, cls)
         class_start_iso = now_iso()
+
+        if cls in SPARK_DEPENDENT_CLASSES:
+            capture = ensure_driver_log_capture(capture, driver_log_dir)
+
         for i in range(1, reps_per_class + 1):
             run_id = f"campaign{i}"
 
@@ -413,6 +475,7 @@ def run_campaign(reps_per_class, classes=None, min_gap_s=45, max_gap_s=90,
             if cls in SPARK_DEPENDENT_CLASSES and not spark_pods_healthy():
                 print(f"  [pre-rep check] Spark unhealthy before {cls} rep {i} -- healing...")
                 handle_spark_crash(cls, i, crash_events, checkpoint_path=checkpoint_path)
+                capture = ensure_driver_log_capture(capture, driver_log_dir)
 
             t0 = time.time()
             status, error = "ok", None
@@ -427,6 +490,7 @@ def run_campaign(reps_per_class, classes=None, min_gap_s=45, max_gap_s=90,
                 if cls in SPARK_DEPENDENT_CLASSES and not spark_pods_healthy():
                     print(f"  [post-rep check] {cls} rep {i} failed and Spark is unhealthy -- healing...")
                     handle_spark_crash(cls, i, crash_events, checkpoint_path=checkpoint_path)
+                    capture = ensure_driver_log_capture(capture, driver_log_dir)
             elapsed = time.time() - t0
             done += 1
 
@@ -455,6 +519,8 @@ def run_campaign(reps_per_class, classes=None, min_gap_s=45, max_gap_s=90,
         with open(manifest_path, "w") as f:
             json.dump(manifest, f, indent=2)
 
+    stop_driver_log_capture(capture)
+
     manifest["campaign_end_utc"] = now_iso()
     with open(manifest_path, "w") as f:
         json.dump(manifest, f, indent=2)
@@ -476,17 +542,129 @@ def run_campaign(reps_per_class, classes=None, min_gap_s=45, max_gap_s=90,
     return manifest
 
 
+def count_valid_records(class_outdir):
+    return len(
+        [f for f in os.listdir(class_outdir) if f.endswith(".json")]
+    ) if os.path.isdir(class_outdir) else 0
+
+
+def top_up_class(cls, target_valid, outdir, checkpoint_path=CHECKPOINT_LOG_DEFAULT,
+                  min_gap_s=45, max_gap_s=90, max_attempts=None, driver_log_dir=None,
+                  manifest_path=None):
+    """Keep attempting reps of a single fault class until class_outdir holds
+    target_valid ground-truth records, healing Spark on detected crashes rather than
+    just recording the loss -- used to top up a class after some reps were lost, e.g.
+    executor_oom's 5/8 from the N=8 run, without re-running the whole class from
+    scratch. max_attempts bounds runaway attempts if something is systematically
+    broken (defaults to target_valid * 3 -- generous, not infinite): a top-up that
+    can't reach target within that budget is itself a signal to stop and report, per
+    the project's pivot rule, not to keep burning cluster time."""
+    runner = FAULT_RUNNERS[cls]
+    class_outdir = os.path.join(outdir, cls)
+    os.makedirs(class_outdir, exist_ok=True)
+    driver_log_dir = driver_log_dir or os.path.join(outdir, "driver_logs")
+    max_attempts = max_attempts or target_valid * 3
+    manifest_path = manifest_path or os.path.join(outdir, f"topup_{cls}_manifest.json")
+
+    topup_start_iso = now_iso()
+    manifest = {"fault_class": cls, "target_valid": target_valid,
+                "start_utc": topup_start_iso, "runs": [], "crash_events": []}
+    crash_events = manifest["crash_events"]
+    capture = ensure_driver_log_capture(None, driver_log_dir) if cls in SPARK_DEPENDENT_CLASSES else None
+
+    starting_valid = count_valid_records(class_outdir)
+    print(f"top-up: {cls} currently has {starting_valid} valid record(s), target {target_valid}")
+
+    attempt = 0
+    while count_valid_records(class_outdir) < target_valid and attempt < max_attempts:
+        attempt += 1
+        if cls in SPARK_DEPENDENT_CLASSES and not spark_pods_healthy():
+            print(f"  [pre-attempt check] Spark unhealthy before {cls} top-up attempt {attempt} -- healing...")
+            handle_spark_crash(cls, f"topup{attempt}", crash_events, checkpoint_path=checkpoint_path)
+            capture = ensure_driver_log_capture(capture, driver_log_dir)
+
+        run_id = f"topup{attempt}"
+        t0 = time.time()
+        status, error = "ok", None
+        try:
+            runner(run_id, class_outdir)
+        except Exception as e:
+            status, error = "error", f"{type(e).__name__}: {e}"
+            if cls in SPARK_DEPENDENT_CLASSES and not spark_pods_healthy():
+                print(f"  [post-attempt check] {cls} top-up attempt {attempt} failed and "
+                      f"Spark is unhealthy -- healing...")
+                handle_spark_crash(cls, f"topup{attempt}", crash_events, checkpoint_path=checkpoint_path)
+                capture = ensure_driver_log_capture(capture, driver_log_dir)
+        elapsed = time.time() - t0
+
+        manifest["runs"].append({
+            "fault_class": cls, "rep": run_id, "run_id": run_id, "status": status,
+            "error": error, "elapsed_seconds": round(elapsed, 1), "started_utc": now_iso(),
+        })
+        with open(manifest_path, "w") as f:
+            json.dump(manifest, f, indent=2)
+
+        error_suffix = f" error={error}" if error else ""
+        print(f"  top-up attempt {attempt}: status={status} elapsed={elapsed:.1f}s{error_suffix} "
+              f"(valid now: {count_valid_records(class_outdir)}/{target_valid})")
+
+        if count_valid_records(class_outdir) < target_valid and attempt < max_attempts:
+            gap = random.uniform(min_gap_s, max_gap_s)
+            print(f"  cooldown {gap:.0f}s...")
+            time.sleep(gap)
+
+    stop_driver_log_capture(capture)
+
+    final_valid = count_valid_records(class_outdir)
+    reached = final_valid >= target_valid
+    manifest["end_utc"] = now_iso()
+    manifest["attempts"] = attempt
+    manifest["final_valid"] = final_valid
+    manifest["reached_target"] = reached
+    with open(manifest_path, "w") as f:
+        json.dump(manifest, f, indent=2)
+
+    print(f"\ntop-up done: {cls} now has {final_valid}/{target_valid} valid record(s) after "
+          f"{attempt} attempt(s), {len(crash_events)} crash(es) observed and auto-healed. "
+          f"{'TARGET REACHED' if reached else 'TARGET NOT REACHED -- max_attempts exhausted'}")
+    for ev in crash_events:
+        print(f"  crash: {ev['detected_utc']} during {cls} attempt {ev['rep_lost']}, "
+              f"signature_matched={ev['signature_matched']}")
+
+    # Fresh checkpoint covering the full, now-topped-up set of valid records (not just
+    # this call's new attempts) -- record_count/timing scan class_outdir's entire
+    # contents regardless of window; the prometheus check's window is scoped to this
+    # top-up call's own run time.
+    checkpoint_result = integrity_checkpoint(
+        cls, class_outdir, target_valid, topup_start_iso, checkpoint_path=checkpoint_path
+    )
+    manifest["checkpoint"] = checkpoint_result
+    with open(manifest_path, "w") as f:
+        json.dump(manifest, f, indent=2)
+
+    return manifest
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--reps", type=int, default=15, help="repetitions per fault class")
     parser.add_argument("--classes", nargs="*", default=None,
                          help="subset of fault classes to run (default: all 5)")
+    parser.add_argument("--top-up-class", default=None,
+                         help="instead of a full campaign, keep attempting this one fault "
+                              "class until --top-up-target valid records exist")
+    parser.add_argument("--top-up-target", type=int, default=8)
     parser.add_argument("--min-gap-s", type=int, default=45)
     parser.add_argument("--max-gap-s", type=int, default=90)
     parser.add_argument("--outdir", default="results/campaign")
     parser.add_argument("--skip-preflight", action="store_true")
     parser.add_argument("--checkpoint-path", default=CHECKPOINT_LOG_DEFAULT)
     args = parser.parse_args()
-    run_campaign(args.reps, classes=args.classes, min_gap_s=args.min_gap_s,
-                 max_gap_s=args.max_gap_s, outdir=args.outdir, skip_preflight=args.skip_preflight,
-                 checkpoint_path=args.checkpoint_path)
+    if args.top_up_class:
+        top_up_class(args.top_up_class, args.top_up_target, args.outdir,
+                     checkpoint_path=args.checkpoint_path,
+                     min_gap_s=args.min_gap_s, max_gap_s=args.max_gap_s)
+    else:
+        run_campaign(args.reps, classes=args.classes, min_gap_s=args.min_gap_s,
+                     max_gap_s=args.max_gap_s, outdir=args.outdir, skip_preflight=args.skip_preflight,
+                     checkpoint_path=args.checkpoint_path)

@@ -24,6 +24,13 @@ server:
 # nesting it silently no-ops (helm applies without error, config just never renders).
 extraScrapeConfigs: |
   - job_name: 'kafka-broker-jmx'
+    # Global scrape_timeout (10s) was clipping network_degradation measurements: the
+    # 2026-07-11 N=8 run showed 5/8 reps land in a tight 9.8-10.01s band right at the
+    # ceiling, right where an unbounded degraded-network distribution wouldn't cluster.
+    # Raised per-job so this class's fault severity (500ms delay/20% loss) has room to
+    # produce a real, uncensored duration instead of being silently truncated. Global
+    # scrape_interval is 1m, so 20s timeout is still well within budget.
+    scrape_timeout: 20s
     kubernetes_sd_configs:
       - role: pod
         namespaces:
