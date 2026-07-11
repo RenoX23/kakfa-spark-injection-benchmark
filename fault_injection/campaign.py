@@ -26,6 +26,7 @@ import datetime
 import json
 import os
 import random
+import re
 import statistics
 import subprocess
 import sys
@@ -564,9 +565,26 @@ def top_up_class(cls, target_valid, outdir, checkpoint_path=CHECKPOINT_LOG_DEFAU
     os.makedirs(class_outdir, exist_ok=True)
     driver_log_dir = driver_log_dir or os.path.join(outdir, "driver_logs")
     max_attempts = max_attempts or target_valid * 3
-    manifest_path = manifest_path or os.path.join(outdir, f"topup_{cls}_manifest.json")
+
+    # A prior top-up call already wrote topup1/topup2/... into this same class_outdir
+    # (e.g. executor_oom topped up once already, then needs a single rep replaced
+    # later) -- starting attempt numbering back at 1 would silently overwrite that
+    # earlier evidence via write_ground_truth's plain open(path, "w"). Scan for the
+    # highest existing topup{N} run_id actually present and continue after it.
+    existing_topup_ns = []
+    if os.path.isdir(class_outdir):
+        for fname in os.listdir(class_outdir):
+            m = re.search(r"runtopup(\d+)\.json$", fname)
+            if m:
+                existing_topup_ns.append(int(m.group(1)))
+    attempt_offset = max(existing_topup_ns) if existing_topup_ns else 0
 
     topup_start_iso = now_iso()
+    # Unique per invocation, not a fixed name -- a second top-up call for the same
+    # class must not silently clobber the first call's manifest.
+    manifest_path = manifest_path or os.path.join(
+        outdir, f"topup_{cls}_manifest_{topup_start_iso.replace(':', '')}.json"
+    )
     manifest = {"fault_class": cls, "target_valid": target_valid,
                 "start_utc": topup_start_iso, "runs": [], "crash_events": []}
     crash_events = manifest["crash_events"]
@@ -578,12 +596,13 @@ def top_up_class(cls, target_valid, outdir, checkpoint_path=CHECKPOINT_LOG_DEFAU
     attempt = 0
     while count_valid_records(class_outdir) < target_valid and attempt < max_attempts:
         attempt += 1
+        run_id = f"topup{attempt_offset + attempt}"
         if cls in SPARK_DEPENDENT_CLASSES and not spark_pods_healthy():
-            print(f"  [pre-attempt check] Spark unhealthy before {cls} top-up attempt {attempt} -- healing...")
-            handle_spark_crash(cls, f"topup{attempt}", crash_events, checkpoint_path=checkpoint_path)
+            print(f"  [pre-attempt check] Spark unhealthy before {cls} top-up attempt {attempt} "
+                  f"({run_id}) -- healing...")
+            handle_spark_crash(cls, run_id, crash_events, checkpoint_path=checkpoint_path)
             capture = ensure_driver_log_capture(capture, driver_log_dir)
 
-        run_id = f"topup{attempt}"
         t0 = time.time()
         status, error = "ok", None
         try:
@@ -591,9 +610,9 @@ def top_up_class(cls, target_valid, outdir, checkpoint_path=CHECKPOINT_LOG_DEFAU
         except Exception as e:
             status, error = "error", f"{type(e).__name__}: {e}"
             if cls in SPARK_DEPENDENT_CLASSES and not spark_pods_healthy():
-                print(f"  [post-attempt check] {cls} top-up attempt {attempt} failed and "
+                print(f"  [post-attempt check] {cls} top-up attempt {attempt} ({run_id}) failed and "
                       f"Spark is unhealthy -- healing...")
-                handle_spark_crash(cls, f"topup{attempt}", crash_events, checkpoint_path=checkpoint_path)
+                handle_spark_crash(cls, run_id, crash_events, checkpoint_path=checkpoint_path)
                 capture = ensure_driver_log_capture(capture, driver_log_dir)
         elapsed = time.time() - t0
 
