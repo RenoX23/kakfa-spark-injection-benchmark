@@ -70,6 +70,13 @@ def prom_query(query, port):
         return json.load(resp)
 
 
+def prom_query_range(query, start_iso, end_iso, step, port):
+    params = {"query": query, "start": start_iso, "end": end_iso, "step": step}
+    url = f"http://localhost:{port}/api/v1/query_range?" + urllib.parse.urlencode(params)
+    with urllib.request.urlopen(url, timeout=15) as resp:
+        return json.load(resp)
+
+
 def prom_target_health(scrape_pool, port):
     url = f"http://localhost:{port}/api/v1/targets"
     with urllib.request.urlopen(url, timeout=10) as resp:
