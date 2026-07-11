@@ -34,12 +34,21 @@ OOM_EXIT_RE = re.compile(r"exit code 137.*possible container OOM")
 # the whole thing done in well under a second. No available telemetry (Spark-level,
 # cAdvisor-level, or kube-state-metrics-level, all checked against real fault windows)
 # has ever caught it, because nothing scrapes faster than ~5-7s and the fault itself
-# only lasted that long. Ramping toward the same 1152Mi limit over ~90-120s instead of
-# hitting it in under a second, so a normal 60s Prometheus scrape interval has room to
-# land mid-climb and see a genuine rising trend, not just a before/after snapshot pair.
-RAMP_CHUNK_BYTES = 100 * 1024 * 1024  # 100MB per chunk
-RAMP_CHUNKS = 16  # 1600MB if never killed -- safety margin past the 1152Mi limit
-RAMP_SLEEP_S = 9  # crossing 1152Mi happens ~chunk 12 -> ~99s into the ramp (11 sleeps)
+# only lasted that long.
+#
+# First ramp attempt (100MB/9s, targeting ~90-120s) undershot: actual duration was 61s,
+# not ~99s, because the estimate assumed a near-zero starting baseline. The real
+# baseline is the executor's own JVM/Spark footprint before any injected allocation --
+# measured directly from that run at ~484MB (container_memory_working_set_bytes), not
+# assumed. Recalibrated from that real number, not by blindly stretching the same
+# chunk size: gap-to-limit = 1208MB - 484MB = 724MB. Target duration 180-240s (3-4 real
+# 60s-interval scrapes during the rise, not 1). Chunk size AND sleep both resized
+# together so ~28 chunks land inside the target window (small chunks -> many steps per
+# 60s scrape window -> a genuinely multi-point rising trend when sampled, not a coarse
+# 1-2-jump step function that happens to be spread over more wall-clock time.
+RAMP_CHUNK_BYTES = 25 * 1024 * 1024  # 25MB per chunk -- small enough for ~8 chunks per 60s scrape window
+RAMP_CHUNKS = 36  # 900MB if never killed -- safety margin past the ~724MB gap
+RAMP_SLEEP_S = 7.5  # crossing the gap happens ~chunk 29 -> ~210s into the ramp (28 sleeps)
 
 
 def find_pod(namespace, label):
