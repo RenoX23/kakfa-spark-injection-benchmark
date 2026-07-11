@@ -27,6 +27,20 @@ FAULT_CLASS = "executor_oom_kill"
 # the exit-code line alone is sufficient and simpler.
 OOM_EXIT_RE = re.compile(r"exit code 137.*possible container OOM")
 
+# Gradual allocation ramp (2026-07-11 redesign, replacing the original single-shot
+# bytearray(200MB)*20 injection). That original version was a true instant
+# step-function -- confirmed: one unlooped list comprehension, no time.sleep anywhere
+# in it, crossing the container's 1152Mi cgroup limit by roughly the 6th of 20 chunks,
+# the whole thing done in well under a second. No available telemetry (Spark-level,
+# cAdvisor-level, or kube-state-metrics-level, all checked against real fault windows)
+# has ever caught it, because nothing scrapes faster than ~5-7s and the fault itself
+# only lasted that long. Ramping toward the same 1152Mi limit over ~90-120s instead of
+# hitting it in under a second, so a normal 60s Prometheus scrape interval has room to
+# land mid-climb and see a genuine rising trend, not just a before/after snapshot pair.
+RAMP_CHUNK_BYTES = 100 * 1024 * 1024  # 100MB per chunk
+RAMP_CHUNKS = 16  # 1600MB if never killed -- safety margin past the 1152Mi limit
+RAMP_SLEEP_S = 9  # crossing 1152Mi happens ~chunk 12 -> ~99s into the ramp (11 sleeps)
+
 
 def find_pod(namespace, label):
     # check=False: kubectl errors (not just returns empty) when the jsonpath indexes into
@@ -69,7 +83,11 @@ def run(run_id, namespace="spark", outdir="results/fault-runs"):
     kubectl(
         "-n", namespace, "exec", pod, "--",
         "python3", "-c",
-        "x = [bytearray(200*1024*1024) for _ in range(20)]",
+        "import time\n"
+        "chunks = []\n"
+        f"for i in range({RAMP_CHUNKS}):\n"
+        f"    chunks.append(bytearray({RAMP_CHUNK_BYTES}))\n"
+        f"    time.sleep({RAMP_SLEEP_S})\n",
         check=False,
     )
 
