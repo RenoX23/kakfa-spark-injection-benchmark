@@ -30,6 +30,17 @@ spec:
         - --conf=spark.driver.memory=768m
         - --conf=spark.executor.memory=768m
         - --conf=spark.kubernetes.driver.podTemplateFile=/opt/spark-conf/driver-pod-template.yaml
+        # Default is max(numExecutors*2, 3) = 3 for spark.executor.instances=1 --
+        # confirmed as the root cause of the 2026-07-11 "[INTERNAL_ERROR] Spark SQL
+        # phase optimization failed" crashes (results/healer-validation/): Spark's own
+        # executor-failure circuit breaker, not a flaky bug. That default protects a
+        # production job from silently limping along after repeated real failures. A
+        # controlled fault-injection campaign deliberately manufactures executor
+        # failures on purpose (executor_oom is one of 5 locked fault classes), so the
+        # production-safe default is wrong for this use case -- raised to 50, not
+        # disabled, so a genuinely runaway failure loop unrelated to the campaign's own
+        # injections would still trip it eventually.
+        - --conf=spark.kubernetes.executor.maxNumFailures=50
         - --conf=spark.ui.prometheus.enabled=true
         - --conf=spark.sql.streaming.metricsEnabled=true
         - --conf=spark.jars.ivy=/tmp/ivy2
