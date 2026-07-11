@@ -40,7 +40,21 @@ spec:
         # production-safe default is wrong for this use case -- raised to 50, not
         # disabled, so a genuinely runaway failure loop unrelated to the campaign's own
         # injections would still trip it eventually.
-        - --conf=spark.kubernetes.executor.maxNumFailures=50
+        #
+        # CORRECTED 2026-07-11 (same day): the key above was
+        # spark.kubernetes.executor.maxNumFailures, which is NOT a real Spark config --
+        # Spark silently ignores unrecognized --conf keys rather than erroring, so this
+        # had zero effect. Confirmed via Apache Spark's own configuration.md (fetched
+        # live, not assumed): the real, generic key since Spark 3.5.0 (SPARK-41210) is
+        # spark.executor.maxNumFailures ("This configuration only takes effect on YARN
+        # and Kubernetes"), same default max(numExecutors*2,3)=3. The wrong key
+        # genuinely was set to 50 in the driver's live properties file (verified twice,
+        # including in a PASSED gate audit) -- but verifying a key is SET is not the
+        # same as verifying it's the RIGHT key, and that gap let a driver crash on
+        # exactly its 4th executor failure again (2026-07-11T16:34:51Z, during the
+        # executor_oom ramp-redesign calibration work) despite the "fix" appearing live
+        # and correct by every check performed on it at the time.
+        - --conf=spark.executor.maxNumFailures=50
         - --conf=spark.ui.prometheus.enabled=true
         - --conf=spark.sql.streaming.metricsEnabled=true
         - --conf=spark.jars.ivy=/tmp/ivy2

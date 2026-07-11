@@ -32,3 +32,16 @@ spark.kubernetes.driver.podTemplateFile=/opt/spark-conf/driver-pod-template.yaml
 line 17 above (spark.kubernetes.executor.maxNumFailures=50) is the config under audit,
 read directly from the properties file the running driver process actually loaded --
 not the committed YAML, not a claim.
+
+*** SUPERSEDED 2026-07-11T16:44:16Z -- this verification was WRONG. ***
+"spark.kubernetes.executor.maxNumFailures" is not a real Spark config key -- Spark
+silently ignores unrecognized --conf keys rather than erroring, so setting it to 50 had
+zero effect. Confirmed via Apache Spark's own configuration.md: the real key (since
+Spark 3.5.0, SPARK-41210) is "spark.executor.maxNumFailures" (no ".kubernetes."
+segment). This file correctly proved the WRONG key was present and set -- which is not
+the same thing as the fix actually working, and it wasn't. Discovered when a driver
+crashed on exactly its 4th executor failure again during the executor_oom ramp-redesign
+calibration work, still hitting the true default of 3. See
+live_maxnumfailures_check_CORRECTED.txt for the fix, and infra/spark/submit-pod.yaml's
+"CORRECTED 2026-07-11" comment for the full account. Kept, not deleted -- this file is
+itself evidence of how a "verified" claim can still be wrong, worth keeping visible.
