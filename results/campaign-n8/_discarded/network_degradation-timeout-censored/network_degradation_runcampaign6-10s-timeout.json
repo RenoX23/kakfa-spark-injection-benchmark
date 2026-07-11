@@ -1,6 +1,6 @@
 {
   "fault_class": "network_degradation",
-  "run_id": "campaign6",
+  "run_id": "campaign6-10s-timeout",
   "namespace": "kafka",
   "target_pod": "kspfail-single-0",
   "interface": "eth0",
