@@ -1,5 +1,13 @@
-# Phase 0 minimal Prometheus: server + node exporter. No Alertmanager/pushgateway/
-# kube-state-metrics -- not needed for the pilot fault signal or RO1-RO2 telemetry.
+# Phase 0 minimal Prometheus: server + node exporter. Alertmanager/pushgateway still
+# unneeded. kube-state-metrics was Phase-0-unneeded too, but re-enabled 2026-07-11:
+# executor_oom's fault window (5-7s) is shorter than every other job's 60s scrape
+# interval, so no continuous telemetry signal (Spark-level or cAdvisor-level) has ever
+# captured it. kube-state-metrics exposes kube_pod_container_status_restarts_total and
+# kube_pod_container_status_last_terminated_reason -- both COUNTERS/state, not gauges,
+# so (unlike a memory gauge that can spike and fall between scrapes) an increment
+# persists and should be visible on the next scrape regardless of exact timing, as long
+# as the pod is scraped again before k8s garbage-collects it. See docs/research_context.md
+# Section 11 for why this was tried before accepting a structural limitation.
 alertmanager:
   enabled: false
 prometheus-pushgateway:
@@ -7,7 +15,7 @@ prometheus-pushgateway:
 prometheus-node-exporter:
   enabled: true
 kube-state-metrics:
-  enabled: false
+  enabled: true
 
 server:
   # Persistence enabled starting Weeks 4-5 (was disabled through Phase 0/Weeks 2-3,
@@ -49,6 +57,22 @@ extraScrapeConfigs: |
         target_label: __address__
       - source_labels: [__meta_kubernetes_pod_name]
         target_label: kubernetes_pod_name
+
+  - job_name: 'kube-state-metrics-fast'
+    # Dedicated job at 5s, separate from whatever interval the chart's default
+    # annotation-based service discovery would apply -- executor_oom's fault window is
+    # 5-7s, so a 60s (or even a generic-job) interval has zero chance of reliably
+    # catching the restart-count/last-terminated-reason signal this job exists to
+    # observe. Deliberately scoped to only the kube-state-metrics Service (not cluster-
+    # wide endpoint discovery like the chart's default kubernetes-service-endpoints
+    # job) -- kube-state-metrics itself is low-cardinality (one series per pod/container
+    # per metric, not per-request/per-topic like Kafka's JMX exporter), confirmed via
+    # live series count before committing to 5s -- see commit history for the actual
+    # measured number.
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    static_configs:
+      - targets: ['prometheus-kube-state-metrics.monitoring.svc:8080']
 
   - job_name: 'spark-driver'
     metrics_path: /metrics/executors/prometheus/
