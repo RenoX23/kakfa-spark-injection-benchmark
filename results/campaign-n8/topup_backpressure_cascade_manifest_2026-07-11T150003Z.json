@@ -1,0 +1,51 @@
+{
+  "fault_class": "backpressure_cascade",
+  "target_valid": 8,
+  "start_utc": "2026-07-11T15:00:03Z",
+  "runs": [
+    {
+      "fault_class": "backpressure_cascade",
+      "rep": "topup1",
+      "run_id": "topup1",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 16.7,
+      "started_utc": "2026-07-11T15:00:20Z"
+    }
+  ],
+  "crash_events": [],
+  "end_utc": "2026-07-11T15:00:20Z",
+  "attempts": 1,
+  "final_valid": 8,
+  "reached_target": true,
+  "checkpoint": {
+    "fault_class": "backpressure_cascade",
+    "record_count": 8,
+    "expected_reps": 8,
+    "storage_type": "persistent-claim",
+    "storage_ok": true,
+    "prom_ok": true,
+    "prom_detail": "1 series, 2 data points for 'up{job=\"spark-driver\"}' over 2026-07-11T15:00:03Z..2026-07-11T15:00:20Z",
+    "status": "PASS",
+    "timing": {
+      "metric_name": "peak_lag_s",
+      "metric_kind": "magnitude",
+      "metric_desc": "peak observed processing lag",
+      "n": 8,
+      "values": [
+        12.24,
+        12.9,
+        12.46,
+        12.04,
+        15.12,
+        15.41,
+        16.34,
+        11.48
+      ],
+      "min": 11.48,
+      "max": 16.34,
+      "mean": 13.5,
+      "stdev": 1.84
+    }
+  }
+}

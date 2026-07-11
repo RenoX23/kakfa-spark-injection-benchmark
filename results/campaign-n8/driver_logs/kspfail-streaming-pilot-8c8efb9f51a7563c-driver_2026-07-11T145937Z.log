@@ -1,0 +1,1680 @@
+WARNING: Using incubator modules: jdk.incubator.vector
+:: loading settings :: url = jar:file:/opt/spark/jars/ivy-2.5.3.jar!/org/apache/ivy/core/settings/ivysettings.xml
+Ivy Default Cache set to: /tmp/ivy2/cache
+The jars for the packages stored in: /tmp/ivy2/jars
+org.apache.spark#spark-sql-kafka-0-10_2.13 added as a dependency
+:: resolving dependencies :: org.apache.spark#spark-submit-parent-23538642-c4f7-4443-9f2f-a75dac911d9a;1.0
+	confs: [default]
+	found org.apache.spark#spark-sql-kafka-0-10_2.13;4.1.2 in central
+	found org.apache.spark#spark-token-provider-kafka-0-10_2.13;4.1.2 in central
+	found org.apache.kafka#kafka-clients;3.9.1 in central
+	found org.lz4#lz4-java;1.8.0 in central
+	found org.xerial.snappy#snappy-java;1.1.10.8 in central
+	found org.slf4j#slf4j-api;2.0.17 in central
+	found org.apache.hadoop#hadoop-client-runtime;3.4.2 in central
+	found org.apache.hadoop#hadoop-client-api;3.4.2 in central
+	found com.google.code.findbugs#jsr305;3.0.0 in central
+	found org.scala-lang.modules#scala-parallel-collections_2.13;1.2.0 in central
+	found org.apache.commons#commons-pool2;2.12.1 in central
+downloading https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.13/4.1.2/spark-sql-kafka-0-10_2.13-4.1.2.jar ...
+	[SUCCESSFUL ] org.apache.spark#spark-sql-kafka-0-10_2.13;4.1.2!spark-sql-kafka-0-10_2.13.jar (121ms)
+downloading https://repo1.maven.org/maven2/org/apache/spark/spark-token-provider-kafka-0-10_2.13/4.1.2/spark-token-provider-kafka-0-10_2.13-4.1.2.jar ...
+	[SUCCESSFUL ] org.apache.spark#spark-token-provider-kafka-0-10_2.13;4.1.2!spark-token-provider-kafka-0-10_2.13.jar (64ms)
+downloading https://repo1.maven.org/maven2/org/scala-lang/modules/scala-parallel-collections_2.13/1.2.0/scala-parallel-collections_2.13-1.2.0.jar ...
+	[SUCCESSFUL ] org.scala-lang.modules#scala-parallel-collections_2.13;1.2.0!scala-parallel-collections_2.13.jar (246ms)
+downloading https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.9.1/kafka-clients-3.9.1.jar ...
+	[SUCCESSFUL ] org.apache.kafka#kafka-clients;3.9.1!kafka-clients.jar (2297ms)
+downloading https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.0/jsr305-3.0.0.jar ...
+	[SUCCESSFUL ] com.google.code.findbugs#jsr305;3.0.0!jsr305.jar (61ms)
+downloading https://repo1.maven.org/maven2/org/apache/commons/commons-pool2/2.12.1/commons-pool2-2.12.1.jar ...
+	[SUCCESSFUL ] org.apache.commons#commons-pool2;2.12.1!commons-pool2.jar (90ms)
+downloading https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/3.4.2/hadoop-client-runtime-3.4.2.jar ...
+	[SUCCESSFUL ] org.apache.hadoop#hadoop-client-runtime;3.4.2!hadoop-client-runtime.jar (13080ms)
+downloading https://repo1.maven.org/maven2/org/lz4/lz4-java/1.8.0/lz4-java-1.8.0.jar ...
+	[SUCCESSFUL ] org.lz4#lz4-java;1.8.0!lz4-java.jar (183ms)
+downloading https://repo1.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.10.8/snappy-java-1.1.10.8.jar ...
+	[SUCCESSFUL ] org.xerial.snappy#snappy-java;1.1.10.8!snappy-java.jar(bundle) (683ms)
+downloading https://repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar ...
+	[SUCCESSFUL ] org.slf4j#slf4j-api;2.0.17!slf4j-api.jar (67ms)
+downloading https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/3.4.2/hadoop-client-api-3.4.2.jar ...
+	[SUCCESSFUL ] org.apache.hadoop#hadoop-client-api;3.4.2!hadoop-client-api.jar (6223ms)
+:: resolution report :: resolve 13862ms :: artifacts dl 23126ms
+	:: modules in use:
+	com.google.code.findbugs#jsr305;3.0.0 from central in [default]
+	org.apache.commons#commons-pool2;2.12.1 from central in [default]
+	org.apache.hadoop#hadoop-client-api;3.4.2 from central in [default]
+	org.apache.hadoop#hadoop-client-runtime;3.4.2 from central in [default]
+	org.apache.kafka#kafka-clients;3.9.1 from central in [default]
+	org.apache.spark#spark-sql-kafka-0-10_2.13;4.1.2 from central in [default]
+	org.apache.spark#spark-token-provider-kafka-0-10_2.13;4.1.2 from central in [default]
+	org.lz4#lz4-java;1.8.0 from central in [default]
+	org.scala-lang.modules#scala-parallel-collections_2.13;1.2.0 from central in [default]
+	org.slf4j#slf4j-api;2.0.17 from central in [default]
+	org.xerial.snappy#snappy-java;1.1.10.8 from central in [default]
+	---------------------------------------------------------------------
+	|                  |            modules            ||   artifacts   |
+	|       conf       | number| search|dwnlded|evicted|| number|dwnlded|
+	---------------------------------------------------------------------
+	|      default     |   11  |   11  |   11  |   0   ||   11  |   11  |
+	---------------------------------------------------------------------
+:: retrieving :: org.apache.spark#spark-submit-parent-23538642-c4f7-4443-9f2f-a75dac911d9a
+	confs: [default]
+	11 artifacts copied, 0 already retrieved (62936kB/99ms)
+26/07/11 14:49:49 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Files file:///tmp/ivy2/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.1.2.jar from /tmp/ivy2/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.1.2.jar to /opt/spark/work-dir/org.apache.spark_spark-sql-kafka-0-10_2.13-4.1.2.jar
+Files file:///tmp/ivy2/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.1.2.jar from /tmp/ivy2/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.1.2.jar to /opt/spark/work-dir/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.1.2.jar
+Files file:///tmp/ivy2/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar from /tmp/ivy2/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar to /opt/spark/work-dir/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar
+Files file:///tmp/ivy2/jars/org.apache.kafka_kafka-clients-3.9.1.jar from /tmp/ivy2/jars/org.apache.kafka_kafka-clients-3.9.1.jar to /opt/spark/work-dir/org.apache.kafka_kafka-clients-3.9.1.jar
+Files file:///tmp/ivy2/jars/com.google.code.findbugs_jsr305-3.0.0.jar from /tmp/ivy2/jars/com.google.code.findbugs_jsr305-3.0.0.jar to /opt/spark/work-dir/com.google.code.findbugs_jsr305-3.0.0.jar
+Files file:///tmp/ivy2/jars/org.apache.commons_commons-pool2-2.12.1.jar from /tmp/ivy2/jars/org.apache.commons_commons-pool2-2.12.1.jar to /opt/spark/work-dir/org.apache.commons_commons-pool2-2.12.1.jar
+Files file:///tmp/ivy2/jars/org.apache.hadoop_hadoop-client-runtime-3.4.2.jar from /tmp/ivy2/jars/org.apache.hadoop_hadoop-client-runtime-3.4.2.jar to /opt/spark/work-dir/org.apache.hadoop_hadoop-client-runtime-3.4.2.jar
+Files file:///tmp/ivy2/jars/org.lz4_lz4-java-1.8.0.jar from /tmp/ivy2/jars/org.lz4_lz4-java-1.8.0.jar to /opt/spark/work-dir/org.lz4_lz4-java-1.8.0.jar
+Files file:///tmp/ivy2/jars/org.xerial.snappy_snappy-java-1.1.10.8.jar from /tmp/ivy2/jars/org.xerial.snappy_snappy-java-1.1.10.8.jar to /opt/spark/work-dir/org.xerial.snappy_snappy-java-1.1.10.8.jar
+Files file:///tmp/ivy2/jars/org.slf4j_slf4j-api-2.0.17.jar from /tmp/ivy2/jars/org.slf4j_slf4j-api-2.0.17.jar to /opt/spark/work-dir/org.slf4j_slf4j-api-2.0.17.jar
+Files file:///tmp/ivy2/jars/org.apache.hadoop_hadoop-client-api-3.4.2.jar from /tmp/ivy2/jars/org.apache.hadoop_hadoop-client-api-3.4.2.jar to /opt/spark/work-dir/org.apache.hadoop_hadoop-client-api-3.4.2.jar
+Files file:///tmp/ivy2/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.1.2.jar from /tmp/ivy2/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.1.2.jar to /opt/spark/work-dir/org.apache.spark_spark-sql-kafka-0-10_2.13-4.1.2.jar
+Files file:///tmp/ivy2/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.1.2.jar from /tmp/ivy2/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.1.2.jar to /opt/spark/work-dir/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.1.2.jar
+Files file:///tmp/ivy2/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar from /tmp/ivy2/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar to /opt/spark/work-dir/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar
+Files file:///tmp/ivy2/jars/org.apache.kafka_kafka-clients-3.9.1.jar from /tmp/ivy2/jars/org.apache.kafka_kafka-clients-3.9.1.jar to /opt/spark/work-dir/org.apache.kafka_kafka-clients-3.9.1.jar
+Files file:///tmp/ivy2/jars/com.google.code.findbugs_jsr305-3.0.0.jar from /tmp/ivy2/jars/com.google.code.findbugs_jsr305-3.0.0.jar to /opt/spark/work-dir/com.google.code.findbugs_jsr305-3.0.0.jar
+Files file:///tmp/ivy2/jars/org.apache.commons_commons-pool2-2.12.1.jar from /tmp/ivy2/jars/org.apache.commons_commons-pool2-2.12.1.jar to /opt/spark/work-dir/org.apache.commons_commons-pool2-2.12.1.jar
+Files file:///tmp/ivy2/jars/org.apache.hadoop_hadoop-client-runtime-3.4.2.jar from /tmp/ivy2/jars/org.apache.hadoop_hadoop-client-runtime-3.4.2.jar to /opt/spark/work-dir/org.apache.hadoop_hadoop-client-runtime-3.4.2.jar
+Files file:///tmp/ivy2/jars/org.lz4_lz4-java-1.8.0.jar from /tmp/ivy2/jars/org.lz4_lz4-java-1.8.0.jar to /opt/spark/work-dir/org.lz4_lz4-java-1.8.0.jar
+Files file:///tmp/ivy2/jars/org.xerial.snappy_snappy-java-1.1.10.8.jar from /tmp/ivy2/jars/org.xerial.snappy_snappy-java-1.1.10.8.jar to /opt/spark/work-dir/org.xerial.snappy_snappy-java-1.1.10.8.jar
+Files file:///tmp/ivy2/jars/org.slf4j_slf4j-api-2.0.17.jar from /tmp/ivy2/jars/org.slf4j_slf4j-api-2.0.17.jar to /opt/spark/work-dir/org.slf4j_slf4j-api-2.0.17.jar
+Files file:///tmp/ivy2/jars/org.apache.hadoop_hadoop-client-api-3.4.2.jar from /tmp/ivy2/jars/org.apache.hadoop_hadoop-client-api-3.4.2.jar to /opt/spark/work-dir/org.apache.hadoop_hadoop-client-api-3.4.2.jar
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/07/11 14:49:50 INFO SparkContext: Running Spark version 4.1.2
+26/07/11 14:49:50 INFO SparkContext: OS info Linux, 6.6.87.2-microsoft-standard-WSL2, amd64
+26/07/11 14:49:50 INFO SparkContext: Java version 17.0.19+10
+26/07/11 14:49:50 INFO ResourceUtils: ==============================================================
+26/07/11 14:49:50 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/07/11 14:49:50 INFO ResourceUtils: ==============================================================
+26/07/11 14:49:50 INFO SparkContext: Submitted application: kspfail-streaming-pilot
+26/07/11 14:49:50 INFO SecurityManager: Changing view acls to: spark
+26/07/11 14:49:50 INFO SecurityManager: Changing modify acls to: spark
+26/07/11 14:49:50 INFO SecurityManager: Changing view acls groups to: spark
+26/07/11 14:49:50 INFO SecurityManager: Changing modify acls groups to: spark
+26/07/11 14:49:50 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: spark groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify permissions: EMPTY; RPC SSL disabled
+26/07/11 14:49:51 INFO Utils: Successfully started service 'sparkDriver' on port 7078.
+26/07/11 14:49:51 INFO SparkEnv: Registering MapOutputTracker
+26/07/11 14:49:51 INFO SparkEnv: Registering BlockManagerMaster
+26/07/11 14:49:51 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/07/11 14:49:51 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/07/11 14:49:51 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/07/11 14:49:51 INFO DiskBlockManager: Created local directory at /var/data/spark-21ec79c5-3afb-4e25-9fef-230fa77686db/blockmgr-2aceaba2-0e61-4af7-9206-2b6aca4e2546
+26/07/11 14:49:51 INFO SparkEnv: Registering OutputCommitCoordinator
+26/07/11 14:49:51 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/07/11 14:49:51 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/07/11 14:49:51 INFO SparkContext: Added JAR file:/opt/spark/work-dir/org.apache.spark_spark-sql-kafka-0-10_2.13-4.1.2.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.1.2.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO SparkContext: Added JAR file:/opt/spark/work-dir/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.1.2.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.1.2.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO SparkContext: Added JAR file:/opt/spark/work-dir/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO SparkContext: Added JAR file:/opt/spark/work-dir/org.apache.kafka_kafka-clients-3.9.1.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/jars/org.apache.kafka_kafka-clients-3.9.1.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO SparkContext: Added JAR file:/opt/spark/work-dir/com.google.code.findbugs_jsr305-3.0.0.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/jars/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO SparkContext: Added JAR file:/opt/spark/work-dir/org.apache.commons_commons-pool2-2.12.1.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/jars/org.apache.commons_commons-pool2-2.12.1.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO SparkContext: Added JAR file:/opt/spark/work-dir/org.apache.hadoop_hadoop-client-runtime-3.4.2.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/jars/org.apache.hadoop_hadoop-client-runtime-3.4.2.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO SparkContext: Added JAR file:/opt/spark/work-dir/org.lz4_lz4-java-1.8.0.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/jars/org.lz4_lz4-java-1.8.0.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO SparkContext: Added JAR file:/opt/spark/work-dir/org.xerial.snappy_snappy-java-1.1.10.8.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/jars/org.xerial.snappy_snappy-java-1.1.10.8.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO SparkContext: Added JAR file:/opt/spark/work-dir/org.slf4j_slf4j-api-2.0.17.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/jars/org.slf4j_slf4j-api-2.0.17.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO SparkContext: Added JAR file:/opt/spark/work-dir/org.apache.hadoop_hadoop-client-api-3.4.2.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/jars/org.apache.hadoop_hadoop-client-api-3.4.2.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO SparkContext: Added file file:/opt/spark/work-dir/org.apache.spark_spark-sql-kafka-0-10_2.13-4.1.2.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/files/org.apache.spark_spark-sql-kafka-0-10_2.13-4.1.2.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO Utils: Copying /opt/spark/work-dir/org.apache.spark_spark-sql-kafka-0-10_2.13-4.1.2.jar to /var/data/spark-21ec79c5-3afb-4e25-9fef-230fa77686db/spark-f9866485-57ac-4bbc-b017-8c1fff9416f4/userFiles-33618539-2278-4a1c-9178-0190a85675ba/org.apache.spark_spark-sql-kafka-0-10_2.13-4.1.2.jar
+26/07/11 14:49:51 INFO SparkContext: Added file file:/opt/spark/work-dir/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.1.2.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/files/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.1.2.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO Utils: Copying /opt/spark/work-dir/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.1.2.jar to /var/data/spark-21ec79c5-3afb-4e25-9fef-230fa77686db/spark-f9866485-57ac-4bbc-b017-8c1fff9416f4/userFiles-33618539-2278-4a1c-9178-0190a85675ba/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.1.2.jar
+26/07/11 14:49:51 INFO SparkContext: Added file file:/opt/spark/work-dir/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/files/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO Utils: Copying /opt/spark/work-dir/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar to /var/data/spark-21ec79c5-3afb-4e25-9fef-230fa77686db/spark-f9866485-57ac-4bbc-b017-8c1fff9416f4/userFiles-33618539-2278-4a1c-9178-0190a85675ba/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar
+26/07/11 14:49:51 INFO SparkContext: Added file file:/opt/spark/work-dir/org.apache.kafka_kafka-clients-3.9.1.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/files/org.apache.kafka_kafka-clients-3.9.1.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO Utils: Copying /opt/spark/work-dir/org.apache.kafka_kafka-clients-3.9.1.jar to /var/data/spark-21ec79c5-3afb-4e25-9fef-230fa77686db/spark-f9866485-57ac-4bbc-b017-8c1fff9416f4/userFiles-33618539-2278-4a1c-9178-0190a85675ba/org.apache.kafka_kafka-clients-3.9.1.jar
+26/07/11 14:49:51 INFO SparkContext: Added file file:/opt/spark/work-dir/com.google.code.findbugs_jsr305-3.0.0.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/files/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO Utils: Copying /opt/spark/work-dir/com.google.code.findbugs_jsr305-3.0.0.jar to /var/data/spark-21ec79c5-3afb-4e25-9fef-230fa77686db/spark-f9866485-57ac-4bbc-b017-8c1fff9416f4/userFiles-33618539-2278-4a1c-9178-0190a85675ba/com.google.code.findbugs_jsr305-3.0.0.jar
+26/07/11 14:49:51 INFO SparkContext: Added file file:/opt/spark/work-dir/org.apache.commons_commons-pool2-2.12.1.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/files/org.apache.commons_commons-pool2-2.12.1.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO Utils: Copying /opt/spark/work-dir/org.apache.commons_commons-pool2-2.12.1.jar to /var/data/spark-21ec79c5-3afb-4e25-9fef-230fa77686db/spark-f9866485-57ac-4bbc-b017-8c1fff9416f4/userFiles-33618539-2278-4a1c-9178-0190a85675ba/org.apache.commons_commons-pool2-2.12.1.jar
+26/07/11 14:49:51 INFO SparkContext: Added file file:/opt/spark/work-dir/org.apache.hadoop_hadoop-client-runtime-3.4.2.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/files/org.apache.hadoop_hadoop-client-runtime-3.4.2.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO Utils: Copying /opt/spark/work-dir/org.apache.hadoop_hadoop-client-runtime-3.4.2.jar to /var/data/spark-21ec79c5-3afb-4e25-9fef-230fa77686db/spark-f9866485-57ac-4bbc-b017-8c1fff9416f4/userFiles-33618539-2278-4a1c-9178-0190a85675ba/org.apache.hadoop_hadoop-client-runtime-3.4.2.jar
+26/07/11 14:49:51 INFO SparkContext: Added file file:/opt/spark/work-dir/org.lz4_lz4-java-1.8.0.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/files/org.lz4_lz4-java-1.8.0.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO Utils: Copying /opt/spark/work-dir/org.lz4_lz4-java-1.8.0.jar to /var/data/spark-21ec79c5-3afb-4e25-9fef-230fa77686db/spark-f9866485-57ac-4bbc-b017-8c1fff9416f4/userFiles-33618539-2278-4a1c-9178-0190a85675ba/org.lz4_lz4-java-1.8.0.jar
+26/07/11 14:49:51 INFO SparkContext: Added file file:/opt/spark/work-dir/org.xerial.snappy_snappy-java-1.1.10.8.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/files/org.xerial.snappy_snappy-java-1.1.10.8.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO Utils: Copying /opt/spark/work-dir/org.xerial.snappy_snappy-java-1.1.10.8.jar to /var/data/spark-21ec79c5-3afb-4e25-9fef-230fa77686db/spark-f9866485-57ac-4bbc-b017-8c1fff9416f4/userFiles-33618539-2278-4a1c-9178-0190a85675ba/org.xerial.snappy_snappy-java-1.1.10.8.jar
+26/07/11 14:49:51 INFO SparkContext: Added file file:/opt/spark/work-dir/org.slf4j_slf4j-api-2.0.17.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/files/org.slf4j_slf4j-api-2.0.17.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO Utils: Copying /opt/spark/work-dir/org.slf4j_slf4j-api-2.0.17.jar to /var/data/spark-21ec79c5-3afb-4e25-9fef-230fa77686db/spark-f9866485-57ac-4bbc-b017-8c1fff9416f4/userFiles-33618539-2278-4a1c-9178-0190a85675ba/org.slf4j_slf4j-api-2.0.17.jar
+26/07/11 14:49:51 INFO SparkContext: Added file file:/opt/spark/work-dir/org.apache.hadoop_hadoop-client-api-3.4.2.jar at spark://kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7078/files/org.apache.hadoop_hadoop-client-api-3.4.2.jar with timestamp 1783781390683
+26/07/11 14:49:51 INFO Utils: Copying /opt/spark/work-dir/org.apache.hadoop_hadoop-client-api-3.4.2.jar to /var/data/spark-21ec79c5-3afb-4e25-9fef-230fa77686db/spark-f9866485-57ac-4bbc-b017-8c1fff9416f4/userFiles-33618539-2278-4a1c-9178-0190a85675ba/org.apache.hadoop_hadoop-client-api-3.4.2.jar
+26/07/11 14:49:51 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 768, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/07/11 14:49:51 INFO ResourceProfile: Limiting resource is cpus at 1 tasks per executor
+26/07/11 14:49:51 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/07/11 14:49:51 INFO SecurityManager: Changing view acls to: spark
+26/07/11 14:49:51 INFO SecurityManager: Changing modify acls to: spark
+26/07/11 14:49:51 INFO SecurityManager: Changing view acls groups to: spark
+26/07/11 14:49:51 INFO SecurityManager: Changing modify acls groups to: spark
+26/07/11 14:49:51 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: spark groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify permissions: EMPTY; RPC SSL disabled
+26/07/11 14:49:51 INFO SparkKubernetesClientFactory: Auto-configuring K8S client using current context from users K8S config file
+26/07/11 14:49:52 INFO SslUtils: Default SSL endpoint verification has been disabled:  -Dio.netty.handler.ssl.defaultEndpointVerificationAlgorithm="NONE"
+26/07/11 14:49:53 INFO ExecutorPodsAllocator: Going to request 1 executors from Kubernetes for ResourceProfile Id: 0, target: 1, known: 0, sharedSlotFromPendingPods: 2147483647.
+26/07/11 14:49:53 INFO ExecutorPodsAllocator: Found 0 reusable PVCs from 0 PVCs
+26/07/11 14:49:53 INFO BasicExecutorFeatureStep: Decommissioning not enabled, skipping shutdown script
+26/07/11 14:49:54 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 7079.
+26/07/11 14:49:54 INFO NettyBlockTransferService: Server created on kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc 10.244.0.44:7079
+26/07/11 14:49:54 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/07/11 14:49:54 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc, 7079, None)
+26/07/11 14:49:55 INFO BlockManagerMasterEndpoint: Registering block manager kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc:7079 with 265.5 MiB RAM, BlockManagerId(driver, kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc, 7079, None)
+26/07/11 14:49:55 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc, 7079, None)
+26/07/11 14:49:55 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc, 7079, None)
+26/07/11 14:49:57 INFO KubernetesClusterSchedulerBackend$KubernetesDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (10.244.0.45:57784) with ID 1, ResourceProfileId 0
+26/07/11 14:49:57 INFO KubernetesClusterSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.8
+26/07/11 14:49:57 INFO BlockManagerMasterEndpoint: Registering block manager 10.244.0.45:37265 with 265.5 MiB RAM, BlockManagerId(1, 10.244.0.45, 37265, None)
+26/07/11 14:50:02 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.
+-------------------------------------------
+Batch: 0
+-------------------------------------------
++----+--------------------+-----+
+|seq |ts                  |value|
++----+--------------------+-----+
+|4622|2026-07-10T16:45:57Z|481  |
+|4623|2026-07-10T16:45:58Z|96   |
+|4624|2026-07-10T16:45:59Z|430  |
+|4625|2026-07-10T16:46:00Z|725  |
+|4626|2026-07-10T16:46:01Z|577  |
+|4627|2026-07-10T16:46:02Z|147  |
+|4628|2026-07-10T16:46:03Z|891  |
+|4629|2026-07-10T16:46:04Z|983  |
+|4630|2026-07-10T16:46:05Z|683  |
+|4631|2026-07-10T16:46:06Z|40   |
+|4632|2026-07-10T16:46:07Z|800  |
+|4633|2026-07-10T16:46:08Z|962  |
+|4634|2026-07-10T16:46:09Z|772  |
+|4635|2026-07-10T16:46:10Z|276  |
+|4636|2026-07-10T16:46:11Z|703  |
+|4637|2026-07-10T16:46:12Z|590  |
+|4638|2026-07-10T16:46:13Z|330  |
+|4639|2026-07-10T16:46:14Z|930  |
+|4640|2026-07-10T16:46:15Z|91   |
+|4641|2026-07-10T16:46:16Z|327  |
++----+--------------------+-----+
+only showing top 20 rows
+26/07/11 14:50:08 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 5000 milliseconds, but spent 5829 milliseconds
+-------------------------------------------
+Batch: 1
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14083|2026-07-11T14:50:03Z|300  |
+|14084|2026-07-11T14:50:04Z|700  |
+|14085|2026-07-11T14:50:05Z|644  |
+|14086|2026-07-11T14:50:06Z|264  |
+|14087|2026-07-11T14:50:07Z|348  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 2
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14088|2026-07-11T14:50:08Z|557  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 3
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14089|2026-07-11T14:50:09Z|539  |
+|14090|2026-07-11T14:50:10Z|336  |
+|14091|2026-07-11T14:50:11Z|453  |
+|14092|2026-07-11T14:50:12Z|47   |
+|14093|2026-07-11T14:50:13Z|263  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 4
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14094|2026-07-11T14:50:14Z|820  |
+|14095|2026-07-11T14:50:15Z|371  |
+|14096|2026-07-11T14:50:16Z|320  |
+|14097|2026-07-11T14:50:17Z|235  |
+|14098|2026-07-11T14:50:18Z|593  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 5
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14099|2026-07-11T14:50:19Z|270  |
+|14100|2026-07-11T14:50:20Z|822  |
+|14101|2026-07-11T14:50:21Z|63   |
+|14102|2026-07-11T14:50:22Z|571  |
+|14103|2026-07-11T14:50:23Z|623  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 6
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14104|2026-07-11T14:50:24Z|295  |
+|14105|2026-07-11T14:50:25Z|81   |
+|14106|2026-07-11T14:50:26Z|618  |
+|14107|2026-07-11T14:50:28Z|5    |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 7
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14108|2026-07-11T14:50:29Z|15   |
+|14109|2026-07-11T14:50:30Z|642  |
+|14110|2026-07-11T14:50:31Z|963  |
+|14111|2026-07-11T14:50:32Z|626  |
+|14112|2026-07-11T14:50:33Z|977  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 8
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14113|2026-07-11T14:50:34Z|31   |
+|14114|2026-07-11T14:50:35Z|872  |
+|14115|2026-07-11T14:50:36Z|336  |
+|14116|2026-07-11T14:50:37Z|181  |
+|14117|2026-07-11T14:50:38Z|331  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 9
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14118|2026-07-11T14:50:39Z|886  |
+|14119|2026-07-11T14:50:40Z|20   |
+|14120|2026-07-11T14:50:41Z|612  |
+|14121|2026-07-11T14:50:42Z|69   |
+|14122|2026-07-11T14:50:43Z|838  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 10
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14123|2026-07-11T14:50:44Z|922  |
+|14124|2026-07-11T14:50:45Z|817  |
+|14125|2026-07-11T14:50:46Z|803  |
+|14126|2026-07-11T14:50:47Z|301  |
+|14127|2026-07-11T14:50:48Z|939  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 11
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14128|2026-07-11T14:50:49Z|801  |
+|14129|2026-07-11T14:50:50Z|492  |
+|14130|2026-07-11T14:50:51Z|470  |
+|14131|2026-07-11T14:50:52Z|252  |
+|14132|2026-07-11T14:50:53Z|460  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 12
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14133|2026-07-11T14:50:54Z|394  |
+|14134|2026-07-11T14:50:55Z|352  |
+|14135|2026-07-11T14:50:56Z|966  |
+|14136|2026-07-11T14:50:57Z|44   |
+|14137|2026-07-11T14:50:58Z|377  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 13
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14138|2026-07-11T14:50:59Z|844  |
+|14139|2026-07-11T14:51:00Z|822  |
+|14140|2026-07-11T14:51:02Z|547  |
+|14141|2026-07-11T14:51:03Z|746  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 14
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14142|2026-07-11T14:51:04Z|416  |
+|14143|2026-07-11T14:51:05Z|706  |
+|14144|2026-07-11T14:51:06Z|862  |
+|14145|2026-07-11T14:51:08Z|688  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 15
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14146|2026-07-11T14:51:09Z|315  |
+|14147|2026-07-11T14:51:10Z|619  |
+|14148|2026-07-11T14:51:11Z|599  |
+|14149|2026-07-11T14:51:12Z|3    |
+|14150|2026-07-11T14:51:13Z|32   |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 16
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14151|2026-07-11T14:51:14Z|9    |
+|14152|2026-07-11T14:51:15Z|662  |
+|14153|2026-07-11T14:51:16Z|859  |
+|14154|2026-07-11T14:51:17Z|786  |
+|14155|2026-07-11T14:51:18Z|623  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 17
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14156|2026-07-11T14:51:19Z|643  |
+|14157|2026-07-11T14:51:20Z|836  |
+|14158|2026-07-11T14:51:21Z|758  |
+|14159|2026-07-11T14:51:22Z|876  |
+|14160|2026-07-11T14:51:23Z|642  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 18
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14161|2026-07-11T14:51:24Z|443  |
+|14162|2026-07-11T14:51:25Z|682  |
+|14163|2026-07-11T14:51:26Z|582  |
+|14164|2026-07-11T14:51:27Z|920  |
+|14165|2026-07-11T14:51:28Z|90   |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 19
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14166|2026-07-11T14:51:29Z|875  |
+|14167|2026-07-11T14:51:30Z|416  |
+|14168|2026-07-11T14:51:31Z|220  |
+|14169|2026-07-11T14:51:32Z|380  |
+|14170|2026-07-11T14:51:33Z|956  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 20
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14171|2026-07-11T14:51:34Z|199  |
+|14172|2026-07-11T14:51:36Z|687  |
+|14173|2026-07-11T14:51:37Z|300  |
+|14174|2026-07-11T14:51:38Z|214  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 21
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14175|2026-07-11T14:51:39Z|349  |
+|14176|2026-07-11T14:51:40Z|592  |
+|14177|2026-07-11T14:51:41Z|11   |
+|14178|2026-07-11T14:51:42Z|347  |
+|14179|2026-07-11T14:51:43Z|741  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 22
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14180|2026-07-11T14:51:44Z|590  |
+|14181|2026-07-11T14:51:45Z|389  |
+|14182|2026-07-11T14:51:46Z|606  |
+|14183|2026-07-11T14:51:47Z|975  |
+|14184|2026-07-11T14:51:48Z|919  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 23
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14185|2026-07-11T14:51:49Z|584  |
+|14186|2026-07-11T14:51:50Z|606  |
+|14187|2026-07-11T14:51:51Z|506  |
+|14188|2026-07-11T14:51:52Z|931  |
+|14189|2026-07-11T14:51:53Z|44   |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 24
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14190|2026-07-11T14:51:54Z|764  |
+|14191|2026-07-11T14:51:55Z|188  |
+|14192|2026-07-11T14:51:56Z|464  |
+|14193|2026-07-11T14:51:57Z|105  |
+|14194|2026-07-11T14:51:58Z|731  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 25
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14195|2026-07-11T14:51:59Z|541  |
+|14196|2026-07-11T14:52:00Z|366  |
+|14197|2026-07-11T14:52:01Z|412  |
+|14198|2026-07-11T14:52:02Z|506  |
+|14199|2026-07-11T14:52:03Z|698  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 26
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14200|2026-07-11T14:52:04Z|837  |
+|14201|2026-07-11T14:52:05Z|800  |
+|14202|2026-07-11T14:52:06Z|227  |
+|14203|2026-07-11T14:52:07Z|754  |
+|14204|2026-07-11T14:52:08Z|806  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 27
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14205|2026-07-11T14:52:09Z|202  |
+|14206|2026-07-11T14:52:10Z|293  |
+|14207|2026-07-11T14:52:11Z|531  |
+|14208|2026-07-11T14:52:12Z|347  |
+|14209|2026-07-11T14:52:13Z|149  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 28
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14210|2026-07-11T14:52:14Z|161  |
+|14211|2026-07-11T14:52:15Z|449  |
+|14212|2026-07-11T14:52:16Z|574  |
+|14213|2026-07-11T14:52:17Z|676  |
+|14214|2026-07-11T14:52:18Z|695  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 29
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14215|2026-07-11T14:52:19Z|323  |
+|14216|2026-07-11T14:52:20Z|334  |
+|14217|2026-07-11T14:52:21Z|22   |
+|14218|2026-07-11T14:52:22Z|852  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 30
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14219|2026-07-11T14:52:23Z|348  |
+|14220|2026-07-11T14:52:26Z|920  |
+|14221|2026-07-11T14:52:27Z|919  |
+|14222|2026-07-11T14:52:28Z|863  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 31
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14223|2026-07-11T14:52:29Z|659  |
+|14224|2026-07-11T14:52:30Z|197  |
+|14225|2026-07-11T14:52:31Z|161  |
+|14226|2026-07-11T14:52:32Z|923  |
+|14227|2026-07-11T14:52:33Z|59   |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 32
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14228|2026-07-11T14:52:34Z|322  |
+|14229|2026-07-11T14:52:35Z|17   |
+|14230|2026-07-11T14:52:36Z|62   |
+|14231|2026-07-11T14:52:37Z|333  |
+|14232|2026-07-11T14:52:38Z|71   |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 33
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14233|2026-07-11T14:52:39Z|811  |
+|14234|2026-07-11T14:52:40Z|288  |
+|14235|2026-07-11T14:52:41Z|454  |
+|14236|2026-07-11T14:52:42Z|403  |
+|14237|2026-07-11T14:52:43Z|919  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 34
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14238|2026-07-11T14:52:44Z|945  |
+|14239|2026-07-11T14:52:45Z|300  |
+|14240|2026-07-11T14:52:46Z|334  |
+|14241|2026-07-11T14:52:47Z|418  |
+|14242|2026-07-11T14:52:48Z|339  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 35
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14243|2026-07-11T14:52:49Z|355  |
+|14244|2026-07-11T14:52:50Z|5    |
+|14245|2026-07-11T14:52:51Z|384  |
+|14246|2026-07-11T14:52:52Z|220  |
+|14247|2026-07-11T14:52:53Z|86   |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 36
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14248|2026-07-11T14:52:54Z|852  |
+|14249|2026-07-11T14:52:55Z|315  |
+|14250|2026-07-11T14:52:56Z|779  |
+|14251|2026-07-11T14:52:57Z|765  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 37
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14252|2026-07-11T14:52:59Z|83   |
+|14253|2026-07-11T14:53:00Z|796  |
+|14254|2026-07-11T14:53:01Z|991  |
+|14255|2026-07-11T14:53:02Z|594  |
+|14256|2026-07-11T14:53:03Z|852  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 38
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14257|2026-07-11T14:53:04Z|910  |
+|14258|2026-07-11T14:53:05Z|866  |
+|14259|2026-07-11T14:53:06Z|13   |
+|14260|2026-07-11T14:53:07Z|618  |
+|14261|2026-07-11T14:53:08Z|749  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 39
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14262|2026-07-11T14:53:09Z|914  |
+|14263|2026-07-11T14:53:10Z|78   |
+|14264|2026-07-11T14:53:11Z|248  |
+|14265|2026-07-11T14:53:12Z|382  |
+|14266|2026-07-11T14:53:13Z|625  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 40
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14267|2026-07-11T14:53:14Z|661  |
+|14268|2026-07-11T14:53:15Z|182  |
+|14269|2026-07-11T14:53:16Z|713  |
+|14270|2026-07-11T14:53:17Z|358  |
+|14271|2026-07-11T14:53:18Z|791  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 41
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14272|2026-07-11T14:53:19Z|375  |
+|14273|2026-07-11T14:53:20Z|660  |
+|14274|2026-07-11T14:53:21Z|532  |
+|14275|2026-07-11T14:53:22Z|528  |
+|14276|2026-07-11T14:53:23Z|516  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 42
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14277|2026-07-11T14:53:24Z|531  |
+|14278|2026-07-11T14:53:25Z|327  |
+|14279|2026-07-11T14:53:26Z|170  |
+|14280|2026-07-11T14:53:27Z|206  |
+|14281|2026-07-11T14:53:28Z|747  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 43
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14282|2026-07-11T14:53:29Z|212  |
+|14283|2026-07-11T14:53:30Z|285  |
+|14284|2026-07-11T14:53:31Z|967  |
+|14285|2026-07-11T14:53:32Z|533  |
+|14286|2026-07-11T14:53:33Z|527  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 44
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14287|2026-07-11T14:53:34Z|115  |
+|14288|2026-07-11T14:53:35Z|88   |
+|14289|2026-07-11T14:53:36Z|102  |
+|14290|2026-07-11T14:53:37Z|522  |
+|14291|2026-07-11T14:53:38Z|589  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 45
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14292|2026-07-11T14:53:39Z|8    |
+|14293|2026-07-11T14:53:40Z|892  |
+|14294|2026-07-11T14:53:41Z|122  |
+|14295|2026-07-11T14:53:42Z|778  |
+|14296|2026-07-11T14:53:43Z|365  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 46
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14297|2026-07-11T14:53:44Z|644  |
+|14298|2026-07-11T14:53:45Z|186  |
+|14299|2026-07-11T14:53:48Z|401  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 47
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14300|2026-07-11T14:53:49Z|999  |
+|14301|2026-07-11T14:53:50Z|307  |
+|14302|2026-07-11T14:53:51Z|934  |
+|14303|2026-07-11T14:53:52Z|251  |
+|14304|2026-07-11T14:53:53Z|455  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 48
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14305|2026-07-11T14:53:54Z|520  |
+|14306|2026-07-11T14:53:55Z|257  |
+|14307|2026-07-11T14:53:56Z|905  |
+|14308|2026-07-11T14:53:57Z|885  |
+|14309|2026-07-11T14:53:58Z|460  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 49
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14310|2026-07-11T14:53:59Z|766  |
+|14311|2026-07-11T14:54:00Z|971  |
+|14312|2026-07-11T14:54:01Z|646  |
+|14313|2026-07-11T14:54:02Z|312  |
+|14314|2026-07-11T14:54:03Z|820  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 50
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14315|2026-07-11T14:54:04Z|917  |
+|14316|2026-07-11T14:54:05Z|826  |
+|14317|2026-07-11T14:54:06Z|336  |
+|14318|2026-07-11T14:54:07Z|824  |
+|14319|2026-07-11T14:54:08Z|157  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 51
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14320|2026-07-11T14:54:09Z|777  |
+|14321|2026-07-11T14:54:10Z|461  |
+|14322|2026-07-11T14:54:11Z|378  |
+|14323|2026-07-11T14:54:12Z|843  |
+|14324|2026-07-11T14:54:13Z|524  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 52
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14325|2026-07-11T14:54:14Z|434  |
+|14326|2026-07-11T14:54:15Z|594  |
+|14327|2026-07-11T14:54:16Z|664  |
+|14328|2026-07-11T14:54:17Z|822  |
+|14329|2026-07-11T14:54:18Z|95   |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 53
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14330|2026-07-11T14:54:19Z|792  |
+|14331|2026-07-11T14:54:20Z|943  |
+|14332|2026-07-11T14:54:22Z|95   |
+|14333|2026-07-11T14:54:23Z|464  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 54
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14334|2026-07-11T14:54:24Z|490  |
+|14335|2026-07-11T14:54:25Z|673  |
+|14336|2026-07-11T14:54:26Z|165  |
+|14337|2026-07-11T14:54:27Z|800  |
+|14338|2026-07-11T14:54:28Z|687  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 55
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14339|2026-07-11T14:54:29Z|853  |
+|14340|2026-07-11T14:54:30Z|882  |
+|14341|2026-07-11T14:54:31Z|470  |
+|14342|2026-07-11T14:54:32Z|591  |
+|14343|2026-07-11T14:54:33Z|816  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 56
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14344|2026-07-11T14:54:34Z|130  |
+|14345|2026-07-11T14:54:35Z|573  |
+|14346|2026-07-11T14:54:36Z|582  |
+|14347|2026-07-11T14:54:37Z|637  |
+|14348|2026-07-11T14:54:38Z|479  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 57
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14349|2026-07-11T14:54:39Z|698  |
+|14350|2026-07-11T14:54:40Z|556  |
+|14351|2026-07-11T14:54:41Z|115  |
+|14352|2026-07-11T14:54:42Z|838  |
+|14353|2026-07-11T14:54:43Z|509  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 58
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14354|2026-07-11T14:54:44Z|501  |
+|14355|2026-07-11T14:54:45Z|729  |
+|14356|2026-07-11T14:54:46Z|473  |
+|14357|2026-07-11T14:54:47Z|809  |
+|14358|2026-07-11T14:54:48Z|0    |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 59
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14359|2026-07-11T14:54:49Z|697  |
+|14360|2026-07-11T14:54:50Z|77   |
+|14361|2026-07-11T14:54:51Z|749  |
+|14362|2026-07-11T14:54:52Z|426  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 60
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14363|2026-07-11T14:54:53Z|466  |
+|14364|2026-07-11T14:54:55Z|866  |
+|14365|2026-07-11T14:54:56Z|809  |
+|14366|2026-07-11T14:54:57Z|296  |
+|14367|2026-07-11T14:54:58Z|627  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 61
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14368|2026-07-11T14:54:59Z|35   |
+|14369|2026-07-11T14:55:00Z|904  |
+|14370|2026-07-11T14:55:01Z|418  |
+|14371|2026-07-11T14:55:03Z|835  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 62
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14372|2026-07-11T14:55:04Z|394  |
+|14373|2026-07-11T14:55:05Z|628  |
+|14374|2026-07-11T14:55:06Z|558  |
+|14375|2026-07-11T14:55:07Z|867  |
+|14376|2026-07-11T14:55:08Z|146  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 63
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14377|2026-07-11T14:55:09Z|933  |
+|14378|2026-07-11T14:55:10Z|5    |
+|14379|2026-07-11T14:55:11Z|65   |
+|14380|2026-07-11T14:55:12Z|166  |
+|14381|2026-07-11T14:55:13Z|719  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 64
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14382|2026-07-11T14:55:14Z|313  |
+|14383|2026-07-11T14:55:15Z|805  |
+|14384|2026-07-11T14:55:16Z|550  |
+|14385|2026-07-11T14:55:17Z|658  |
+|14386|2026-07-11T14:55:18Z|945  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 65
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14387|2026-07-11T14:55:19Z|263  |
+|14388|2026-07-11T14:55:20Z|801  |
+|14389|2026-07-11T14:55:21Z|414  |
+|14390|2026-07-11T14:55:22Z|230  |
+|14391|2026-07-11T14:55:23Z|566  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 66
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14392|2026-07-11T14:55:24Z|48   |
+|14393|2026-07-11T14:55:25Z|478  |
+|14394|2026-07-11T14:55:26Z|426  |
+|14395|2026-07-11T14:55:27Z|329  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 67
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14396|2026-07-11T14:55:29Z|561  |
+|14397|2026-07-11T14:55:30Z|178  |
+|14398|2026-07-11T14:55:31Z|398  |
+|14399|2026-07-11T14:55:32Z|920  |
+|14400|2026-07-11T14:55:33Z|338  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 68
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14401|2026-07-11T14:55:34Z|356  |
+|14402|2026-07-11T14:55:35Z|435  |
+|14403|2026-07-11T14:55:36Z|242  |
+|14404|2026-07-11T14:55:37Z|674  |
+|14405|2026-07-11T14:55:38Z|822  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 69
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14406|2026-07-11T14:55:39Z|728  |
+|14407|2026-07-11T14:55:40Z|771  |
+|14408|2026-07-11T14:55:41Z|724  |
+|14409|2026-07-11T14:55:42Z|639  |
+|14410|2026-07-11T14:55:43Z|301  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 70
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14411|2026-07-11T14:55:44Z|920  |
+|14412|2026-07-11T14:55:45Z|920  |
+|14413|2026-07-11T14:55:46Z|557  |
+|14414|2026-07-11T14:55:47Z|542  |
+|14415|2026-07-11T14:55:48Z|836  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 71
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14416|2026-07-11T14:55:49Z|819  |
+|14417|2026-07-11T14:55:50Z|940  |
+|14418|2026-07-11T14:55:51Z|648  |
+|14419|2026-07-11T14:55:52Z|882  |
+|14420|2026-07-11T14:55:53Z|10   |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 72
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14421|2026-07-11T14:55:54Z|276  |
+|14422|2026-07-11T14:55:55Z|780  |
+|14423|2026-07-11T14:55:56Z|670  |
+|14424|2026-07-11T14:55:57Z|324  |
+|14425|2026-07-11T14:55:58Z|684  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 73
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14426|2026-07-11T14:55:59Z|242  |
+|14427|2026-07-11T14:56:00Z|985  |
+|14428|2026-07-11T14:56:01Z|401  |
+|14429|2026-07-11T14:56:03Z|360  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 74
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14430|2026-07-11T14:56:04Z|272  |
+|14431|2026-07-11T14:56:05Z|293  |
+|14432|2026-07-11T14:56:06Z|957  |
+|14433|2026-07-11T14:56:07Z|773  |
+|14434|2026-07-11T14:56:08Z|532  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 75
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14435|2026-07-11T14:56:09Z|883  |
+|14436|2026-07-11T14:56:10Z|336  |
+|14437|2026-07-11T14:56:11Z|737  |
+|14438|2026-07-11T14:56:12Z|634  |
+|14439|2026-07-11T14:56:13Z|766  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 76
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14440|2026-07-11T14:56:14Z|671  |
+|14441|2026-07-11T14:56:15Z|544  |
+|14442|2026-07-11T14:56:16Z|449  |
+|14443|2026-07-11T14:56:17Z|143  |
+|14444|2026-07-11T14:56:18Z|400  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 77
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14445|2026-07-11T14:56:19Z|449  |
+|14446|2026-07-11T14:56:20Z|278  |
+|14447|2026-07-11T14:56:21Z|422  |
+|14448|2026-07-11T14:56:22Z|922  |
+|14449|2026-07-11T14:56:23Z|463  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 78
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14450|2026-07-11T14:56:24Z|939  |
+|14451|2026-07-11T14:56:25Z|616  |
+|14452|2026-07-11T14:56:26Z|948  |
+|14453|2026-07-11T14:56:27Z|587  |
+|14454|2026-07-11T14:56:28Z|991  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 79
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14455|2026-07-11T14:56:29Z|920  |
+|14456|2026-07-11T14:56:30Z|458  |
+|14457|2026-07-11T14:56:31Z|224  |
+|14458|2026-07-11T14:56:32Z|1    |
+|14459|2026-07-11T14:56:33Z|516  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 80
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14460|2026-07-11T14:56:34Z|969  |
+|14461|2026-07-11T14:56:36Z|244  |
+|14462|2026-07-11T14:56:37Z|485  |
+|14463|2026-07-11T14:56:38Z|268  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 81
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14464|2026-07-11T14:56:39Z|975  |
+|14465|2026-07-11T14:56:40Z|382  |
+|14466|2026-07-11T14:56:42Z|893  |
+|14467|2026-07-11T14:56:43Z|573  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 82
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14468|2026-07-11T14:56:44Z|744  |
+|14469|2026-07-11T14:56:45Z|350  |
+|14470|2026-07-11T14:56:46Z|560  |
+|14471|2026-07-11T14:56:47Z|400  |
+|14472|2026-07-11T14:56:48Z|292  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 83
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14473|2026-07-11T14:56:49Z|988  |
+|14474|2026-07-11T14:56:50Z|739  |
+|14475|2026-07-11T14:56:51Z|451  |
+|14476|2026-07-11T14:56:52Z|186  |
+|14477|2026-07-11T14:56:53Z|814  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 84
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14478|2026-07-11T14:56:54Z|900  |
+|14479|2026-07-11T14:56:55Z|854  |
+|14480|2026-07-11T14:56:56Z|867  |
+|14481|2026-07-11T14:56:57Z|687  |
+|14482|2026-07-11T14:56:58Z|390  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 85
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14483|2026-07-11T14:56:59Z|939  |
+|14484|2026-07-11T14:57:00Z|735  |
+|14485|2026-07-11T14:57:01Z|369  |
+|14486|2026-07-11T14:57:02Z|21   |
+|14487|2026-07-11T14:57:03Z|812  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 86
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14488|2026-07-11T14:57:04Z|474  |
+|14489|2026-07-11T14:57:05Z|218  |
+|14490|2026-07-11T14:57:06Z|955  |
+|14491|2026-07-11T14:57:07Z|777  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 87
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14492|2026-07-11T14:57:08Z|127  |
+|14493|2026-07-11T14:57:10Z|254  |
+|14494|2026-07-11T14:57:11Z|739  |
+|14495|2026-07-11T14:57:12Z|651  |
+|14496|2026-07-11T14:57:13Z|964  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 88
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14497|2026-07-11T14:57:14Z|93   |
+|14498|2026-07-11T14:57:15Z|414  |
+|14499|2026-07-11T14:57:16Z|716  |
+|14500|2026-07-11T14:57:17Z|180  |
+|14501|2026-07-11T14:57:18Z|865  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 89
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14502|2026-07-11T14:57:19Z|865  |
+|14503|2026-07-11T14:57:20Z|423  |
+|14504|2026-07-11T14:57:21Z|510  |
+|14505|2026-07-11T14:57:22Z|774  |
+|14506|2026-07-11T14:57:23Z|930  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 90
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14507|2026-07-11T14:57:24Z|676  |
+|14508|2026-07-11T14:57:25Z|64   |
+|14509|2026-07-11T14:57:26Z|349  |
+|14510|2026-07-11T14:57:27Z|594  |
+|14511|2026-07-11T14:57:28Z|603  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 91
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14512|2026-07-11T14:57:29Z|113  |
+|14513|2026-07-11T14:57:30Z|151  |
+|14514|2026-07-11T14:57:31Z|340  |
+|14515|2026-07-11T14:57:32Z|201  |
+|14516|2026-07-11T14:57:33Z|55   |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 92
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14517|2026-07-11T14:57:34Z|777  |
+|14518|2026-07-11T14:57:35Z|924  |
+|14519|2026-07-11T14:57:36Z|395  |
+|14520|2026-07-11T14:57:37Z|402  |
+|14521|2026-07-11T14:57:38Z|122  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 93
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14522|2026-07-11T14:57:39Z|199  |
+|14523|2026-07-11T14:57:40Z|675  |
+|14524|2026-07-11T14:57:41Z|717  |
+|14525|2026-07-11T14:57:43Z|252  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 94
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14526|2026-07-11T14:57:44Z|87   |
+|14527|2026-07-11T14:57:45Z|677  |
+|14528|2026-07-11T14:57:46Z|693  |
+|14529|2026-07-11T14:57:47Z|688  |
+|14530|2026-07-11T14:57:48Z|109  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 95
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14531|2026-07-11T14:57:49Z|112  |
+|14532|2026-07-11T14:57:50Z|292  |
+|14533|2026-07-11T14:57:51Z|238  |
+|14534|2026-07-11T14:57:52Z|52   |
+|14535|2026-07-11T14:57:53Z|717  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 96
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14536|2026-07-11T14:57:54Z|412  |
+|14537|2026-07-11T14:57:55Z|913  |
+|14538|2026-07-11T14:57:56Z|201  |
+|14539|2026-07-11T14:57:57Z|209  |
+|14540|2026-07-11T14:57:58Z|159  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 97
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14541|2026-07-11T14:57:59Z|727  |
+|14542|2026-07-11T14:58:00Z|222  |
+|14543|2026-07-11T14:58:01Z|506  |
+|14544|2026-07-11T14:58:02Z|772  |
+|14545|2026-07-11T14:58:03Z|190  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 98
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14546|2026-07-11T14:58:04Z|924  |
+|14547|2026-07-11T14:58:06Z|945  |
+|14548|2026-07-11T14:58:07Z|28   |
+|14549|2026-07-11T14:58:08Z|395  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 99
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14550|2026-07-11T14:58:09Z|840  |
+|14551|2026-07-11T14:58:10Z|924  |
+|14552|2026-07-11T14:58:11Z|668  |
+|14553|2026-07-11T14:58:12Z|441  |
+|14554|2026-07-11T14:58:13Z|249  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 100
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14555|2026-07-11T14:58:14Z|476  |
+|14556|2026-07-11T14:58:15Z|517  |
+|14557|2026-07-11T14:58:16Z|155  |
+|14558|2026-07-11T14:58:18Z|27   |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 101
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14559|2026-07-11T14:58:19Z|744  |
+|14560|2026-07-11T14:58:20Z|739  |
+|14561|2026-07-11T14:58:21Z|498  |
+|14562|2026-07-11T14:58:22Z|767  |
+|14563|2026-07-11T14:58:23Z|259  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 102
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14564|2026-07-11T14:58:24Z|958  |
+|14565|2026-07-11T14:58:25Z|226  |
+|14566|2026-07-11T14:58:26Z|987  |
+|14567|2026-07-11T14:58:27Z|553  |
+|14568|2026-07-11T14:58:28Z|309  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 103
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14569|2026-07-11T14:58:29Z|59   |
+|14570|2026-07-11T14:58:30Z|11   |
+|14571|2026-07-11T14:58:31Z|744  |
+|14572|2026-07-11T14:58:32Z|757  |
+|14573|2026-07-11T14:58:33Z|269  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 104
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14574|2026-07-11T14:58:34Z|526  |
+|14575|2026-07-11T14:58:35Z|526  |
+|14576|2026-07-11T14:58:36Z|353  |
+|14577|2026-07-11T14:58:37Z|310  |
+|14578|2026-07-11T14:58:38Z|889  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 105
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14579|2026-07-11T14:58:39Z|98   |
+|14580|2026-07-11T14:58:40Z|320  |
+|14581|2026-07-11T14:58:41Z|408  |
+|14582|2026-07-11T14:58:42Z|346  |
+|14583|2026-07-11T14:58:43Z|781  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 106
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14584|2026-07-11T14:58:44Z|214  |
+|14585|2026-07-11T14:58:45Z|402  |
+|14586|2026-07-11T14:58:46Z|321  |
+|14587|2026-07-11T14:58:47Z|749  |
+|14588|2026-07-11T14:58:48Z|506  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 107
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14589|2026-07-11T14:58:49Z|562  |
+|14590|2026-07-11T14:58:50Z|235  |
+|14591|2026-07-11T14:58:51Z|518  |
+|14592|2026-07-11T14:58:52Z|910  |
+|14593|2026-07-11T14:58:53Z|444  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 108
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14594|2026-07-11T14:58:55Z|78   |
+|14595|2026-07-11T14:58:56Z|543  |
+|14596|2026-07-11T14:58:57Z|460  |
+|14597|2026-07-11T14:58:58Z|263  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 109
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14598|2026-07-11T14:58:59Z|311  |
+|14599|2026-07-11T14:59:00Z|139  |
+|14600|2026-07-11T14:59:01Z|783  |
+|14601|2026-07-11T14:59:02Z|651  |
+|14602|2026-07-11T14:59:03Z|391  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 110
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14603|2026-07-11T14:59:04Z|749  |
+|14604|2026-07-11T14:59:05Z|179  |
+|14605|2026-07-11T14:59:06Z|766  |
+|14606|2026-07-11T14:59:07Z|22   |
+|14607|2026-07-11T14:59:08Z|758  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 111
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14608|2026-07-11T14:59:09Z|666  |
+|14609|2026-07-11T14:59:10Z|735  |
+|14610|2026-07-11T14:59:11Z|523  |
+|14611|2026-07-11T14:59:12Z|609  |
+|14612|2026-07-11T14:59:13Z|419  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 112
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14613|2026-07-11T14:59:14Z|949  |
+|14614|2026-07-11T14:59:15Z|646  |
+|14615|2026-07-11T14:59:16Z|517  |
+|14616|2026-07-11T14:59:17Z|259  |
+|14617|2026-07-11T14:59:18Z|755  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 113
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14618|2026-07-11T14:59:19Z|842  |
+|14619|2026-07-11T14:59:20Z|688  |
+|14620|2026-07-11T14:59:21Z|810  |
+|14621|2026-07-11T14:59:22Z|425  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 114
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14622|2026-07-11T14:59:24Z|939  |
+|14623|2026-07-11T14:59:25Z|481  |
+|14624|2026-07-11T14:59:26Z|875  |
+|14625|2026-07-11T14:59:27Z|804  |
+|14626|2026-07-11T14:59:28Z|461  |
++-----+--------------------+-----+
+
+-------------------------------------------
+Batch: 115
+-------------------------------------------
++-----+--------------------+-----+
+|seq  |ts                  |value|
++-----+--------------------+-----+
+|14627|2026-07-11T14:59:29Z|949  |
+|14628|2026-07-11T14:59:30Z|895  |
+|14629|2026-07-11T14:59:31Z|971  |
+|14630|2026-07-11T14:59:32Z|334  |
+|14631|2026-07-11T14:59:33Z|649  |
++-----+--------------------+-----+
+
+26/07/11 14:59:40 WARN ExecutorPodsLifecycleManager: 1 new failed executors.
+26/07/11 14:59:40 ERROR TaskSchedulerImpl: Lost executor 1 on 10.244.0.45: 
+The executor with id 1 exited with exit code 137(SIGKILL, possible container OOM).
+
+
+
+The API gave the following container statuses:
+
+
+	 container name: spark-kubernetes-executor
+	 container image: docker.io/apache/spark:4.1.2-scala2.13-java17-python3-ubuntu
+	 container state: terminated
+	 container started at: 2026-07-11T14:49:55Z
+	 container finished at: 2026-07-11T14:59:39Z
+	 exit code: 137
+	 termination reason: OOMKilled
+      

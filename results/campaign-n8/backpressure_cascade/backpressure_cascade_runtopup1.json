@@ -1,0 +1,11 @@
+{
+  "fault_class": "backpressure_cascade",
+  "run_id": "topup1",
+  "burst_size": 3000,
+  "baseline_lag_seconds": 6.284543,
+  "injection_timestamp_utc": "2026-07-11T15:00:04Z",
+  "burst_sent_timestamp_utc": "2026-07-11T15:00:12Z",
+  "peak_lag_seconds_observed": 11.482272,
+  "caught_up_utc": "2026-07-11T15:00:20Z",
+  "recovered": true
+}
