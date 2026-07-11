@@ -1,0 +1,34 @@
+checked pod: kspfail-streaming-pilot-8c8efb9f51a7563c-driver at 2026-07-11T15:03:32Z
+command: kubectl -n spark exec kspfail-streaming-pilot-8c8efb9f51a7563c-driver -- cat /opt/spark/conf/spark.properties
+---full live properties file, loaded by the running driver process---
+#Java properties built from Kubernetes config map with name: spark-drv-9a61249f51a75a2b-conf-map
+#Sat Jul 11 14:49:09 UTC 2026
+spark.driver.port=7078
+spark.submit.pyFiles=
+spark.kubernetes.resource.type=python
+spark.kubernetes.namespace=spark
+spark.app.submitTime=1783781348841
+spark.sql.streaming.metricsEnabled=true
+spark.kubernetes.submitInDriver=true
+spark.kubernetes.authenticate.driver.serviceAccountName=spark
+spark.kubernetes.driver.pod.name=kspfail-streaming-pilot-8c8efb9f51a7563c-driver
+spark.executor.instances=1
+spark.executor.memory=768m
+spark.kubernetes.executor.maxNumFailures=50
+spark.jars.ivy=/tmp/ivy2
+spark.driver.memory=768m
+spark.master=k8s\://https\://kubernetes.default.svc
+spark.jars.packages=org.apache.spark\:spark-sql-kafka-0-10_2.13\:4.1.2
+spark.ui.prometheus.enabled=true
+spark.app.name=kspfail-streaming-pilot
+spark.submit.deployMode=cluster
+spark.driver.host=kspfail-streaming-pilot-8c8efb9f51a7563c-driver-svc.spark.svc
+spark.driver.blockManager.port=7079
+spark.app.id=spark-6cbda246627840bbb6ed34ad54f1bcf3
+spark.kubernetes.container.image=apache/spark\:4.1.2-scala2.13-java17-python3-ubuntu
+spark.kubernetes.memoryOverheadFactor=0.4
+spark.kubernetes.driver.podTemplateFile=/opt/spark-conf/driver-pod-template.yaml
+---
+line 17 above (spark.kubernetes.executor.maxNumFailures=50) is the config under audit,
+read directly from the properties file the running driver process actually loaded --
+not the committed YAML, not a claim.
