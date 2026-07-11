@@ -1,0 +1,69 @@
+{
+  "fault_class": "executor_oom",
+  "target_valid": 8,
+  "start_utc": "2026-07-11T13:57:44Z",
+  "runs": [
+    {
+      "fault_class": "executor_oom",
+      "rep": "topup1",
+      "run_id": "topup1",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 7.5,
+      "started_utc": "2026-07-11T13:57:52Z"
+    },
+    {
+      "fault_class": "executor_oom",
+      "rep": "topup2",
+      "run_id": "topup2",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 5.7,
+      "started_utc": "2026-07-11T13:59:29Z"
+    },
+    {
+      "fault_class": "executor_oom",
+      "rep": "topup3",
+      "run_id": "topup3",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 5.5,
+      "started_utc": "2026-07-11T14:00:36Z"
+    }
+  ],
+  "crash_events": [],
+  "end_utc": "2026-07-11T14:00:36Z",
+  "attempts": 3,
+  "final_valid": 8,
+  "reached_target": true,
+  "checkpoint": {
+    "fault_class": "executor_oom",
+    "record_count": 8,
+    "expected_reps": 8,
+    "storage_type": "persistent-claim",
+    "storage_ok": true,
+    "prom_ok": true,
+    "prom_detail": "1 series, 12 data points for 'up{job=\"spark-driver\"}' over 2026-07-11T13:57:44Z..2026-07-11T14:00:37Z",
+    "status": "PASS",
+    "timing": {
+      "metric_name": "detection_latency_s",
+      "metric_kind": "latency",
+      "metric_desc": "injection -> OOM confirmed",
+      "n": 8,
+      "values": [
+        6.0,
+        5.0,
+        5.0,
+        2.0,
+        1.0,
+        7.0,
+        5.0,
+        2.0
+      ],
+      "min": 1.0,
+      "max": 7.0,
+      "mean": 4.12,
+      "stdev": 2.17
+    }
+  }
+}

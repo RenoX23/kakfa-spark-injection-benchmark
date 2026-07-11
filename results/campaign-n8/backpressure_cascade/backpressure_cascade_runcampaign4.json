@@ -1,0 +1,11 @@
+{
+  "fault_class": "backpressure_cascade",
+  "run_id": "campaign4",
+  "burst_size": 3000,
+  "baseline_lag_seconds": 2.717963,
+  "injection_timestamp_utc": "2026-07-11T10:54:05Z",
+  "burst_sent_timestamp_utc": "2026-07-11T10:54:13Z",
+  "peak_lag_seconds_observed": 12.459404,
+  "caught_up_utc": "2026-07-11T10:54:21Z",
+  "recovered": true
+}

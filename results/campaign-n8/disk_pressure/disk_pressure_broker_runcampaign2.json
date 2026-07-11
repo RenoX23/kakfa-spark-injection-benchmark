@@ -1,0 +1,14 @@
+{
+  "fault_class": "disk_pressure_broker",
+  "run_id": "campaign2",
+  "namespace": "kafka",
+  "target_pod": "kspfail-single-0",
+  "fill_size_gb": 3,
+  "baseline_avail_bytes": 995152027648.0,
+  "injection_timestamp_utc": "2026-07-11T11:03:03Z",
+  "fill_done_utc": "2026-07-11T11:03:09Z",
+  "post_fill_avail_bytes": 991930441728.0,
+  "drop_confirmed_utc": "2026-07-11T11:03:14Z",
+  "cleaned_up_utc": "2026-07-11T11:04:15Z",
+  "recovered": true
+}

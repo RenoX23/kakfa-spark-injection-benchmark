@@ -1,0 +1,12 @@
+{
+  "fault_class": "executor_oom_kill",
+  "run_id": "campaign8",
+  "namespace": "spark",
+  "target_pod": "kspfail-streaming-pilot-be305a9f50c49352-exec-4",
+  "driver_pod": "kspfail-streaming-pilot-f684199f50c40af8-driver",
+  "baseline_restart_count": 0,
+  "injection_timestamp_utc": "2026-07-11T10:46:00Z",
+  "oomkilled_confirmed_utc": "2026-07-11T10:46:01Z",
+  "new_executor_recovered_utc": null,
+  "recovered": false
+}
