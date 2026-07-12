@@ -360,6 +360,17 @@ Hyperparameter tuning uses a nested inner loop (tune on the 7-episode training f
 its own internal CV, never touching that fold's held-out episode) — outer-loop test
 episodes stay genuinely unseen during tuning, not just during final fit.
 
+**Deviation logged, 2026-07-12 (gate-auditor finding):** the nested-tuning design above
+was decided before window extraction started, but the Weeks 8-9 first pass did not
+implement it — every class was evaluated with one fixed, untuned
+`RandomForestClassifier(n_estimators=200, max_depth=5, class_weight="balanced")`
+configuration, no inner CV, no hyperparameter search. This was an unflagged gap between
+documented methodology and actual implementation until gate-audit caught it; see
+Section 8's Weeks 8-9 accepted-limitation note for the full scope of what this pass
+covers and defers. The nested-tuning design itself is not withdrawn — it remains the
+plan for whichever pass adds tuning (see Section 8), just not something this pass can
+claim to have done.
+
 **3. Applied consistently across all 4 evaluated classes — with an explicit flag on
 broker_kill, not glossed over.** broker_kill's own baseline evaluation
 (`results/baseline-threshold-evidence/evaluation_output.json`) found real Prometheus
@@ -437,29 +448,51 @@ follow this trail, not just trust the final table:*
    with a separate `NORMAL_REF_STRIDE_S = 402` constant, spreading the 10 windows
    evenly across the full period. Commit `d75783f`. `executor_oom` draws normal
    context from each episode's own pre-injection period instead
-   (`extract_executor_oom_normal_windows()`) and was never exposed to bugs #2 or #3 —
-   confirmed empirically, not just by code-reading: its feature-importance numbers are
-   bit-identical before and after both fixes (`executor_oom_feature_importance_check.json`).
-   Re-extracting broker_kill and network_degradation under the fix changed their
+   (`extract_executor_oom_normal_windows()`) and was never exposed to bug #3 (the
+   stride bug) — confirmed empirically via `executor_oom_feature_importance_check.json`,
+   whose `full_5_episode` block is bit-identical to the pre-existing snapshot committed
+   at `63e2d8b`, which already postdates bug #2's fix; the stride fix (bug #3, `d75783f`)
+   is the only one this specific empirical comparison isolates. The code-level argument
+   (`extract_executor_oom_normal_windows()` never calls `extract_normal_reference_windows()`
+   or references any `NORMAL_REF_*` constant) is what establishes immunity to bug #2 as
+   well. Re-extracting broker_kill and network_degradation under the fix changed their
    numbers materially (`3423a6b`) — including a further, distinct false-positive result
    for broker_kill (below), caught the same way: by not trusting a suspiciously large
    F1 jump.
+
+**Gate-auditor correction, 2026-07-12 (caught before push, not after):** the first draft
+of this section called executor_oom "positive, with caveats" on F1 alone, without the
+permutation/null test every other class received — the one class-level check this whole
+pass consistently applied elsewhere and skipped here. gate-auditor flagged it as a FAIL:
+executor_oom's F1 sits *below* a trivial always-predict-pre_failure baseline (0.842 vs a
+computed 0.900 for the 5-episode set; 0.727 vs 0.833 for the 3-clean-episode set), and
+the model misclassifies **both** normal windows in every configuration tried (0/2
+specificity — it predicts pre_failure regardless of the actual window). Ran the same
+rank-based shuffle test used for the other three classes
+(`executor_oom_null_baseline_check.json`): 34/100 shuffled F1≥real (p=0.34, 5-episode),
+54/100 (p=0.54, 3-clean) — both squarely in chance territory, the same range as
+broker_kill (p=0.66) and network_degradation (p=0.56). The verdict below is corrected
+accordingly, not softened with a caveat.
 
 *Final verdict:*
 
 | Class | Verdict | Key numbers | Evidence file(s) |
 |---|---|---|---|
-| **executor_oom** | Positive, with caveats | LOO-CV F1=0.842 (precision=0.800, recall=0.889; 5 episodes, of which 2 — ramptest4/8 — have only a cold-start-artifact reading as their pre-failure sample) / F1=0.727 (precision=0.667, recall=0.800; 3 genuinely clean episodes only). Feature importance evenly spread on both subsets (top feature 0.200-0.204, no dominance) — no leak. | `loo_cv_results.json`, `executor_oom_clean_episode_check.json`, `executor_oom_feature_importance_check.json` |
-| **disk_pressure** | Positive, via delta features | Raw-feature LOO-CV F1=0.968 initially flagged as confounded (feature importance dominated by absolute-magnitude features). Std-only ablation: F1=0.778, 5/100 shuffled≥real (p=0.05, rank-based) — inconclusive on its own. False positives traced to scattered `std==0` sampling coincidences (not time-of-day clustering), so per-episode delta/relative-baseline features (subtract each episode's own pre-injection baseline) were built accordingly: **F1=0.941, 0/100 shuffled≥real (p<0.01)**. Per-fold breakdown confirms this isn't carried by one episode — all 8 real episodes classify correctly, including an unexplained outlier (campaign2). | `magnitude_ablation_check.json`, `disk_pressure_stdonly_perfold.json`, `disk_pressure_delta_features.json` |
+| **executor_oom** | Negative / inconclusive — no demonstrated discrimination at this N | LOO-CV F1=0.842 (5 episodes) / F1=0.727 (3 clean episodes) — both *below* a trivial always-predict-pre_failure baseline (0.900 / 0.833 respectively), and the model misclassifies both normal windows in every run (0/2 specificity). Permutation test: **34/100 and 54/100 shuffled F1≥real (p=0.34 / p=0.54, chance)**. Feature importance evenly spread on both subsets (top feature 0.200-0.204, no single-feature leak) — ruling out a leak explanation, but that doesn't rescue the result: there is simply no evidence this model discriminates pre-failure from normal at N=5 (or N=3) episodes. | `loo_cv_results.json`, `executor_oom_clean_episode_check.json`, `executor_oom_feature_importance_check.json`, `executor_oom_null_baseline_check.json` |
+| **disk_pressure** | Positive, via delta features | Raw-feature LOO-CV F1=0.968 initially flagged as confounded (feature importance dominated by absolute-magnitude features). Std-only ablation: F1=0.778, 5/100 shuffled≥real (p=0.05, rank-based) — inconclusive on its own. False positives traced to scattered `std==0` sampling coincidences (not time-of-day clustering), so per-episode delta/relative-baseline features (subtract each episode's own pre-injection baseline) were built accordingly: **F1=0.941, 0/100 shuffled≥real (p<0.01)**. Delta recall=1.0 logically guarantees every pre-failure window — hence all 8 real fault episodes, including an unexplained outlier (campaign2, confirmed a genuine magnitude outlier in the raw CSV) — is caught; no dedicated per-fold JSON is committed for the delta model itself (the committed per-fold breakdown is for the superseded std-only model, in which campaign2 *is* misclassified). | `magnitude_ablation_check.json`, `disk_pressure_stdonly_perfold.json`, `disk_pressure_delta_features.json` |
 | **broker_kill** | Negative | Full-feature LOO-CV F1=0.941 (post stride-fix) is a leak artifact, not signal — `n_samples` carries 0.969 of feature importance, traced to a sample-count-parity difference between differently-constructed query windows (grid misalignment), not broker health. Excluding `n_samples`: **F1=0.222 (precision=1.0, recall=0.125), 66/100 shuffled≥real (p=0.66, chance)**. recall=0.125 matches the baseline detector's own 12.5% recall (Section 6.3 point 3) — the ground truth itself mostly lacks observable signal at 60s scrape resolution for this class; not an ML shortfall, and not fixable by better features. | `loo_cv_results.json` (`full_feature_set_caveat` field), `broker_kill_no_nsamples_check.json` |
 | **network_degradation** | Negative | Full-feature LOO-CV F1 dropped 0.867→0.759 after the stride fix (removing the executor_oom-overlap contamination made the class *harder*, not easier — inconsistent with the earlier score being real signal). Std-only ablation: real F1=0.545, **56/100 shuffled≥real (p=0.56, chance)**. Negative finding holds and strengthens once contamination is removed. | `loo_cv_results.json`, `magnitude_ablation_check.json` |
 
-Net: one class with real signal on corrected, delta-baselined features
-(disk_pressure), one positive-with-caveats on small-N grounds (executor_oom), two
-honest negatives traced to a resolved artifact (broker_kill) and a confirmed absence
-of shape-independent signal (network_degradation) — not three negatives softened by an
-asterisk, and not a suspiciously clean four-for-four. Follow-ups (XGBoost/LightGBM,
-lead-time reconstruction) are explicitly out of scope for this pass.
+Net: **one class with real signal** on corrected, delta-baselined features
+(disk_pressure, p<0.01) and **three honest negatives** — one traced to a resolved
+extraction artifact (broker_kill), one a confirmed absence of shape-independent signal
+(network_degradation), and one with no demonstrated discrimination above chance or even
+a trivial constant classifier at this N (executor_oom, caught by gate-audit before
+being reported as a false positive). One-for-four, not the four-for-four or
+three-plus-a-caveat story an earlier draft of this section claimed. Follow-ups
+(XGBoost/LightGBM, lead-time reconstruction, and — per Section 11's revised risk
+entry below — a possible executor_oom top-up if more episodes are collected) are
+explicitly out of scope for this pass.
 
 ### 6.6 Explainability
 SHAP or permutation feature importance per fault class, to show *which* signals drive early warning for *which* failure type — this is the actionable-insight narrative for the write-up and for real operator adoption.
@@ -491,6 +524,22 @@ SHAP or permutation feature importance per fault class, to show *which* signals 
 | 4–5 | Full fault-injection campaign | Labeled dataset across all fault classes, N=8/class (revised down from initial N=15-20 target — justified by per-class CV analysis, see commit history; reactive top-up only if a specific class shows instability during modeling, not a blanket rescale), ground-truth timestamps recorded |
 | 6–7 | Baseline implementation | Static-threshold detector reproducing real alerting rules, evaluated on the dataset |
 | 8–9 | ML models | RF / XGBoost / LightGBM trained, tuned, window/horizon sensitivity swept |
+
+**Weeks 8-9 accepted limitation, logged 2026-07-12 (gate-auditor finding, not
+self-reported before audit):** the first pass delivered against this row only
+partially. Done: Random Forest trained and evaluated via LOO-CV across all 4 viable
+classes, with a full verification trail (see Section 6.5) — three real extraction bugs
+found and fixed, one class's apparent positive result caught and corrected via a
+null-baseline test before being reported as final. **Not done, and not silently
+dropped:** (a) no XGBoost/LightGBM — only Random Forest; (b) no hyperparameter tuning —
+one fixed config throughout, despite Section 6.3's addendum documenting a nested-tuning
+design before extraction started (see that section's 2026-07-12 deviation note); (c) no
+systematic window/horizon sensitivity sweep — the `[15s,30s]`/30s configuration was
+corrected once from an infeasible a-priori choice (`[30,60,120]s`/90s, Section 6.3), not
+swept across a grid. Accepted as this pass's scope per the pivot rule (time-boxed
+first-pass validation, not the full Weeks 8-9 deliverable) — multi-model comparison,
+tuning, and a real sensitivity sweep are carried forward as explicit follow-up work
+before Weeks 8-9 can be marked fully complete, not silently absorbed into "done."
 | 10–11 | Lead-time evaluation | Full metric suite computed per fault class; ML vs. baseline comparison table |
 | 12 | Explainability | SHAP analysis per fault class |
 | 13–16 | Writing | Full draft, review/audit pass |
@@ -518,6 +567,7 @@ IEEE Access, MDPI Electronics or Applied Sciences (rolling submission, consisten
 - **Sample size per fault class revised down (N≥15-20 → N=8), 2026-07-11** — a reasoned call, not a shortcut: per-class coefficient-of-variation analysis on the completed N=8 campaign (see commit history, `fault_injection/campaign.py` checkpoint stats) showed 4 of 5 classes with CV in the 37-57% range and one (backpressure_cascade) at 12.9%, none showing the kind of instability that would demand doubling the repetition count outright. Risk being tracked, not eliminated: this is a judgment call from a single completed campaign, not a power analysis, and it could be wrong for a class that only reveals instability once ML modeling starts probing the tails of its distribution. Mitigation is reactive, not preventive — top up a specific class's N if modeling surfaces a problem there, rather than blanket-rescaling all 5 up front on a hunch. Re-evaluate this call explicitly if any class's held-out performance is anomalously poor relative to the others (Weeks 8-11).
 - **False gate PASS on config-presence verification, 2026-07-11** — Criterion 5 (maxNumFailures fix) was recorded as PASS on 2026-07-11 (~15:16 UTC) based on config-presence verification only (reading the loaded spark.properties file). This was a false PASS -- the config key was invalid (spark.kubernetes.executor.maxNumFailures does not exist; correct key is spark.executor.maxNumFailures) and Spark silently ignored it. Caught 2026-07-11 (~16:34 UTC) when a 4th executor kill crossed the old default-3 boundary during unrelated ramp-calibration work. Lesson generalized: config-presence checks are insufficient for silently-ignored-flag risks; behavioral confirmation is required for any config claiming to change runtime failure-tolerance behavior. Remediated the same day: corrected key set in `infra/spark/submit-pod.yaml` (commit `3731a61`, 16:47:40 UTC), re-verified against a live driver's loaded properties file (`results/phase1-gate-evidence/live_maxnumfailures_check_CORRECTED.txt`), and behaviorally confirmed by 8 consecutive executor kills with 0 driver crashes across the redesigned executor_oom campaign (`ramptest3`-`ramptest10`).
 - **backpressure_cascade dataset provenance gap from the same maxNumFailures bug, 2026-07-11** — the bug's scope was driver-lifetime, not local to executor_oom, so the other 4 classes' original collection manifests were cross-checked directly rather than trusting "none reported." `backpressure_cascade` rep1 failed at 10:49:32 UTC ("no running driver pod found"), immediately after executor_oom's class had already burned through 5 real executor kills past the true default ceiling of 3 -- plausible spillover, not provable after the fact (no driver log capture existed for that window). Its topup1 replacement (15:00:20 UTC) fell between the wrong-key "fix" and the real fix, so it was contaminated too. Both discarded and replaced with a fresh, post-fix rep (`refresh1`, 18:15:49 UTC) -- see `results/campaign-n8/_discarded/backpressure_cascade-unconfirmed-config/README.md`. The other 3 classes (broker_kill, disk_pressure, network_degradation) showed no equivalent failures in their original collection windows, so no further action was needed there.
+- **executor_oom's Weeks 8-9 ML result does not clear chance at N=5 (or N=3 clean) episodes, 2026-07-12** — gate-auditor caught this before it was reported as final: an earlier draft of Section 6.5 called executor_oom "positive, with caveats" on F1 alone; a null-baseline + permutation check (`executor_oom_null_baseline_check.json`, same rigor as the other 3 classes) found F1 below a trivial always-predict-pre_failure baseline in both configurations, and 34-54/100 shuffled F1≥real (p=0.34/0.54, chance). Not a data-quality bug like the other risk entries here — executor_oom's own extraction path is confirmed clean (see Section 6.5's bug #3 discussion) — this is a genuine small-N power problem: 5 episodes (3 after excluding cold-start-artifact ones) is not enough to distinguish a real precursor pattern from noise for this class's telemetry signature, if one exists at all. Mitigation is the same reactive top-up path as the N=8 revision above (Section 8, Weeks 4-5 row) — collect more executor_oom reps if this class's evaluation needs to be revisited, not a different model or feature set on the current N.
 
 ## 12. References — verification status
 
