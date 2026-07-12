@@ -370,6 +370,18 @@ network_degradation (8/8 detection-level signal, though only 4/8 reach the separ
 defined severity threshold per `docs/baseline_thresholds.md` Section 5) do not share this
 specific fragility — LOO-CV applies to them without the same caveat.
 
+**4. Normalization/scaling is fit exclusively on each fold's training episodes, refit per
+fold — never on the full N=8 before the LOO loop starts.** Fitting a scaler (mean/std, or
+any other normalization statistic) on all 8 episodes' windows before splitting would leak
+the held-out episode's own distribution into the statistics used to transform the training
+data — a real, well-documented leakage bug (the model's inputs would already encode
+information about the specific test episode it's about to be evaluated against), not a
+theoretical one. Each of the 8 LOO folds fits its own scaler on that fold's 7 training
+episodes' windows only, then applies the *same fitted* transform to the 1 held-out episode's
+windows for evaluation. The held-out episode's data never contributes to the fit in any
+fold. This applies to every fold independently — 8 separate scaler fits per class, not one
+shared fit reused across folds.
+
 ### 6.4 Models and Baselines
 - **ML models**: Random Forest, XGBoost/LightGBM on windowed statistical features (extends your existing Isolation Forest / DBSCAN anomaly-detection background into a supervised, lead-time-aware setting); optionally a lightweight temporal model (e.g., simple LSTM or GRU) as a stretch comparison if time allows.
 - **Baseline (critical, non-negotiable)**: a static-threshold detector reproducing real alerting rules from current practice (consumer lag > X, under-replicated partitions > 0, executor memory > Y%) evaluated on the *same* fault-injection dataset. This is the baseline that makes the paper's claim testable — without it, "ML predicts failure" is an unfalsifiable claim.
