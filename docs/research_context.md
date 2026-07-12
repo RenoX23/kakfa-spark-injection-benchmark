@@ -404,6 +404,63 @@ shared fit reused across folds.
 ### 6.5 Metrics
 Precision, Recall, F1, AUROC for the classification framing; **lead time** (median seconds between first true-positive alert and actual recorded failure onset) as the headline metric; false-positive rate under confirmed normal operation (this is what determines whether the approach is usable in practice — a model that predicts constantly is worthless even with perfect recall).
 
+**Weeks 8-9 first-pass ML results, final four-class verdict (2026-07-12).** Window-level
+classification only (lead time itself is Weeks 10-11's deliverable, not computed here).
+Fixed pipeline for every class: `RandomForestClassifier(n_estimators=200, max_depth=5,
+class_weight="balanced")`, features `[mean, std, min, max, last, n_samples]` per 30s
+window at [15s, 30s] horizons, LOO-CV per Section 6.3's addendum. Every number below is
+traceable to a committed JSON in `results/ml-first-pass/`, not asserted from prose.
+
+*Three real bugs found and fixed while building this pass — a reviewer should be able to
+follow this trail, not just trust the final table:*
+
+1. **Metric-string escaping bug.** `CLASS_CONFIG`'s query templates in
+   `modeling/extract_and_train.py` use `.format()`-escaped `{{...}}` braces, but only
+   pod-scoped classes called `.format()` in the first draft — broker_kill's query was
+   sent to Prometheus literally, returning HTTP 400. Fixed: always call
+   `.format(pod=ep.get("target_pod", ""))` regardless of `pod_scoped`. Folded into
+   commit `ae6b8e4` (never shipped as a broken intermediate state).
+2. **n_samples window-size leak.** The first working extraction produced a suspicious
+   uniform F1=1.000 across 3 of 4 classes. Inspecting raw features (not trusting a
+   suspiciously clean result) found normal-reference windows were 300s wide (~21
+   samples) against pre-failure's 30s (~3 samples) — `n_samples` alone perfectly
+   separated the label, unrelated to genuine signal. Fixed: `NORMAL_REF_WINDOW_S =
+   WINDOW_S` (30s, matched exactly). Commit `ae6b8e4`.
+3. **Normal-reference stride / grid-misalignment bug.** Investigating disk_pressure's
+   std-only false positives (below) found the normal-reference window loop still
+   strode by `NORMAL_REF_WINDOW_S` (30s) after fix #2, packing all 10 "normal" windows
+   into the *first 5 minutes* of the intended 67-minute quiet reference period — a
+   slice that sits entirely inside executor_oom's own `ramptest3` fault window
+   (injected 17:13:37, OOM 17:17:06). Every "normal" sample for broker_kill/
+   disk_pressure/network_degradation (the three classes sharing this pooled-quiet-
+   period code path) was drawn from inside a *different class's active fault*. Fixed
+   with a separate `NORMAL_REF_STRIDE_S = 402` constant, spreading the 10 windows
+   evenly across the full period. Commit `d75783f`. `executor_oom` draws normal
+   context from each episode's own pre-injection period instead
+   (`extract_executor_oom_normal_windows()`) and was never exposed to bugs #2 or #3 —
+   confirmed empirically, not just by code-reading: its feature-importance numbers are
+   bit-identical before and after both fixes (`executor_oom_feature_importance_check.json`).
+   Re-extracting broker_kill and network_degradation under the fix changed their
+   numbers materially (`3423a6b`) — including a further, distinct false-positive result
+   for broker_kill (below), caught the same way: by not trusting a suspiciously large
+   F1 jump.
+
+*Final verdict:*
+
+| Class | Verdict | Key numbers | Evidence file(s) |
+|---|---|---|---|
+| **executor_oom** | Positive, with caveats | LOO-CV F1=0.842 (precision=0.800, recall=0.889; 5 episodes, of which 2 — ramptest4/8 — have only a cold-start-artifact reading as their pre-failure sample) / F1=0.727 (precision=0.667, recall=0.800; 3 genuinely clean episodes only). Feature importance evenly spread on both subsets (top feature 0.200-0.204, no dominance) — no leak. | `loo_cv_results.json`, `executor_oom_clean_episode_check.json`, `executor_oom_feature_importance_check.json` |
+| **disk_pressure** | Positive, via delta features | Raw-feature LOO-CV F1=0.968 initially flagged as confounded (feature importance dominated by absolute-magnitude features). Std-only ablation: F1=0.778, 5/100 shuffled≥real (p=0.05, rank-based) — inconclusive on its own. False positives traced to scattered `std==0` sampling coincidences (not time-of-day clustering), so per-episode delta/relative-baseline features (subtract each episode's own pre-injection baseline) were built accordingly: **F1=0.941, 0/100 shuffled≥real (p<0.01)**. Per-fold breakdown confirms this isn't carried by one episode — all 8 real episodes classify correctly, including an unexplained outlier (campaign2). | `magnitude_ablation_check.json`, `disk_pressure_stdonly_perfold.json`, `disk_pressure_delta_features.json` |
+| **broker_kill** | Negative | Full-feature LOO-CV F1=0.941 (post stride-fix) is a leak artifact, not signal — `n_samples` carries 0.969 of feature importance, traced to a sample-count-parity difference between differently-constructed query windows (grid misalignment), not broker health. Excluding `n_samples`: **F1=0.222 (precision=1.0, recall=0.125), 66/100 shuffled≥real (p=0.66, chance)**. recall=0.125 matches the baseline detector's own 12.5% recall (Section 6.3 point 3) — the ground truth itself mostly lacks observable signal at 60s scrape resolution for this class; not an ML shortfall, and not fixable by better features. | `loo_cv_results.json` (`full_feature_set_caveat` field), `broker_kill_no_nsamples_check.json` |
+| **network_degradation** | Negative | Full-feature LOO-CV F1 dropped 0.867→0.759 after the stride fix (removing the executor_oom-overlap contamination made the class *harder*, not easier — inconsistent with the earlier score being real signal). Std-only ablation: real F1=0.545, **56/100 shuffled≥real (p=0.56, chance)**. Negative finding holds and strengthens once contamination is removed. | `loo_cv_results.json`, `magnitude_ablation_check.json` |
+
+Net: one class with real signal on corrected, delta-baselined features
+(disk_pressure), one positive-with-caveats on small-N grounds (executor_oom), two
+honest negatives traced to a resolved artifact (broker_kill) and a confirmed absence
+of shape-independent signal (network_degradation) — not three negatives softened by an
+asterisk, and not a suspiciously clean four-for-four. Follow-ups (XGBoost/LightGBM,
+lead-time reconstruction) are explicitly out of scope for this pass.
+
 ### 6.6 Explainability
 SHAP or permutation feature importance per fault class, to show *which* signals drive early warning for *which* failure type — this is the actionable-insight narrative for the write-up and for real operator adoption.
 
