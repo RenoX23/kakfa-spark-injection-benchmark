@@ -134,11 +134,11 @@
         0
       ],
       "pred": [
-        0
+        1
       ],
-      "n_correct": 1,
+      "n_correct": 0,
       "n_total": 1,
-      "all_correct": true
+      "all_correct": false
     },
     {
       "held_out_episode": "normal_ref_3",
@@ -158,11 +158,11 @@
         0
       ],
       "pred": [
-        1
+        0
       ],
-      "n_correct": 0,
+      "n_correct": 1,
       "n_total": 1,
-      "all_correct": false
+      "all_correct": true
     },
     {
       "held_out_episode": "normal_ref_5",

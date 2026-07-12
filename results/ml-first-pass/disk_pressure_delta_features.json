@@ -1,0 +1,21 @@
+{
+  "features_used": [
+    "delta_mean",
+    "delta_min",
+    "delta_max",
+    "delta_last",
+    "std",
+    "n_samples"
+  ],
+  "precision": 0.8888888888888888,
+  "recall": 1.0,
+  "f1": 0.9411764705882353,
+  "n_shuffles": 100,
+  "shuffled_f1_mean": 0.5715459106300286,
+  "shuffled_f1_std": 0.10756221713639146,
+  "n_shuffled_ge_real": 0,
+  "p_value": 0.0,
+  "comparison_full_raw_features_f1": 0.9677419354838709,
+  "comparison_std_only_f1": 0.7777777777777778,
+  "comparison_std_only_p": 0.08
+}

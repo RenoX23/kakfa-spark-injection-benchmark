@@ -52,6 +52,16 @@ NORMAL_REF_WINDOW_S = WINDOW_S  # MUST match pre-failure's window size -- a firs
 # used 300s here against pre-failure's 30s, which made n_samples (~21 vs ~3) a perfect,
 # completely spurious label leak (window-size artifact, not signal). Caught by inspecting
 # the raw extracted features before trusting a suspicious 1.000 F1, not assumed fine.
+#
+# SECOND BUG, caught later (disk_pressure false-positive clustering investigation):
+# that fix shrank the window size but left the stride between windows at exactly
+# NORMAL_REF_WINDOW_S too, packing all 10 windows into the first 300s (5 minutes) of
+# the intended 67-minute quiet period, not spread across it -- and that 5-minute slice
+# (17:13:00-17:18:00) sits entirely inside executor_oom's own ramptest3 fault window
+# (injected 17:13:37, OOM 17:17:06). Every "normal" sample was drawn from inside a
+# DIFFERENT class's active fault, not a genuinely separate quiet time. Fixed by
+# striding windows evenly across the full QUIET_REF_START..QUIET_REF_END span instead.
+NORMAL_REF_STRIDE_S = 402  # (4020s span) / 10 windows, spreads evenly end to end
 
 # executor_oom is pod-scoped (each episode's target_pod is a fresh, short-lived pod --
 # no shared long-lived "normal" pod exists), so its normal window stays tied to each
@@ -202,7 +212,7 @@ def extract_normal_reference_windows(cls, prom):
 
     rows = []
     for i in range(N_NORMAL_REF_WINDOWS):
-        win_start = add(ref_start, i * NORMAL_REF_WINDOW_S)
+        win_start = add(ref_start, i * NORMAL_REF_STRIDE_S)
         win_end = add(win_start, NORMAL_REF_WINDOW_S)
         feats = window_features(samples, win_start, win_end)
         if feats is None:
