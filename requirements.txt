@@ -1,3 +1,10 @@
 # Pin versions here as they're actually used -- don't pre-install speculative deps.
-# Nothing needed yet (Phase 0 used only Python stdlib: json). Populate starting with
-# the fault-injection tooling / feature-engineering phase (RO2 onward).
+# fault_injection/, campaign orchestration, and baseline threshold evaluation used only
+# Python stdlib (json, urllib). scikit-learn/pandas/numpy added starting Weeks 8-9
+# (window extraction + Random Forest baseline model), actually in use, not speculative.
+numpy==2.5.1
+pandas==3.0.3
+scikit-learn==1.9.0
+scipy==1.18.0
+joblib==1.5.3
+threadpoolctl==3.6.0
