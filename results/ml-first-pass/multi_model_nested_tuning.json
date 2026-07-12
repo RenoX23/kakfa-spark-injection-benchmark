@@ -1,0 +1,465 @@
+{
+  "broker_kill": {
+    "random_forest": {
+      "tuned": true,
+      "precision": 0.8888888888888888,
+      "recall": 1.0,
+      "f1": 0.9411764705882353,
+      "n_windows": 26,
+      "n_groups": 18,
+      "chosen_config_frequency": {
+        "{\"max_depth\": 3, \"n_estimators\": 100}": 18
+      },
+      "mode_config": {
+        "max_depth": 3,
+        "n_estimators": 100
+      }
+    },
+    "xgboost": {
+      "tuned": true,
+      "precision": 0.8888888888888888,
+      "recall": 1.0,
+      "f1": 0.9411764705882353,
+      "n_windows": 26,
+      "n_groups": 18,
+      "chosen_config_frequency": {
+        "{\"learning_rate\": 0.1, \"max_depth\": 3, \"n_estimators\": 100}": 18
+      },
+      "mode_config": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "n_estimators": 100
+      }
+    },
+    "lightgbm": {
+      "tuned": true,
+      "precision": 0.8888888888888888,
+      "recall": 1.0,
+      "f1": 0.9411764705882353,
+      "n_windows": 26,
+      "n_groups": 18,
+      "chosen_config_frequency": {
+        "{\"learning_rate\": 0.1, \"max_depth\": 3, \"min_child_samples\": 1, \"n_estimators\": 100}": 18
+      },
+      "mode_config": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_child_samples": 1,
+        "n_estimators": 100
+      }
+    },
+    "best_model_feature_importance": [
+      [
+        "n_samples",
+        0.9716398846549438
+      ],
+      [
+        "mean",
+        0.01231900308523887
+      ],
+      [
+        "std",
+        0.01061648149658539
+      ],
+      [
+        "min",
+        0.005424630763232388
+      ],
+      [
+        "max",
+        0.0
+      ],
+      [
+        "last",
+        0.0
+      ]
+    ],
+    "best_model_n_samples_leak_flagged": true,
+    "best_model_deconfounded_no_n_samples": {
+      "precision": 1.0,
+      "recall": 0.125,
+      "f1": 0.2222222222222222,
+      "features_used": [
+        "mean",
+        "std",
+        "min",
+        "max",
+        "last"
+      ]
+    },
+    "best_model": "random_forest",
+    "best_model_significance": {
+      "n_shuffled_ge_real": 56,
+      "p_value": 0.56,
+      "p_value_reported": "0.560",
+      "shuffled_f1_mean": 0.38573858889648366,
+      "shuffled_f1_std": 0.3431073193371095,
+      "fixed_config_used": {
+        "max_depth": 3,
+        "n_estimators": 100
+      }
+    },
+    "best_model_significance_basis": "de-confounded (no n_samples)"
+  },
+  "disk_pressure": {
+    "random_forest": {
+      "tuned": true,
+      "precision": 1.0,
+      "recall": 0.9375,
+      "f1": 0.967741935483871,
+      "n_windows": 26,
+      "n_groups": 18,
+      "chosen_config_frequency": {
+        "{\"max_depth\": 5, \"n_estimators\": 200}": 11,
+        "{\"max_depth\": 3, \"n_estimators\": 100}": 7
+      },
+      "mode_config": {
+        "max_depth": 5,
+        "n_estimators": 200
+      }
+    },
+    "xgboost": {
+      "tuned": true,
+      "precision": 1.0,
+      "recall": 0.8125,
+      "f1": 0.896551724137931,
+      "n_windows": 26,
+      "n_groups": 18,
+      "chosen_config_frequency": {
+        "{\"learning_rate\": 0.1, \"max_depth\": 3, \"n_estimators\": 100}": 18
+      },
+      "mode_config": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "n_estimators": 100
+      }
+    },
+    "lightgbm": {
+      "tuned": true,
+      "precision": 1.0,
+      "recall": 0.9375,
+      "f1": 0.967741935483871,
+      "n_windows": 26,
+      "n_groups": 18,
+      "chosen_config_frequency": {
+        "{\"learning_rate\": 0.1, \"max_depth\": 3, \"min_child_samples\": 1, \"n_estimators\": 100}": 18
+      },
+      "mode_config": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_child_samples": 1,
+        "n_estimators": 100
+      }
+    },
+    "best_model_feature_importance": [
+      [
+        "last",
+        0.3085521528185205
+      ],
+      [
+        "max",
+        0.2609265056452588
+      ],
+      [
+        "mean",
+        0.18767160444935
+      ],
+      [
+        "min",
+        0.1739430653304613
+      ],
+      [
+        "n_samples",
+        0.06247211621345915
+      ],
+      [
+        "std",
+        0.00643455554295015
+      ]
+    ],
+    "best_model_n_samples_leak_flagged": false,
+    "best_model": "random_forest",
+    "best_model_significance": {
+      "n_shuffled_ge_real": 0,
+      "p_value": 0.0,
+      "p_value_reported": "< 0.01",
+      "shuffled_f1_mean": 0.555603327632005,
+      "shuffled_f1_std": 0.12753568604180324,
+      "fixed_config_used": {
+        "max_depth": 5,
+        "n_estimators": 200
+      }
+    },
+    "best_model_significance_basis": "raw feature set"
+  },
+  "network_degradation": {
+    "random_forest": {
+      "tuned": true,
+      "precision": 0.8461538461538461,
+      "recall": 0.6875,
+      "f1": 0.7586206896551724,
+      "n_windows": 26,
+      "n_groups": 18,
+      "chosen_config_frequency": {
+        "{\"max_depth\": 3, \"n_estimators\": 100}": 8,
+        "{\"max_depth\": 5, \"n_estimators\": 200}": 10
+      },
+      "mode_config": {
+        "max_depth": 5,
+        "n_estimators": 200
+      }
+    },
+    "xgboost": {
+      "tuned": true,
+      "precision": 0.8888888888888888,
+      "recall": 1.0,
+      "f1": 0.9411764705882353,
+      "n_windows": 26,
+      "n_groups": 18,
+      "chosen_config_frequency": {
+        "{\"learning_rate\": 0.05, \"max_depth\": 5, \"n_estimators\": 100}": 3,
+        "{\"learning_rate\": 0.1, \"max_depth\": 3, \"n_estimators\": 100}": 14,
+        "{\"learning_rate\": 0.1, \"max_depth\": 3, \"n_estimators\": 200}": 1
+      },
+      "mode_config": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "n_estimators": 100
+      }
+    },
+    "lightgbm": {
+      "tuned": true,
+      "precision": 0.7857142857142857,
+      "recall": 0.6875,
+      "f1": 0.7333333333333333,
+      "n_windows": 26,
+      "n_groups": 18,
+      "chosen_config_frequency": {
+        "{\"learning_rate\": 0.1, \"max_depth\": 3, \"min_child_samples\": 1, \"n_estimators\": 100}": 11,
+        "{\"learning_rate\": 0.1, \"max_depth\": 3, \"min_child_samples\": 1, \"n_estimators\": 200}": 1,
+        "{\"learning_rate\": 0.05, \"max_depth\": 5, \"min_child_samples\": 1, \"n_estimators\": 100}": 6
+      },
+      "mode_config": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_child_samples": 1,
+        "n_estimators": 100
+      }
+    },
+    "best_model_feature_importance": [
+      [
+        "n_samples",
+        0.8106728792190552
+      ],
+      [
+        "max",
+        0.08347371220588684
+      ],
+      [
+        "last",
+        0.039400432258844376
+      ],
+      [
+        "mean",
+        0.035011932253837585
+      ],
+      [
+        "min",
+        0.0314411036670208
+      ],
+      [
+        "std",
+        0.0
+      ]
+    ],
+    "best_model_n_samples_leak_flagged": true,
+    "best_model_deconfounded_no_n_samples": {
+      "precision": 0.8461538461538461,
+      "recall": 0.6875,
+      "f1": 0.7586206896551724,
+      "features_used": [
+        "mean",
+        "std",
+        "min",
+        "max",
+        "last"
+      ]
+    },
+    "best_model": "xgboost",
+    "best_model_significance": {
+      "n_shuffled_ge_real": 6,
+      "p_value": 0.06,
+      "p_value_reported": "0.060",
+      "shuffled_f1_mean": 0.568663179279094,
+      "shuffled_f1_std": 0.1281266446635681,
+      "fixed_config_used": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "n_estimators": 100
+      }
+    },
+    "best_model_significance_basis": "de-confounded (no n_samples)"
+  },
+  "executor_oom_5episode": {
+    "random_forest": {
+      "tuned": false,
+      "precision": 0.8,
+      "recall": 0.8888888888888888,
+      "f1": 0.8421052631578947,
+      "n_windows": 11,
+      "n_groups": 5,
+      "fixed_config": {
+        "n_estimators": 200,
+        "max_depth": 5
+      }
+    },
+    "xgboost": {
+      "tuned": false,
+      "precision": 1.0,
+      "recall": 0.4444444444444444,
+      "f1": 0.6153846153846154,
+      "n_windows": 11,
+      "n_groups": 5,
+      "fixed_config": {
+        "n_estimators": 100,
+        "max_depth": 3,
+        "learning_rate": 0.1
+      }
+    },
+    "lightgbm": {
+      "tuned": false,
+      "precision": 0.8,
+      "recall": 0.8888888888888888,
+      "f1": 0.8421052631578947,
+      "n_windows": 11,
+      "n_groups": 5,
+      "fixed_config": {
+        "n_estimators": 100,
+        "max_depth": 3,
+        "learning_rate": 0.1,
+        "min_child_samples": 1
+      }
+    },
+    "best_model_feature_importance": [
+      [
+        "last",
+        0.2004367791005291
+      ],
+      [
+        "n_samples",
+        0.18214750000000002
+      ],
+      [
+        "max",
+        0.16425948129251702
+      ],
+      [
+        "std",
+        0.16103678571428573
+      ],
+      [
+        "mean",
+        0.16033358087679517
+      ],
+      [
+        "min",
+        0.13178587301587305
+      ]
+    ],
+    "best_model_n_samples_leak_flagged": false,
+    "best_model": "random_forest",
+    "best_model_significance": {
+      "n_shuffled_ge_real": 34,
+      "p_value": 0.34,
+      "p_value_reported": "0.340",
+      "shuffled_f1_mean": 0.7651764705882352,
+      "shuffled_f1_std": 0.09808276055664393,
+      "fixed_config_used": {
+        "max_depth": 5,
+        "n_estimators": 200
+      }
+    },
+    "best_model_significance_basis": "raw feature set"
+  },
+  "executor_oom_clean3": {
+    "random_forest": {
+      "tuned": false,
+      "precision": 0.6666666666666666,
+      "recall": 0.8,
+      "f1": 0.7272727272727273,
+      "n_windows": 7,
+      "n_groups": 3,
+      "fixed_config": {
+        "n_estimators": 200,
+        "max_depth": 5
+      }
+    },
+    "xgboost": {
+      "tuned": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_windows": 7,
+      "n_groups": 3,
+      "fixed_config": {
+        "n_estimators": 100,
+        "max_depth": 3,
+        "learning_rate": 0.1
+      }
+    },
+    "lightgbm": {
+      "tuned": false,
+      "precision": 0.6666666666666666,
+      "recall": 0.8,
+      "f1": 0.7272727272727273,
+      "n_windows": 7,
+      "n_groups": 3,
+      "fixed_config": {
+        "n_estimators": 100,
+        "max_depth": 3,
+        "learning_rate": 0.1,
+        "min_child_samples": 1
+      }
+    },
+    "best_model_feature_importance": [
+      [
+        "std",
+        0.20376673169799578
+      ],
+      [
+        "n_samples",
+        0.20343849299911546
+      ],
+      [
+        "last",
+        0.18371466040393392
+      ],
+      [
+        "mean",
+        0.16556629651204002
+      ],
+      [
+        "max",
+        0.16231372839095232
+      ],
+      [
+        "min",
+        0.08120008999596251
+      ]
+    ],
+    "best_model_n_samples_leak_flagged": false,
+    "best_model": "random_forest",
+    "best_model_significance": {
+      "n_shuffled_ge_real": 54,
+      "p_value": 0.54,
+      "p_value_reported": "0.540",
+      "shuffled_f1_mean": 0.6354292929292931,
+      "shuffled_f1_std": 0.20637127965346733,
+      "fixed_config_used": {
+        "max_depth": 5,
+        "n_estimators": 200
+      }
+    },
+    "best_model_significance_basis": "raw feature set"
+  }
+}

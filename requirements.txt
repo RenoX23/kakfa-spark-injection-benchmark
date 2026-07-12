@@ -8,3 +8,7 @@ scikit-learn==1.9.0
 scipy==1.18.0
 joblib==1.5.3
 threadpoolctl==3.6.0
+# xgboost/lightgbm added for the Weeks 8-9 multi-model comparison required by
+# Section 8's work-plan row (RF/XGBoost/LightGBM) -- CPU-only use confirmed working.
+xgboost==3.3.0
+lightgbm==4.6.0
