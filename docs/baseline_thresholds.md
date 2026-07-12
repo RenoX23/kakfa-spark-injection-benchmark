@@ -107,6 +107,22 @@ Compounding, not the primary reason: even if a metric existed, this class's faul
 (14-19s, `results/campaign-n8/backpressure_cascade/`) are well under the 60s scrape
 interval — the same coin-flip problem as broker_kill.
 
+**Second, independent layer checked — broker-side, not just application-side.** The
+Spark-driver-metrics check above rules out the application layer; separately checked
+whether Kafka's own broker-side JMX exposes consumer-group lag (`kafka.consumer:type=
+consumer-fetch-manager-metrics` or a group-coordinator lag equivalent) via the existing
+`kafka-broker-jmx` scrape job — a genuinely different telemetry layer, not the same check
+run twice. Dumped the complete list of scraped `kafka_*` metrics (268 total) and searched
+for any consumer/group/fetch/offset family: none tracks per-group consumer lag. The only
+"group" metric family present is `kafka_server_sharegroupmetrics_*`, which is Kafka's
+newer KIP-932 share-groups feature (queue-style consumption) — unrelated to Spark
+Structured Streaming's classic consumer-group API, which this pipeline actually uses.
+No lag-exporter (Burrow, kafka-lag-exporter, etc.) is deployed either. Two independent
+layers now checked and both empty — the same two-layer rigor standard applied to
+executor_oom's own ground-truth/detection investigation earlier this session (where the
+second layer, cAdvisor, did turn up a usable signal; here it doesn't). Exclusion confirmed,
+not just asserted once.
+
 **Disposition:** excluded from the precision/recall/F1 comparison. Reported explicitly as
 a real limitation of current Prometheus-based alerting practice on this pipeline — this
 class cannot be monitored by a static threshold without new instrumentation, which would
@@ -194,3 +210,15 @@ reps (correctly-flagged vs. missed vs. false-fired-during-normal-operation), and
 full lead-time distribution for disk_pressure/network_degradation the way executor_oom's
 is already shown above. Holding for review before running that, per standing instruction:
 don't evaluate before the threshold definitions themselves are checked.
+
+**Scope limitation — same-corpus calibration, no held-out split.** Every threshold value
+above (900MB, 1.5GB, 1.5s) was derived by directly inspecting the N=8 active reps' own
+baseline/fault-window values — the same 8 reps per class that the evaluation below is then
+run against. There is no train/test split and no held-out validation set. This is standard
+and expected for a *baseline* detector meant to reproduce real static-alerting practice
+(a real ops team tunes its thresholds against its own historical telemetry too), but it
+means the precision/recall/F1 numbers below describe how well each threshold fits the data
+it was calibrated on, not out-of-sample generalization. This is a real, disclosed
+limitation, not hidden in the results — genuinely independent validation would need either
+additional held-out reps (the reactive top-up path already in Section 11's risk register)
+or cross-validation folds, neither in scope for Weeks 6-7.
