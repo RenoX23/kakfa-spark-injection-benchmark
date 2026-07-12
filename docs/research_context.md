@@ -316,6 +316,60 @@ Real per-repetition timing from the validated pilots, used to size the full N=15
 ### 6.3 Labeling
 Sliding-window supervised framing, following the standard AIOps approach (Notaro et al., 2021): telemetry windows at multiple horizons before recorded failure onset (e.g., t-30s, t-60s, t-120s) are labeled "pre-failure"; windows during confirmed steady-state operation are labeled "normal." Window size and horizon are hyperparameters to sweep, not fixed a priori — report sensitivity.
 
+**Addendum — train/val/test methodology, decided before any window extraction, 2026-07-12.**
+
+**1. Split unit is the fault episode, not the window.** Sliding-window extraction turns each
+N=8-episode class into many more feature rows (multiple horizons × multiple normal-period
+windows per episode). No window derived from a given rep's telemetry — pre-failure or
+normal, at any horizon — may appear in more than one of train/val/test. Reason: windows
+within a single episode are temporally autocorrelated and share episode-specific artifacts
+(the same executor pod's exact JVM warm-up curve, the same specific noise draw in a given
+netem session, the same broker restart timing) that a model could learn to recognize
+instead of the general fault signature. Window-level random splitting would leak this
+episode identity across splits and inflate apparent performance in a way that would not
+generalize — standard practice (group-based/`GroupKFold`-style splitting), applied here
+because the failure mode is concrete and checkable, not hypothetical.
+
+**2. Leave-one-episode-out cross-validation, not a fixed ratio split — decided against a
+fixed 5/1/2 split specifically because of what N=8 does to it, not by default convention.**
+A fixed split with test=2 episodes can only produce recall/precision values in units of
+50% (0/2, 1/2, 2/2) — too coarse to distinguish "the model generalizes" from "one held-out
+episode happened to be easy or hard," and val=1 episode is not a meaningful basis for
+hyperparameter selection (whatever hyperparameters happen to fit that one episode's
+idiosyncrasies get picked, not necessarily the best general ones). Leave-one-episode-out CV
+(8 folds/class: train on 7, test on 1, rotate) uses every episode as both training signal
+and held-out evaluation across the full run, producing a much lower-variance aggregate
+estimate than any single fixed split at this N, and is standard practice for exactly this
+small-N regime (rare-event/medical ML literature, not invented for this project).
+Hyperparameter tuning uses a nested inner loop (tune on the 7-episode training fold via
+its own internal CV, never touching that fold's held-out episode) — outer-loop test
+episodes stay genuinely unseen during tuning, not just during final fit.
+
+**3. Applied consistently across all 4 evaluated classes — with an explicit flag on
+broker_kill, not glossed over.** broker_kill's own baseline evaluation
+(`results/baseline-threshold-evidence/evaluation_output.json`) found real Prometheus
+telemetry actually captured *inside* the fault window in only 1 of 8 episodes (tp=1, fn=7 —
+the other 7 episodes' outages, 11-62s each, simply fell between scrapes at this pipeline's
+60s interval; see `docs/baseline_thresholds.md` Section 1). This is a ground-truth-labeling
+concern independent of split methodology, and LOO-CV does not fix it: in the 1 fold where
+the single informative episode is held out as test, the training set has zero examples of
+what a real captured outage looks like; in the other 7 folds, the training set has that one
+informative episode but the test episode itself likely has no real captured signal to
+detect. Either way, aggregate broker_kill ML metrics are very likely to come back near
+chance/near the static baseline's own 12.5% regardless of model quality — not because ML is
+inherently weak on this class, but because the underlying labeled data mostly lacks
+observable signal at the current scrape resolution. **Recommendation: proceed with the same
+LOO-CV methodology on broker_kill for consistency, but do not report its ML result as
+directly comparable to the other 3 classes without this caveat attached.** If it comes back
+uninformative as expected, the fix is the reactive top-up path already in Section 11's risk
+register (collect more broker_kill reps, which — given the sparsity is a timing coin-flip,
+not a fault-design flaw — improves the odds of capturing more informative episodes), not a
+different split scheme. executor_oom (8/8 real fault-window signal, engineered ramp),
+disk_pressure (8/8, deterministic single-sample-but-present-every-time), and
+network_degradation (8/8 detection-level signal, though only 4/8 reach the separately-
+defined severity threshold per `docs/baseline_thresholds.md` Section 5) do not share this
+specific fragility — LOO-CV applies to them without the same caveat.
+
 ### 6.4 Models and Baselines
 - **ML models**: Random Forest, XGBoost/LightGBM on windowed statistical features (extends your existing Isolation Forest / DBSCAN anomaly-detection background into a supervised, lead-time-aware setting); optionally a lightweight temporal model (e.g., simple LSTM or GRU) as a stretch comparison if time allows.
 - **Baseline (critical, non-negotiable)**: a static-threshold detector reproducing real alerting rules from current practice (consumer lag > X, under-replicated partitions > 0, executor memory > Y%) evaluated on the *same* fault-injection dataset. This is the baseline that makes the paper's claim testable — without it, "ML predicts failure" is an unfalsifiable claim.
