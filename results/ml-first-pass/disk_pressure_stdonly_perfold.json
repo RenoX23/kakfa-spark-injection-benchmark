@@ -1,0 +1,242 @@
+{
+  "precision": 0.7,
+  "recall": 0.875,
+  "f1": 0.7777777777777778,
+  "n_folds_all_correct": 10,
+  "n_folds_any_error": 8,
+  "n_folds_total": 18,
+  "per_fold": [
+    {
+      "held_out_episode": "campaign1",
+      "true": [
+        1,
+        1
+      ],
+      "pred": [
+        1,
+        1
+      ],
+      "n_correct": 2,
+      "n_total": 2,
+      "all_correct": true
+    },
+    {
+      "held_out_episode": "campaign2",
+      "true": [
+        1,
+        1
+      ],
+      "pred": [
+        1,
+        0
+      ],
+      "n_correct": 1,
+      "n_total": 2,
+      "all_correct": false
+    },
+    {
+      "held_out_episode": "campaign3",
+      "true": [
+        1,
+        1
+      ],
+      "pred": [
+        1,
+        1
+      ],
+      "n_correct": 2,
+      "n_total": 2,
+      "all_correct": true
+    },
+    {
+      "held_out_episode": "campaign4",
+      "true": [
+        1,
+        1
+      ],
+      "pred": [
+        1,
+        1
+      ],
+      "n_correct": 2,
+      "n_total": 2,
+      "all_correct": true
+    },
+    {
+      "held_out_episode": "campaign5",
+      "true": [
+        1,
+        1
+      ],
+      "pred": [
+        1,
+        1
+      ],
+      "n_correct": 2,
+      "n_total": 2,
+      "all_correct": true
+    },
+    {
+      "held_out_episode": "campaign7",
+      "true": [
+        1,
+        1
+      ],
+      "pred": [
+        1,
+        1
+      ],
+      "n_correct": 2,
+      "n_total": 2,
+      "all_correct": true
+    },
+    {
+      "held_out_episode": "campaign8",
+      "true": [
+        1,
+        1
+      ],
+      "pred": [
+        1,
+        1
+      ],
+      "n_correct": 2,
+      "n_total": 2,
+      "all_correct": true
+    },
+    {
+      "held_out_episode": "normal_ref_1",
+      "true": [
+        0
+      ],
+      "pred": [
+        1
+      ],
+      "n_correct": 0,
+      "n_total": 1,
+      "all_correct": false
+    },
+    {
+      "held_out_episode": "normal_ref_10",
+      "true": [
+        0
+      ],
+      "pred": [
+        0
+      ],
+      "n_correct": 1,
+      "n_total": 1,
+      "all_correct": true
+    },
+    {
+      "held_out_episode": "normal_ref_2",
+      "true": [
+        0
+      ],
+      "pred": [
+        0
+      ],
+      "n_correct": 1,
+      "n_total": 1,
+      "all_correct": true
+    },
+    {
+      "held_out_episode": "normal_ref_3",
+      "true": [
+        0
+      ],
+      "pred": [
+        1
+      ],
+      "n_correct": 0,
+      "n_total": 1,
+      "all_correct": false
+    },
+    {
+      "held_out_episode": "normal_ref_4",
+      "true": [
+        0
+      ],
+      "pred": [
+        1
+      ],
+      "n_correct": 0,
+      "n_total": 1,
+      "all_correct": false
+    },
+    {
+      "held_out_episode": "normal_ref_5",
+      "true": [
+        0
+      ],
+      "pred": [
+        1
+      ],
+      "n_correct": 0,
+      "n_total": 1,
+      "all_correct": false
+    },
+    {
+      "held_out_episode": "normal_ref_6",
+      "true": [
+        0
+      ],
+      "pred": [
+        0
+      ],
+      "n_correct": 1,
+      "n_total": 1,
+      "all_correct": true
+    },
+    {
+      "held_out_episode": "normal_ref_7",
+      "true": [
+        0
+      ],
+      "pred": [
+        1
+      ],
+      "n_correct": 0,
+      "n_total": 1,
+      "all_correct": false
+    },
+    {
+      "held_out_episode": "normal_ref_8",
+      "true": [
+        0
+      ],
+      "pred": [
+        0
+      ],
+      "n_correct": 1,
+      "n_total": 1,
+      "all_correct": true
+    },
+    {
+      "held_out_episode": "normal_ref_9",
+      "true": [
+        0
+      ],
+      "pred": [
+        1
+      ],
+      "n_correct": 0,
+      "n_total": 1,
+      "all_correct": false
+    },
+    {
+      "held_out_episode": "topup1",
+      "true": [
+        1,
+        1
+      ],
+      "pred": [
+        1,
+        0
+      ],
+      "n_correct": 1,
+      "n_total": 2,
+      "all_correct": false
+    }
+  ]
+}
