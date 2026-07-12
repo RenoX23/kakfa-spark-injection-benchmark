@@ -433,8 +433,12 @@ network_degradation, exploits *more aggressively*) the same n_samples grid-misal
 leak already found and de-confounded in Section 6.5 — an automatic feature-importance
 guard (n_samples importance > 0.5) built into the evaluation script catches this
 per-model, not just for the RF case originally found: XGBoost's tuned config hit
-F1=0.941/p<0.01 on network_degradation before de-confounding, collapsing to F1=0.759,
-6/100 shuffled≥real (p=0.06) after — reported as a curiosity, not a reopened question,
+F1=0.941 on network_degradation before de-confounding — confirmed genuinely significant
+on that leaked feature set too (0/100 shuffled≥real, p<0.01;
+`network_degradation_xgboost_raw_significance.json`, computed after gate-audit flagged
+that this number was otherwise asserted from prose, not traced to a committed file) —
+collapsing to F1=0.759, 6/100 shuffled≥real (p=0.06) after de-confounding — reported as
+a curiosity, not a reopened question,
 since this still uses the full magnitude feature set rather than the shape-only std
 ablation the negative verdict is actually built on (Section 6.5). No stretch temporal
 model (LSTM/GRU) attempted this pass — N per class (5-18 groups) is too small to fit a
@@ -527,12 +531,16 @@ formality:
   (F1=1.000) at the safest, smallest windows (10-20s lookback), dipping only slightly
   at the risky G3 point (F1=0.968) — a real signal doesn't need contamination to look
   strong, reinforcing the delta-feature finding via a completely different axis.
-- **broker_kill** and **network_degradation** both climb monotonically with window
-  size, in lockstep with the contamination-risk flag turning on
-  (broker_kill: 0.222→0.667→0.889→0.941; network_degradation: 0.483→0.414→0.552→0.759)
-  — the apparent "signal" tracks reach-back distance into the *previous* episode's own
-  fault, not genuine precursor detection, consistent with (and independently
-  reinforcing) the n_samples leak and magnitude-drift confounds already found for
+- **broker_kill** climbs monotonically with window size across the full grid
+  (0.222→0.667→0.889→0.941), rising well before the contamination-risk flag itself
+  turns on at G3 — the trend starts, not just ends, with reach-back distance.
+  **network_degradation** rises overall but non-monotonically (0.483→0.414→0.552→0.759,
+  dipping at G1 before climbing) and its steepest jump lands exactly at G3, the one
+  grid point flagged AT RISK. Neither pattern reads as flat noise around a stable
+  value — the apparent "signal" for both classes correlates with reach-back distance
+  into the *previous* episode's own fault, not genuine precursor detection, consistent
+  with (and independently reinforcing) the n_samples leak and magnitude-drift confounds
+  already found for
   these classes.
 - **executor_oom** stays flat (0.800-0.842) regardless of window size or
   contamination-risk status — consistent with the null-baseline finding that this

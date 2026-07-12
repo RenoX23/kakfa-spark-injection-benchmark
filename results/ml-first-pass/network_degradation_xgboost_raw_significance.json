@@ -1,0 +1,28 @@
+{
+  "features_used": [
+    "mean",
+    "std",
+    "min",
+    "max",
+    "last",
+    "n_samples"
+  ],
+  "fixed_config": {
+    "learning_rate": 0.1,
+    "max_depth": 3,
+    "n_estimators": 100
+  },
+  "precision": 0.8888888888888888,
+  "recall": 1.0,
+  "f1": 0.9411764705882353,
+  "n_shuffled_ge_real": 0,
+  "p_value": 0.0,
+  "p_value_reported": "< 0.01",
+  "shuffled_f1_mean": 0.5663089982300871,
+  "shuffled_f1_std": 0.12225290617090379,
+  "fixed_config_used": {
+    "learning_rate": 0.1,
+    "max_depth": 3,
+    "n_estimators": 100
+  }
+}
