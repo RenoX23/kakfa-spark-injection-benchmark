@@ -119,7 +119,13 @@ disk_reps = [
     ('topup1','2026-07-11T14:33:37Z','2026-07-11T14:34:56Z'),
 ]
 THRESH_DROP = 1_500_000_000
+# Severity-target: 90% of the mean real observed drop across all 8 reps (3,221,544,960 B
+# mean -> 2,899,390,464 B), not a round number -- see docs/baseline_thresholds.md for the
+# full justification (gate-auditor flagged crossing->recovery lead time as not comparable
+# in kind to executor_oom/broker_kill's crossing->crash-event lead time; this is the fix).
+SEVERITY_DROP = 2_899_390_464
 tp, fn, leads = 0, 0, []
+severity_detail = []
 for rid, inj, rec in disk_reps:
     start = add(inj, -30)
     series = q('node_filesystem_avail_bytes{mountpoint="/var"}', start, rec, '5s')
@@ -129,11 +135,19 @@ for rid, inj, rec in disk_reps:
         continue
     baseline = vals[0][1]
     crossing = next((t for t, v in vals if (baseline - v) > THRESH_DROP), None)
+    severity_ts = next((t for t, v in vals if (baseline - v) > SEVERITY_DROP), None)
     if crossing:
         tp += 1
         leads.append(iso(rec).timestamp() - crossing)
     else:
         fn += 1
+    severity_detail.append(dict(
+        run_id=rid, crossing_utc=(iso('1970-01-01T00:00:00Z')+timedelta(seconds=crossing)).isoformat() if crossing else None,
+        severity_utc=(iso('1970-01-01T00:00:00Z')+timedelta(seconds=severity_ts)).isoformat() if severity_ts else None,
+        natural_end_utc=rec,
+        crossing_to_severity_lead_s=(severity_ts - crossing) if (crossing and severity_ts) else None,
+        severity_reached=severity_ts is not None,
+    ))
 # FPR: clean inter-rep gaps, excluding the one contaminated by discarded campaign6's real
 # injection (11:13:15-11:17:29), padded to skip the stale in-fault carryover artifact
 disk_gaps_all = [(disk_reps[i][2], disk_reps[i+1][1]) for i in range(len(disk_reps)-1)]
@@ -152,7 +166,7 @@ for g_start, g_end in disk_gaps:
     else:
         checked += 1
         fp_windows += int(r)
-results['disk_pressure'] = dict(tp=tp, fn=fn, fp=fp_windows, gaps_checked=checked, gaps_too_short=too_short, leads=leads, excluded_gap='campaign6-contaminated (real fill occurred, discarded for unrelated detection-timing reason)')
+results['disk_pressure'] = dict(tp=tp, fn=fn, fp=fp_windows, gaps_checked=checked, gaps_too_short=too_short, leads=leads, excluded_gap='campaign6-contaminated (real fill occurred, discarded for unrelated detection-timing reason)', severity_threshold_bytes=SEVERITY_DROP, severity_detail=severity_detail)
 
 # ---------------- network_degradation: scrape_duration_seconds > 1.5s ----------------
 net_reps = [
@@ -166,16 +180,31 @@ net_reps = [
     ('campaign8','2026-07-11T14:21:30Z','2026-07-11T14:23:07Z'),
 ]
 THRESH_SCRAPE = 1.5
+# Severity-target: 90% of the mean REAL per-rep maximum scrape_duration_seconds across all
+# 8 reps' full actual Prometheus time series (4.280559766875s mean -> 3.8525037901875s) --
+# note this uses the true scraped max, not the fault script's own self-reported
+# peak_scrape_duration_seconds_during_fault field, which was found to understate the real
+# peak in 3/8 reps (script samples 3x right after detection, misses later real scrapes).
+SEVERITY_SCRAPE = 3.8525037901875
 tp, fn, leads = 0, 0, []
+severity_detail = []
 for rid, inj, rec in net_reps:
     series = q('scrape_duration_seconds{job="kafka-broker-jmx"}', inj, rec, '5s')
     vals = [(int(t), float(v)) for t, v in series[0]['values']] if series else []
     crossing = next((t for t, v in vals if v > THRESH_SCRAPE), None)
+    severity_ts = next((t for t, v in vals if v > SEVERITY_SCRAPE), None)
     if crossing:
         tp += 1
         leads.append(iso(rec).timestamp() - crossing)
     else:
         fn += 1
+    severity_detail.append(dict(
+        run_id=rid, crossing_utc=(iso('1970-01-01T00:00:00Z')+timedelta(seconds=crossing)).isoformat() if crossing else None,
+        severity_utc=(iso('1970-01-01T00:00:00Z')+timedelta(seconds=severity_ts)).isoformat() if severity_ts else None,
+        natural_end_utc=rec,
+        crossing_to_severity_lead_s=(severity_ts - crossing) if (crossing and severity_ts) else None,
+        severity_reached=severity_ts is not None,
+    ))
 gaps = [(net_reps[i][2], net_reps[i+1][1]) for i in range(len(net_reps)-1)]
 fp_windows, checked, too_short = 0, 0, 0
 for g_start, g_end in gaps:
@@ -186,7 +215,7 @@ for g_start, g_end in gaps:
     else:
         checked += 1
         fp_windows += int(r)
-results['network_degradation'] = dict(tp=tp, fn=fn, fp=fp_windows, gaps_checked=checked, gaps_too_short=too_short, leads=leads)
+results['network_degradation'] = dict(tp=tp, fn=fn, fp=fp_windows, gaps_checked=checked, gaps_too_short=too_short, leads=leads, severity_threshold_s=SEVERITY_SCRAPE, severity_detail=severity_detail)
 
 pf.terminate()
 

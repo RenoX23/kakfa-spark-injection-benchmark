@@ -1,0 +1,44 @@
+{
+  "_purpose": "Snapshot of figures used in docs/baseline_thresholds.md that were derived from live Prometheus queries during this session and don't otherwise exist in any committed ground-truth JSON. Committed so these claims are reproducible from the repo alone, without re-querying a live Prometheus instance.",
+  "executor_oom": {
+    "cgroup_memory_limit_bytes": 1207959552,
+    "cgroup_memory_limit_note": "1152Mi (mebibytes) = 1152 * 1024 * 1024 bytes exactly, from infra/spark/submit-pod.yaml's spark.executor.memory=768m + spark.kubernetes.memoryOverheadFactor=0.4 computation",
+    "organic_settled_baseline_range_mb": [391.9, 525.2],
+    "organic_settled_baseline_note": "Corrected from an earlier remembered figure of 395.7-525.2MB during this snapshot -- direct re-query found ramptest7's real settled value was 391.9MB, below the previously-cited floor. Range is per-pod, per-rep container_memory_working_set_bytes{container=\"spark-kubernetes-executor\"} queried over the 90s immediately before each rep's injection_timestamp_utc, restricted to reps where the pod had genuinely settled (not still cold-starting from the previous rep's OOM-kill replacement -- ramptest4/ramptest8's pre-injection windows only caught cold-start values near 0MB and are excluded from this range as non-representative).",
+    "per_rep_settled_baseline_mb": {
+      "ramptest3": 525.2,
+      "ramptest6": 395.7,
+      "ramptest7": 391.9,
+      "ramptest10": 414.0
+    },
+    "ramptest6_full_ramp_sequence_mb": [395.7, 642.0, 822.5, 1074.4],
+    "ramptest6_note": "Full injection-to-OOM real Prometheus sample sequence for one rep, showing the genuine 4-point rising signal referenced in docs/research_context.md Section 6.2 and docs/baseline_thresholds.md Section 2. Queried 2026-07-11T17:26:00Z-17:30:20Z, step=15s, deduplicated for distinct values."
+  },
+  "disk_pressure": {
+    "steady_state_noise_floor_check": {
+      "window_start_utc": "2026-07-11T17:13:00Z",
+      "window_end_utc": "2026-07-11T18:20:00Z",
+      "window_duration_minutes": 67,
+      "metric": "node_filesystem_avail_bytes{mountpoint=\"/var\"}",
+      "sample_count": 68,
+      "min_bytes": 994837835776,
+      "max_bytes": 995045208064,
+      "range_bytes": 207372288,
+      "note": "Queried during the executor_oom ramp campaign, a window with zero disk_pressure fault activity -- genuine non-fault steady-state, not a synthetic estimate. 207MB max natural fluctuation over 67 real minutes, vs. the ~3.22GB real injected drop -- roughly 15x separation."
+    }
+  },
+  "network_degradation": {
+    "real_per_rep_max_scrape_duration_seconds": {
+      "note": "The true maximum scrape_duration_seconds{job=\"kafka-broker-jmx\"} observed in Prometheus's full stored time series per rep's [injection_timestamp_utc, target_recovered_utc] window -- NOT the fault script's own self-reported peak_scrape_duration_seconds_during_fault field. The script's field is computed by sampling 3x in quick succession right after degraded_detected_ts fires (fault_injection/network_degradation.py line ~140), which can miss a later, higher real scrape that Prometheus's own periodic scraping goes on to capture. Found to differ in 3 of 8 reps (campaign2, campaign5, campaign6) -- the script's self-reported peak understated the true scraped maximum in each case.",
+      "campaign1": 5.698439404,
+      "campaign2": 8.869884925,
+      "campaign3": 2.267276883,
+      "campaign4": 3.060562609,
+      "campaign5": 4.17259577,
+      "campaign6": 4.728295168,
+      "campaign7": 2.803549926,
+      "campaign8": 2.64387345
+    },
+    "mean_of_real_per_rep_maxima": 4.280559766875
+  }
+}
