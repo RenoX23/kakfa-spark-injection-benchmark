@@ -314,7 +314,22 @@ Real per-repetition timing from the validated pilots, used to size the full N=15
 ~166s -- full campaign at N=15/class is ~2.6 hours, N=20/class is ~3.4 hours.
 
 ### 6.3 Labeling
-Sliding-window supervised framing, following the standard AIOps approach (Notaro et al., 2021): telemetry windows at multiple horizons before recorded failure onset (e.g., t-30s, t-60s, t-120s) are labeled "pre-failure"; windows during confirmed steady-state operation are labeled "normal." Window size and horizon are hyperparameters to sweep, not fixed a priori — report sensitivity.
+Sliding-window supervised framing, following the standard AIOps approach (Notaro et al., 2021): telemetry windows at multiple horizons before recorded failure onset are labeled "pre-failure"; windows during confirmed steady-state operation are labeled "normal." Window size and horizon are hyperparameters to sweep, not fixed a priori — report sensitivity, and the first empirical pass (2026-07-12) is exactly that kind of correction, not an exception to it.
+
+**Horizons/window size corrected from the original illustrative example to the actual
+empirically-final values used in the Weeks 8-9 first model training pass.** The original
+text here proposed t-30s/t-60s/t-120s horizons with (implicitly, from the initial
+implementation) a 90s window -- an a-priori, textbook-style choice, not grounded in this
+campaign's own real spacing. Building `modeling/extract_and_train.py` found that scheme
+needs ~210s of lookback room per episode, but real inter-episode gaps across all 4
+evaluated classes' campaigns are only 32-90s (measured directly from the ground-truth
+JSON timestamps, not assumed) -- so the original horizons collapsed almost every
+episode's "normal" window (7 of 8 skipped for most classes on the first extraction
+attempt). Corrected to **[15s, 30s] horizons, 30s window** -- the actual values now in
+use, chosen to fit what this campaign's real rep-to-rep timing supports, the same kind
+of measured recalibration as executor_oom's ramp redesign and network_degradation's
+scrape_timeout fix earlier this session, not a one-off exception to the "not fixed a
+priori" principle stated above.
 
 **Addendum — train/val/test methodology, decided before any window extraction, 2026-07-12.**
 
