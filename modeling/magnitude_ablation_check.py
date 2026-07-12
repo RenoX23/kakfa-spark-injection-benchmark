@@ -18,7 +18,10 @@ from sklearn.metrics import f1_score
 
 REPO = Path(__file__).resolve().parent.parent
 SHAPE_FEATURES = ["std"]
-N_SHUFFLES = 30
+N_SHUFFLES = 100  # raised from 30: comparing real F1 against the single observed max of
+# a 30-sample null distribution is not a real significance test -- a proper permutation
+# p-value is (count of shuffled F1 >= real F1) / n_shuffles, which needs more resolution
+# than 30 draws gives at F1's coarse granularity for this sample size.
 SEED = 42
 
 
@@ -55,17 +58,24 @@ def main():
         real_f1 = loo_cv_f1(X, y_true, groups)
         shuffled_f1s = [loo_cv_f1(X, rng.permutation(y_true), groups) for _ in range(N_SHUFFLES)]
 
+        n_shuffled_ge_real = sum(1 for f in shuffled_f1s if f >= real_f1)
+        p_value = n_shuffled_ge_real / N_SHUFFLES
+
         results[cls] = {
             "features_used": SHAPE_FEATURES,
+            "n_shuffles": N_SHUFFLES,
             "real_f1": real_f1,
             "shuffled_f1_mean": float(np.mean(shuffled_f1s)),
             "shuffled_f1_std": float(np.std(shuffled_f1s)),
             "shuffled_f1_min": float(np.min(shuffled_f1s)),
             "shuffled_f1_max": float(np.max(shuffled_f1s)),
+            "n_shuffled_ge_real": n_shuffled_ge_real,
+            "p_value": p_value,
             "full_feature_real_f1_for_comparison": 0.968 if cls == "disk_pressure" else 0.867,
         }
         print(f"{cls} (std only): real_f1={real_f1:.3f}  shuffled mean={np.mean(shuffled_f1s):.3f} "
               f"std={np.std(shuffled_f1s):.3f} range=[{np.min(shuffled_f1s):.3f},{np.max(shuffled_f1s):.3f}]")
+        print(f"    {n_shuffled_ge_real}/{N_SHUFFLES} shuffled F1 >= real F1  ->  p={p_value:.3f}")
         print(f"    (full-feature-set real F1 was {results[cls]['full_feature_real_f1_for_comparison']:.3f})")
 
     with open(REPO / "results" / "ml-first-pass" / "magnitude_ablation_check.json", "w") as f:
