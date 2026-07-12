@@ -1,0 +1,66 @@
+{
+  "clean_episodes_used": [
+    "ramptest3",
+    "ramptest7",
+    "ramptest10"
+  ],
+  "n_windows": 7,
+  "n_episodes": 3,
+  "class_balance": {
+    "normal": 2,
+    "pre_failure": 5
+  },
+  "precision": 0.6666666666666666,
+  "recall": 0.8,
+  "f1": 0.7272727272727273,
+  "per_fold": [
+    {
+      "held_out_episode": "ramptest10",
+      "true": [
+        1,
+        1,
+        0
+      ],
+      "pred": [
+        1,
+        1,
+        1
+      ],
+      "train_class_balance": {
+        "normal": 1,
+        "pre_failure": 3
+      }
+    },
+    {
+      "held_out_episode": "ramptest3",
+      "true": [
+        1,
+        1,
+        0
+      ],
+      "pred": [
+        1,
+        1,
+        1
+      ],
+      "train_class_balance": {
+        "normal": 1,
+        "pre_failure": 3
+      }
+    },
+    {
+      "held_out_episode": "ramptest7",
+      "true": [
+        1
+      ],
+      "pred": [
+        0
+      ],
+      "train_class_balance": {
+        "normal": 2,
+        "pre_failure": 4
+      }
+    }
+  ],
+  "comparison_5episode_f1": 0.8421052631578947
+}
