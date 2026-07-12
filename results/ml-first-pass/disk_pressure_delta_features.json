@@ -15,7 +15,10 @@
   "shuffled_f1_std": 0.10756221713639146,
   "n_shuffled_ge_real": 0,
   "p_value": 0.0,
+  "p_value_reported": "p < 0.01",
+  "p_value_note": "0/100 shuffled draws bounds significance at p < 1/n_shuffles; it does not establish an exact probability of 0.",
   "comparison_full_raw_features_f1": 0.9677419354838709,
   "comparison_std_only_f1": 0.7777777777777778,
-  "comparison_std_only_p": 0.08
+  "comparison_std_only_p": 0.05,
+  "comparison_std_only_p_note": "corrected from 0.08 after the normal-reference stride bug fix (commit d75783f); 0.08 was computed on pre-fix data and is stale"
 }

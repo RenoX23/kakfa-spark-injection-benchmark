@@ -87,10 +87,14 @@ def main():
         shuffled_f1s.append(f1_score(t, p, zero_division=0))
     n_ge = sum(1 for f in shuffled_f1s if f >= f1)
     p_value = n_ge / N_SHUFFLES
+    # A rank-based p-value from N_SHUFFLES permutations is bounded below by 1/N_SHUFFLES --
+    # 0/N_SHUFFLES means "p < 1/N_SHUFFLES", not "p is exactly 0". Report the bound, not
+    # the raw fraction, when n_ge == 0.
+    p_value_reported = f"< {1/N_SHUFFLES:.2g}" if n_ge == 0 else f"{p_value:.3f}"
 
     print(f"disk_pressure delta features: precision={precision:.3f} recall={recall:.3f} f1={f1:.3f}")
     print(f"shuffled F1: mean={np.mean(shuffled_f1s):.3f} range=[{np.min(shuffled_f1s):.3f},{np.max(shuffled_f1s):.3f}]")
-    print(f"{n_ge}/{N_SHUFFLES} shuffled F1 >= real F1  ->  p={p_value:.3f}")
+    print(f"{n_ge}/{N_SHUFFLES} shuffled F1 >= real F1  ->  p {p_value_reported}")
 
     result = {
         "features_used": DELTA_FEATURE_COLS,
@@ -99,9 +103,12 @@ def main():
         "shuffled_f1_mean": float(np.mean(shuffled_f1s)),
         "shuffled_f1_std": float(np.std(shuffled_f1s)),
         "n_shuffled_ge_real": n_ge, "p_value": p_value,
+        "p_value_reported": p_value_reported,
+        "p_value_note": "rank-based p-value from N_SHUFFLES permutations is bounded below by 1/N_SHUFFLES; 0/N_SHUFFLES is reported as a bound, not an exact 0.",
         "comparison_full_raw_features_f1": 0.9677419354838709,
         "comparison_std_only_f1": 0.7777777777777778,
-        "comparison_std_only_p": 0.08,
+        "comparison_std_only_p": 0.05,
+        "comparison_std_only_p_note": "corrected from 0.08 after the normal-reference stride bug fix (commit d75783f); 0.08 was computed on pre-fix data and is stale",
     }
     with open(REPO / "results" / "ml-first-pass" / "disk_pressure_delta_features.json", "w") as f:
         json.dump(result, f, indent=2)

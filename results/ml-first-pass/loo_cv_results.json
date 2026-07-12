@@ -7,9 +7,9 @@
       "normal": 10,
       "pre_failure": 16
     },
-    "precision": 1.0,
-    "recall": 0.3125,
-    "f1": 0.47619047619047616,
+    "precision": 0.8888888888888888,
+    "recall": 1.0,
+    "f1": 0.9411764705882353,
     "per_fold": [
       {
         "held_out_episode": "campaign1",
@@ -19,8 +19,8 @@
           1
         ],
         "pred": [
-          0,
-          0
+          1,
+          1
         ],
         "train_class_balance": {
           "normal": 10,
@@ -35,8 +35,8 @@
           1
         ],
         "pred": [
-          0,
-          0
+          1,
+          1
         ],
         "train_class_balance": {
           "normal": 10,
@@ -67,7 +67,7 @@
           1
         ],
         "pred": [
-          0,
+          1,
           1
         ],
         "train_class_balance": {
@@ -99,8 +99,8 @@
           1
         ],
         "pred": [
-          0,
-          0
+          1,
+          1
         ],
         "train_class_balance": {
           "normal": 10,
@@ -115,8 +115,8 @@
           1
         ],
         "pred": [
-          0,
-          0
+          1,
+          1
         ],
         "train_class_balance": {
           "normal": 10,
@@ -131,8 +131,8 @@
           1
         ],
         "pred": [
-          0,
-          0
+          1,
+          1
         ],
         "train_class_balance": {
           "normal": 10,
@@ -146,7 +146,7 @@
           0
         ],
         "pred": [
-          0
+          1
         ],
         "train_class_balance": {
           "normal": 9,
@@ -230,7 +230,7 @@
           0
         ],
         "pred": [
-          0
+          1
         ],
         "train_class_balance": {
           "normal": 9,
@@ -279,7 +279,8 @@
           "pre_failure": 16
         }
       }
-    ]
+    ],
+    "full_feature_set_caveat": "This full-feature (incl. n_samples) F1=0.941 is NOT trustworthy as a genuine-signal result. feature_importances_ shows n_samples carries 0.969 of total importance -- mean/std/min/max/last are flat (1.0/0.0) across nearly every window because the up{} metric barely moves in a 30s window. The apparent separation is a sample-count-parity artifact between differently-constructed pre_failure vs normal_reference query windows, not broker-health signal (same class of bug as the earlier n_samples window-size leak). See broker_kill_no_nsamples_check.json for the de-confounded result: F1=0.222, p=0.660 (near chance) once n_samples is dropped -- consistent with the baseline detectors recall-limited mechanism (12.5% baseline recall), not a real ML improvement."
   },
   "executor_oom": {
     "fault_class": "executor_oom",
@@ -667,9 +668,9 @@
       "normal": 10,
       "pre_failure": 16
     },
-    "precision": 0.9285714285714286,
-    "recall": 0.8125,
-    "f1": 0.8666666666666667,
+    "precision": 0.8461538461538461,
+    "recall": 0.6875,
+    "f1": 0.7586206896551724,
     "per_fold": [
       {
         "held_out_episode": "campaign1",
@@ -679,8 +680,8 @@
           1
         ],
         "pred": [
-          1,
-          1
+          0,
+          0
         ],
         "train_class_balance": {
           "normal": 10,
@@ -890,7 +891,7 @@
           0
         ],
         "pred": [
-          0
+          1
         ],
         "train_class_balance": {
           "normal": 9,
