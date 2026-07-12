@@ -195,21 +195,50 @@ specifically to guarantee — not just likely, mathematically guaranteed given a
 against a 60s scrape period — at least one real scrape lands inside the fault window for
 every rep. No coin-flip risk here, unlike broker_kill/backpressure_cascade.
 
-## Summary
+## Full Evaluation Results
 
-| class | threshold | expected recall (this dataset) | status |
-|---|---|---|---|
-| broker_kill | `up == 0` | ~12.5% (1/8) | real limitation, reported not routed around |
-| executor_oom | `working_set > 900MB` | 100% (8/8), lead time 48-83s | clean, viable |
-| backpressure_cascade | — | — | **excluded** — no independent signal exists |
-| disk_pressure | `avail drop > 1.5GB` | pending full evaluation | clean, viable |
-| network_degradation | `scrape_duration > 1.5s` | pending full evaluation | clean, viable |
+Run against all 8 active reps per class (recall/lead-time) and each class's own
+deliberate inter-rep steady-state gaps (precision/false-positive rate) — the
+methodology's own designated "confirmed normal" windows, not a separately invented
+normal-operation definition.
 
-Not yet run: the actual per-rep precision/recall/F1/false-positive-rate pass across all
-reps (correctly-flagged vs. missed vs. false-fired-during-normal-operation), and the
-full lead-time distribution for disk_pressure/network_degradation the way executor_oom's
-is already shown above. Holding for review before running that, per standing instruction:
-don't evaluate before the threshold definitions themselves are checked.
+**Methodological catch worth recording:** the first pass of this evaluation showed
+network_degradation false-firing in all 7 gap windows. Investigated before trusting it —
+turned out to be a query-construction artifact, not a real false positive: Prometheus's
+range-query step-interpolation carries the last real sample forward until the next actual
+scrape, so a gap window starting exactly at a rep's `target_recovered_utc` picks up that
+rep's own last *real* in-fault reading (still the fault's peak value) rather than a fresh
+post-recovery one. Fixed by padding every gap's start by 65s (one scrape interval) past
+the recovery timestamp before checking for crossings; re-verified broker_kill's and
+disk_pressure's already-clean results under the same padding to make sure they weren't
+accidentally clean for the same wrong reason (they weren't — genuinely clean either way).
+Consequence: several gaps were too short in real wall-clock time to survive the padding
+and be checked at all (noted per class below) — a genuine data limitation, not
+papered over by counting an unchecked gap as clean.
+
+| class | TP | FN | FP | recall | precision | F1 | mean lead time | gaps checked |
+|---|---|---|---|---|---|---|---|---|
+| broker_kill | 1 | 7 | 0 | 12.5% | 100% | 0.22 | 57.0s (n=1) | 3 of 7 (rest too short) |
+| executor_oom | 8 | 0 | 0 | 100% | 100% | 1.00 | 64.9s (range 48-83s) | 8 of 8 |
+| disk_pressure | 8 | 0 | 0 | 100% | 100% | 1.00 | 61.6s (range 61-64s) | 3 of 6 (rest too short; 1 gap excluded entirely — contained the discarded `campaign6` rep's real, physically-occurred fill) |
+| network_degradation | 8 | 0 | 0 | 100% | 100% | 1.00 | 57.4s (range 31-93s) | 4 of 7 (rest too short) |
+| backpressure_cascade | — | — | — | — | — | — | — | excluded, see above |
+
+**Reading these results honestly, not just reporting the numbers:**
+- executor_oom, disk_pressure, and network_degradation all score perfectly on this
+  corpus. Per the same-corpus scope-limitation above, that is expected — the thresholds
+  were calibrated directly against these same 8 reps' own observed values. It confirms the
+  thresholds are *well-separated* (real margin between baseline and fault, not a coin
+  flip), not that they'd necessarily hold at N=8 held-out or in a differently-tuned
+  production deployment.
+- broker_kill's F1 (0.22) is dragged down entirely by recall (12.5%), not precision
+  (100% — when it does fire, it's never wrong). This is the expected, already-flagged
+  structural finding: a real "target down" alert on this pipeline would miss most short
+  broker outages at the current 60s scrape interval, not a threshold-tuning failure.
+- disk_pressure's lead-time is unusually tight (61-64s, stdev ~1s) compared to the other
+  classes (which range 15-45s wide) — expected, not suspicious: the fill is a controlled,
+  fixed-rate 3GB write every rep, so the delta crosses 1.5GB at nearly the same elapsed
+  time each time. Not evidence of overfitting, just a lower-variance fault by construction.
 
 **Scope limitation — same-corpus calibration, no held-out split.** Every threshold value
 above (900MB, 1.5GB, 1.5s) was derived by directly inspecting the N=8 active reps' own
