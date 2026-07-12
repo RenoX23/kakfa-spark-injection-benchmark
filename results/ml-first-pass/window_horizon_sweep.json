@@ -1,0 +1,194 @@
+{
+  "min_real_gap_s": {
+    "broker_kill": 47.0,
+    "executor_oom": 32.0,
+    "disk_pressure": 49.0,
+    "network_degradation": 54.0
+  },
+  "grid": {
+    "G0": {
+      "window_s": 10,
+      "horizons_s": [
+        5,
+        10
+      ],
+      "needed_lookback_s": 20,
+      "per_class": {
+        "broker_kill": {
+          "precision": 1.0,
+          "recall": 0.125,
+          "f1": 0.2222222222222222,
+          "n_windows": 24,
+          "n_groups": 16,
+          "contamination_safe": true,
+          "min_real_gap_s": 47.0
+        },
+        "executor_oom": {
+          "precision": 0.8,
+          "recall": 0.8888888888888888,
+          "f1": 0.8421052631578947,
+          "n_windows": 11,
+          "n_groups": 5,
+          "contamination_safe": true,
+          "min_real_gap_s": 32.0
+        },
+        "disk_pressure": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "n_windows": 24,
+          "n_groups": 16,
+          "contamination_safe": true,
+          "min_real_gap_s": 49.0
+        },
+        "network_degradation": {
+          "precision": 0.5384615384615384,
+          "recall": 0.4375,
+          "f1": 0.4827586206896552,
+          "n_windows": 24,
+          "n_groups": 16,
+          "contamination_safe": true,
+          "min_real_gap_s": 54.0
+        }
+      }
+    },
+    "G1": {
+      "window_s": 15,
+      "horizons_s": [
+        10,
+        15
+      ],
+      "needed_lookback_s": 30,
+      "per_class": {
+        "broker_kill": {
+          "precision": 0.8181818181818182,
+          "recall": 0.5625,
+          "f1": 0.6666666666666666,
+          "n_windows": 26,
+          "n_groups": 18,
+          "contamination_safe": true,
+          "min_real_gap_s": 47.0
+        },
+        "executor_oom": {
+          "precision": 0.8,
+          "recall": 0.8,
+          "f1": 0.8,
+          "n_windows": 12,
+          "n_groups": 5,
+          "contamination_safe": true,
+          "min_real_gap_s": 32.0
+        },
+        "disk_pressure": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "n_windows": 26,
+          "n_groups": 18,
+          "contamination_safe": true,
+          "min_real_gap_s": 49.0
+        },
+        "network_degradation": {
+          "precision": 0.46153846153846156,
+          "recall": 0.375,
+          "f1": 0.41379310344827586,
+          "n_windows": 26,
+          "n_groups": 18,
+          "contamination_safe": true,
+          "min_real_gap_s": 54.0
+        }
+      }
+    },
+    "G2": {
+      "window_s": 20,
+      "horizons_s": [
+        10,
+        20
+      ],
+      "needed_lookback_s": 40,
+      "per_class": {
+        "broker_kill": {
+          "precision": 0.8,
+          "recall": 1.0,
+          "f1": 0.8888888888888888,
+          "n_windows": 26,
+          "n_groups": 18,
+          "contamination_safe": true,
+          "min_real_gap_s": 47.0
+        },
+        "executor_oom": {
+          "precision": 0.8,
+          "recall": 0.8888888888888888,
+          "f1": 0.8421052631578947,
+          "n_windows": 11,
+          "n_groups": 5,
+          "contamination_safe": false,
+          "min_real_gap_s": 32.0
+        },
+        "disk_pressure": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "n_windows": 26,
+          "n_groups": 18,
+          "contamination_safe": true,
+          "min_real_gap_s": 49.0
+        },
+        "network_degradation": {
+          "precision": 0.6153846153846154,
+          "recall": 0.5,
+          "f1": 0.5517241379310345,
+          "n_windows": 26,
+          "n_groups": 18,
+          "contamination_safe": true,
+          "min_real_gap_s": 54.0
+        }
+      }
+    },
+    "G3_current_default": {
+      "window_s": 30,
+      "horizons_s": [
+        15,
+        30
+      ],
+      "needed_lookback_s": 60,
+      "per_class": {
+        "broker_kill": {
+          "precision": 0.8888888888888888,
+          "recall": 1.0,
+          "f1": 0.9411764705882353,
+          "n_windows": 26,
+          "n_groups": 18,
+          "contamination_safe": false,
+          "min_real_gap_s": 47.0
+        },
+        "executor_oom": {
+          "precision": 0.8,
+          "recall": 0.8888888888888888,
+          "f1": 0.8421052631578947,
+          "n_windows": 11,
+          "n_groups": 5,
+          "contamination_safe": false,
+          "min_real_gap_s": 32.0
+        },
+        "disk_pressure": {
+          "precision": 1.0,
+          "recall": 0.9375,
+          "f1": 0.967741935483871,
+          "n_windows": 26,
+          "n_groups": 18,
+          "contamination_safe": false,
+          "min_real_gap_s": 49.0
+        },
+        "network_degradation": {
+          "precision": 0.8461538461538461,
+          "recall": 0.6875,
+          "f1": 0.7586206896551724,
+          "n_windows": 26,
+          "n_groups": 18,
+          "contamination_safe": false,
+          "min_real_gap_s": 54.0
+        }
+      }
+    }
+  }
+}
