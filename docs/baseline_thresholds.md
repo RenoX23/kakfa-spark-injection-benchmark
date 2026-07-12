@@ -200,7 +200,10 @@ every rep. No coin-flip risk here, unlike broker_kill/backpressure_cascade.
 Run against all 8 active reps per class (recall/lead-time) and each class's own
 deliberate inter-rep steady-state gaps (precision/false-positive rate) — the
 methodology's own designated "confirmed normal" windows, not a separately invented
-normal-operation definition.
+normal-operation definition. Script and raw output committed as evidence:
+`results/baseline-threshold-evidence/evaluate_baselines.py` and
+`results/baseline-threshold-evidence/evaluation_output.json` — every number in the table
+below is read directly from that file, not retyped by hand.
 
 **Methodological catch worth recording:** the first pass of this evaluation showed
 network_degradation false-firing in all 7 gap windows. Investigated before trusting it —
@@ -220,7 +223,7 @@ papered over by counting an unchecked gap as clean.
 |---|---|---|---|---|---|---|---|---|
 | broker_kill | 1 | 7 | 0 | 12.5% | 100% | 0.22 | 57.0s (n=1) | 3 of 7 (rest too short) |
 | executor_oom | 8 | 0 | 0 | 100% | 100% | 1.00 | 64.9s (range 48-83s) | 8 of 8 |
-| disk_pressure | 8 | 0 | 0 | 100% | 100% | 1.00 | 61.6s (range 61-64s) | 3 of 6 (rest too short; 1 gap excluded entirely — contained the discarded `campaign6` rep's real, physically-occurred fill) |
+| disk_pressure | 8 | 0 | 0 | 100% | 100% | 1.00 | 61.6s (range 61-64s) | 4 of 6 (rest too short; 1 gap excluded entirely — contained the discarded `campaign6` rep's real, physically-occurred fill) |
 | network_degradation | 8 | 0 | 0 | 100% | 100% | 1.00 | 57.4s (range 31-93s) | 4 of 7 (rest too short) |
 | backpressure_cascade | — | — | — | — | — | — | — | excluded, see above |
 
