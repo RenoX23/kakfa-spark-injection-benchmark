@@ -952,13 +952,20 @@ more than a restated conclusion —
 2. **SHAP attribution vectors are near-identical across episodes with very different
    raw delta values** — e.g. campaign1 (delta_mean=+684,032B) and campaign2
    (delta_mean=+0B) produce almost the same per-feature SHAP vector at both horizons.
-   Checked directly, not assumed a coincidence: the two folds' fitted scalers
-   (`StandardScaler.mean_`) and tree thresholds are genuinely different (verified by
-   direct comparison), but every real observed delta value sits so far above the
-   ablation's ≈-350,000-byte boundary that all 16 instances land on the identical side
-   of every split that matters, producing the same leaf path regardless of exactly how
-   far above threshold each one sits. This is the fingerprint of a coarse, single-
-   threshold step function, not a classifier sensitive to graded magnitude — the same
+   Checked directly, not assumed a coincidence, and persisted as committed evidence
+   rather than a one-off shell comparison (gate-audit's own catch on this pass — see
+   Section 11's risk register): `disk_pressure_shap.json`'s
+   `coarse_threshold_pair_diagnostics` records all 6 near-identical-SHAP instance pairs
+   found (campaign1↔campaign2, campaign3↔campaign4, campaign8↔topup1, each at both
+   horizons) and confirms, from the actual fitted objects in `per_fold_diagnostics`, that
+   every pair's `StandardScaler.mean_` and first-tree threshold array are genuinely
+   different (`scaler_mean_genuinely_differs=true`, `tree0_threshold_genuinely_differs=true`
+   in all 6 cases) — these are real, independently-fit folds, not a reused model. Yet
+   every real observed delta value sits so far above the ablation's ≈-350,000-byte
+   boundary that all 16 instances land on the identical side of every split that
+   matters, producing the same leaf path regardless of exactly how far above threshold
+   each one sits. This is the fingerprint of a coarse, single-threshold step function,
+   not a classifier sensitive to graded magnitude — the same
    qualitative shape as the ablation's zero-cross-fold-variance finding, arrived at from
    the model's actual behavior on real data rather than a synthetic parameter sweep.
 

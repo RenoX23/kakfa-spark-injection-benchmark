@@ -80,6 +80,7 @@ def main():
     logo = LeaveOneGroupOut()
 
     per_instance = []
+    per_fold_diagnostics = {}
     for train_idx, test_idx in logo.split(X, y, groups):
         held_out = groups[test_idx][0]
         if held_out not in REAL_EPISODES:
@@ -93,6 +94,21 @@ def main():
         clf = RandomForestClassifier(n_estimators=200, max_depth=5, random_state=42, class_weight="balanced")
         clf.fit(X_train, y_train)
         preds = clf.predict(X_test)
+
+        # Persisted, not asserted from prose: the "coarse-threshold" claim below rests on
+        # folds being genuinely distinct fits (different training data -> different
+        # scaler/tree) that nonetheless agree on every real instance's leaf path. Record
+        # the actual scaler mean_ and the first tree's raw structure per fold so that
+        # claim is independently checkable from committed data, not a one-off shell check
+        # that never got persisted (the exact gap this repo's gate-auditor has flagged
+        # before, e.g. disk_pressure_lead_time_ablation.py's origin story).
+        tree0 = clf.estimators_[0].tree_
+        per_fold_diagnostics[held_out] = {
+            "scaler_mean_": {c: float(scaler.mean_[j]) for j, c in enumerate(DELTA_FEATURE_COLS)},
+            "n_train_rows": int(len(train_idx)),
+            "tree0_feature": tree0.feature.tolist(),
+            "tree0_threshold": tree0.threshold.tolist(),
+        }
 
         explainer = shap.TreeExplainer(clf)
         sv = explainer.shap_values(X_test)
@@ -155,13 +171,62 @@ def main():
 
     # Sign check: does a NEGATIVE delta_mean (decline below baseline) push toward class 1
     # (pre_failure), consistent with a magnitude-threshold direction, or is the sign
-    # inconsistent/unrelated to the raw value's direction?
+    # inconsistent/unrelated to the raw value's direction? Vacuously 0/N if no
+    # true-positive instance actually has a negative delta_mean -- flagged explicitly so
+    # a reader doesn't misread "0/16" as a failed check rather than an inapplicable one.
+    n_negative_delta_mean = sum(1 for r in tp if r["raw_feature_values"]["delta_mean"] < 0)
     sign_consistent = sum(
         1 for r in tp
         if (r["raw_feature_values"]["delta_mean"] < 0) == (r["shap_values_class1"]["delta_mean"] > 0)
     )
+    sign_check_applicable = n_negative_delta_mean > 0
     print(f"\nsign check: negative delta_mean -> positive (pre_failure-pushing) SHAP contribution "
-          f"in {sign_consistent}/{len(tp)} true-positive instances")
+          f"in {sign_consistent}/{len(tp)} true-positive instances "
+          f"({'APPLICABLE' if sign_check_applicable else 'VACUOUS -- 0/16 true-positive instances have a negative delta_mean at all, see raw_feature_values'})")
+
+    # Coarse-threshold diagnostic: persist a direct pairwise comparison (not just the
+    # per-fold arrays above) proving folds are genuinely distinct fits whose SHAP
+    # attribution nonetheless coincides on real data -- the specific claim gate-audit
+    # asked to see backed by committed evidence, not a one-off shell comparison.
+    pair_diagnostics = []
+    seen_pairs = set()
+    for r1 in tp:
+        for r2 in tp:
+            if r1["episode_id"] >= r2["episode_id"]:
+                continue
+            key = (r1["episode_id"], r1["horizon_s"], r2["episode_id"], r2["horizon_s"])
+            if key in seen_pairs:
+                continue
+            shap_close = all(
+                abs(r1["shap_values_class1"][c] - r2["shap_values_class1"][c]) < 1e-3
+                for c in DELTA_FEATURE_COLS
+            )
+            if not shap_close:
+                continue
+            seen_pairs.add(key)
+            d1 = per_fold_diagnostics[r1["episode_id"]]
+            d2 = per_fold_diagnostics[r2["episode_id"]]
+            scaler_differs = any(
+                abs(d1["scaler_mean_"][c] - d2["scaler_mean_"][c]) > 1.0 for c in DELTA_FEATURE_COLS
+            )
+            threshold_differs = d1["tree0_threshold"] != d2["tree0_threshold"]
+            pair_diagnostics.append({
+                "episode_a": r1["episode_id"], "horizon_a": r1["horizon_s"],
+                "episode_b": r2["episode_id"], "horizon_b": r2["horizon_s"],
+                "raw_delta_mean_a": r1["raw_feature_values"]["delta_mean"],
+                "raw_delta_mean_b": r2["raw_feature_values"]["delta_mean"],
+                "shap_vectors_near_identical": True,
+                "scaler_mean_genuinely_differs": scaler_differs,
+                "tree0_threshold_genuinely_differs": threshold_differs,
+            })
+    print(f"\ncoarse-threshold diagnostic: {len(pair_diagnostics)} instance pair(s) with near-identical "
+          f"SHAP vectors despite different raw delta_mean -- checked whether the underlying "
+          f"fold fits (scaler mean_, tree0 thresholds) are genuinely different, not reused:")
+    for p in pair_diagnostics:
+        print(f"  {p['episode_a']}(h={p['horizon_a']}, delta={p['raw_delta_mean_a']:+,.0f}B) vs "
+              f"{p['episode_b']}(h={p['horizon_b']}, delta={p['raw_delta_mean_b']:+,.0f}B): "
+              f"scaler_differs={p['scaler_mean_genuinely_differs']} "
+              f"tree0_threshold_differs={p['tree0_threshold_genuinely_differs']}")
 
     nonmagnitude_share = nonmagnitude_top[1] / total if total else 0.0
     corroborated = magnitude_share >= MAGNITUDE_SHARE_GATE and nonmagnitude_share < NONMAGNITUDE_SINGLE_FEATURE_GATE
@@ -175,12 +240,19 @@ def main():
         "magnitude_feature_combined_share": magnitude_share,
         "largest_non_magnitude_feature": {"feature": nonmagnitude_top[0], "mean_abs_shap": nonmagnitude_top[1],
                                            "share": nonmagnitude_share},
-        "sign_check_negative_delta_pushes_positive_class": {"consistent": sign_consistent, "total": len(tp)},
+        "sign_check_negative_delta_pushes_positive_class": {
+            "consistent": sign_consistent, "total": len(tp),
+            "applicable": sign_check_applicable,
+            "note": "vacuous if applicable=false -- no true-positive instance has a negative delta_mean, "
+                    "so this check has nothing to evaluate; not a failed check.",
+        },
         "gate": {
             "magnitude_share_threshold": MAGNITUDE_SHARE_GATE,
             "nonmagnitude_single_feature_threshold": NONMAGNITUDE_SINGLE_FEATURE_GATE,
             "corroborated": corroborated,
         },
+        "coarse_threshold_pair_diagnostics": pair_diagnostics,
+        "per_fold_diagnostics": per_fold_diagnostics,
         "per_instance": per_instance,
     }
     out_path = REPO / "results" / "ml-first-pass" / "disk_pressure_shap.json"

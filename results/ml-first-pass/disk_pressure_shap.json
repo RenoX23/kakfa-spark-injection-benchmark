@@ -49,12 +49,284 @@
   },
   "sign_check_negative_delta_pushes_positive_class": {
     "consistent": 0,
-    "total": 16
+    "total": 16,
+    "applicable": false,
+    "note": "vacuous if applicable=false -- no true-positive instance has a negative delta_mean, so this check has nothing to evaluate; not a failed check."
   },
   "gate": {
     "magnitude_share_threshold": 0.8,
     "nonmagnitude_single_feature_threshold": 0.15,
     "corroborated": true
+  },
+  "coarse_threshold_pair_diagnostics": [
+    {
+      "episode_a": "campaign1",
+      "horizon_a": 10.0,
+      "episode_b": "campaign2",
+      "horizon_b": 10.0,
+      "raw_delta_mean_a": 684032.0,
+      "raw_delta_mean_b": 0.0,
+      "shap_vectors_near_identical": true,
+      "scaler_mean_genuinely_differs": true,
+      "tree0_threshold_genuinely_differs": true
+    },
+    {
+      "episode_a": "campaign1",
+      "horizon_a": 15.0,
+      "episode_b": "campaign2",
+      "horizon_b": 15.0,
+      "raw_delta_mean_a": 684032.0,
+      "raw_delta_mean_b": 0.0,
+      "shap_vectors_near_identical": true,
+      "scaler_mean_genuinely_differs": true,
+      "tree0_threshold_genuinely_differs": true
+    },
+    {
+      "episode_a": "campaign3",
+      "horizon_a": 10.0,
+      "episode_b": "campaign4",
+      "horizon_b": 10.0,
+      "raw_delta_mean_a": 0.0,
+      "raw_delta_mean_b": 0.0,
+      "shap_vectors_near_identical": true,
+      "scaler_mean_genuinely_differs": true,
+      "tree0_threshold_genuinely_differs": true
+    },
+    {
+      "episode_a": "campaign3",
+      "horizon_a": 15.0,
+      "episode_b": "campaign4",
+      "horizon_b": 15.0,
+      "raw_delta_mean_a": 219136.0,
+      "raw_delta_mean_b": 188416.0,
+      "shap_vectors_near_identical": true,
+      "scaler_mean_genuinely_differs": true,
+      "tree0_threshold_genuinely_differs": true
+    },
+    {
+      "episode_a": "campaign8",
+      "horizon_a": 10.0,
+      "episode_b": "topup1",
+      "horizon_b": 10.0,
+      "raw_delta_mean_a": 368640.0,
+      "raw_delta_mean_b": 0.0,
+      "shap_vectors_near_identical": true,
+      "scaler_mean_genuinely_differs": true,
+      "tree0_threshold_genuinely_differs": true
+    },
+    {
+      "episode_a": "campaign8",
+      "horizon_a": 15.0,
+      "episode_b": "topup1",
+      "horizon_b": 15.0,
+      "raw_delta_mean_a": 368640.0,
+      "raw_delta_mean_b": 0.0,
+      "shap_vectors_near_identical": true,
+      "scaler_mean_genuinely_differs": true,
+      "tree0_threshold_genuinely_differs": true
+    }
+  ],
+  "per_fold_diagnostics": {
+    "campaign1": {
+      "scaler_mean_": {
+        "delta_mean": -377128.1568806966,
+        "delta_min": -401618.8235473633,
+        "delta_max": -352637.49021402997,
+        "delta_last": -401618.8235473633,
+        "std": 24490.666666666668,
+        "n_samples": 1.375
+      },
+      "n_train_rows": 24,
+      "tree0_feature": [
+        3,
+        -2,
+        0,
+        -2,
+        -2
+      ],
+      "tree0_threshold": [
+        0.004044584929943085,
+        -2.0,
+        0.12424394860863686,
+        -2.0,
+        -2.0
+      ]
+    },
+    "campaign2": {
+      "scaler_mean_": {
+        "delta_mean": -320125.49021402997,
+        "delta_min": -344616.1568806966,
+        "delta_max": -295634.8235473633,
+        "delta_last": -344616.1568806966,
+        "std": 24490.666666666668,
+        "n_samples": 1.375
+      },
+      "n_train_rows": 24,
+      "tree0_feature": [
+        3,
+        -2,
+        0,
+        -2,
+        -2
+      ],
+      "tree0_threshold": [
+        -0.0002391049638390541,
+        -2.0,
+        0.13178123906254768,
+        -2.0,
+        -2.0
+      ]
+    },
+    "campaign3": {
+      "scaler_mean_": {
+        "delta_mean": -329256.1568806966,
+        "delta_min": -344616.1568806966,
+        "delta_max": -313896.1568806966,
+        "delta_last": -344616.1568806966,
+        "std": 15360.0,
+        "n_samples": 1.375
+      },
+      "n_train_rows": 24,
+      "tree0_feature": [
+        3,
+        -2,
+        0,
+        -2,
+        -2
+      ],
+      "tree0_threshold": [
+        -0.0002391049638390541,
+        -2.0,
+        0.13247017189860344,
+        -2.0,
+        -2.0
+      ]
+    },
+    "campaign4": {
+      "scaler_mean_": {
+        "delta_mean": -327976.1568806966,
+        "delta_min": -344616.1568806966,
+        "delta_max": -311336.1568806966,
+        "delta_last": -344616.1568806966,
+        "std": 16640.0,
+        "n_samples": 1.375
+      },
+      "n_train_rows": 24,
+      "tree0_feature": [
+        3,
+        -2,
+        0,
+        -2,
+        -2
+      ],
+      "tree0_threshold": [
+        -0.0002391049638390541,
+        -2.0,
+        0.13237349689006805,
+        -2.0,
+        -2.0
+      ]
+    },
+    "campaign5": {
+      "scaler_mean_": {
+        "delta_mean": -337192.1568806966,
+        "delta_min": -361682.8235473633,
+        "delta_max": -312701.49021402997,
+        "delta_last": -361682.8235473633,
+        "std": 24490.666666666668,
+        "n_samples": 1.375
+      },
+      "n_train_rows": 24,
+      "tree0_feature": [
+        3,
+        -2,
+        0,
+        -2,
+        -2
+      ],
+      "tree0_threshold": [
+        0.0010432042181491852,
+        -2.0,
+        0.13306895270943642,
+        -2.0,
+        -2.0
+      ]
+    },
+    "campaign7": {
+      "scaler_mean_": {
+        "delta_mean": -327634.8235473633,
+        "delta_min": -344616.1568806966,
+        "delta_max": -310653.49021402997,
+        "delta_last": -344616.1568806966,
+        "std": 16981.333333333332,
+        "n_samples": 1.375
+      },
+      "n_train_rows": 24,
+      "tree0_feature": [
+        3,
+        -2,
+        0,
+        -2,
+        -2
+      ],
+      "tree0_threshold": [
+        -0.0002391049638390541,
+        -2.0,
+        0.1323477253317833,
+        -2.0,
+        -2.0
+      ]
+    },
+    "campaign8": {
+      "scaler_mean_": {
+        "delta_mean": -350845.49021402997,
+        "delta_min": -375336.1568806966,
+        "delta_max": -326354.8235473633,
+        "delta_last": -375336.1568806966,
+        "std": 24490.666666666668,
+        "n_samples": 1.375
+      },
+      "n_train_rows": 24,
+      "tree0_feature": [
+        3,
+        -2,
+        0,
+        -2,
+        -2
+      ],
+      "tree0_threshold": [
+        0.00206916406750679,
+        -2.0,
+        0.1341012604534626,
+        -2.0,
+        -2.0
+      ]
+    },
+    "topup1": {
+      "scaler_mean_": {
+        "delta_mean": -320125.49021402997,
+        "delta_min": -344616.1568806966,
+        "delta_max": -295634.8235473633,
+        "delta_last": -344616.1568806966,
+        "std": 24490.666666666668,
+        "n_samples": 1.375
+      },
+      "n_train_rows": 24,
+      "tree0_feature": [
+        3,
+        -2,
+        0,
+        -2,
+        -2
+      ],
+      "tree0_threshold": [
+        -0.0002391049638390541,
+        -2.0,
+        0.13178123906254768,
+        -2.0,
+        -2.0
+      ]
+    }
   },
   "per_instance": [
     {
