@@ -1,8 +1,10 @@
 """Closes the first accepted-limitation gap from the Weeks 8-9 gate-audit (Section 8):
-RF/XGBoost/LightGBM trained and tuned, at the current gate-audited [15s,30s]/30s window
-config (results/ml-first-pass/extracted_windows.csv is not re-extracted here -- that
-data already passed gate-audit; only the window/horizon SWEEP, in a separate script,
-re-extracts).
+RF/XGBoost/LightGBM trained and tuned, at whatever window/horizon config
+results/ml-first-pass/extracted_windows.csv currently holds (this script does not
+re-extract -- only the window/horizon SWEEP, in a separate script, does that). Originally
+run at [15s,30s]/30s; re-run at [10s,15s]/15s after Section 6.3's second correction
+(2026-07-13) found the former unsafe for every class's tightest real inter-episode gap
+-- current committed results/JSON are from the corrected config.
 
 Nested CV per Section 6.3's addendum: for each outer LOO fold, hyperparameters are
 selected via an inner CV on the outer-training groups only, never touching the outer
@@ -14,7 +16,8 @@ principle (nested CV is standard with an inner k-fold even when the outer loop i
 executor_oom is NOT nested-tuned. With only 4 (or 2, clean-3 subset) training groups
 remaining per outer fold, an inner CV has no meaningful signal to select on -- this is
 the same small-N problem the null-baseline check already confirmed (F1 below a trivial
-baseline, p=0.34-0.54). Faking a tuned result on data that can't support tuning would
+baseline, chance-level p across configs tried). Faking a tuned result on data that can't
+support tuning would
 misrepresent the finding, not strengthen it. executor_oom still gets all 3 models
 trained with one fixed default config each, satisfying the "trained" half of Section 8's
 gate criterion honestly, without pretending the "tuned" half applies at this N.

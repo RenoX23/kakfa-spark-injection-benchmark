@@ -279,7 +279,8 @@
           "pre_failure": 16
         }
       }
-    ]
+    ],
+    "full_feature_set_caveat": "This full-feature (incl. n_samples) F1=0.667 is NOT trustworthy as a genuine-signal result. feature_importances_ shows n_samples carries 100% of total importance at this config (up{} barely moves in a 15s window). See broker_kill_no_nsamples_check.json for the de-confounded result: F1=0.762, p=0.25 (chance) once n_samples is dropped."
   },
   "executor_oom": {
     "fault_class": "executor_oom",

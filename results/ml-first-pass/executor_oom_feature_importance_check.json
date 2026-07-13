@@ -58,5 +58,5 @@
     ],
     "n_folds_averaged": 3
   },
-  "verdict": "no single feature dominates in either version -- top feature is last=0.200 (full set) or std=0.204 (clean subset), both essentially tied with the rest. No n_samples-style leak."
+  "verdict": "no single feature dominates in either version -- top feature is last=0.205 (full set) or mean=0.192 (clean subset), both essentially tied with the rest. No n_samples-style leak."
 }

@@ -63,6 +63,27 @@ def loo_cv_eval(X, y, groups):
 def main():
     df = pd.read_csv(REPO / "results" / "ml-first-pass" / "extracted_windows.csv")
     sub = df[df.fault_class == "disk_pressure"].reset_index(drop=True)
+    y = sub["label"].values
+    groups = sub["episode_id"].values
+
+    # Comparison numbers computed from the CURRENT data, not frozen literals -- a
+    # hardcoded "what the other approaches scored" goes stale the moment the window/
+    # horizon config changes (found happening to exactly this pattern in 3 other
+    # scripts during the 2026-07-13 recalibration; fixed here too instead of hand-
+    # patching this script's JSON output the same way those were originally fixed).
+    raw_cols = ["mean", "std", "min", "max", "last", "n_samples"]
+    raw_true, raw_pred = loo_cv_eval(sub[raw_cols].values, y, groups)
+    comparison_full_raw_features_f1 = f1_score(raw_true, raw_pred, zero_division=0)
+
+    std_true, std_pred = loo_cv_eval(sub[["std"]].values, y, groups)
+    comparison_std_only_f1 = f1_score(std_true, std_pred, zero_division=0)
+    rng_std = np.random.default_rng(SEED)
+    std_shuffled_f1s = []
+    for _ in range(N_SHUFFLES):
+        y_shuffled = rng_std.permutation(y)
+        t, p = loo_cv_eval(sub[["std"]].values, y_shuffled, groups)
+        std_shuffled_f1s.append(f1_score(t, p, zero_division=0))
+    comparison_std_only_p = sum(1 for f in std_shuffled_f1s if f >= comparison_std_only_f1) / N_SHUFFLES
 
     baselines = sub["episode_id"].map(baseline_for)
     sub["delta_mean"] = sub["mean"] - baselines
@@ -71,8 +92,6 @@ def main():
     sub["delta_last"] = sub["last"] - baselines
 
     X = sub[DELTA_FEATURE_COLS].values
-    y = sub["label"].values
-    groups = sub["episode_id"].values
 
     true, pred = loo_cv_eval(X, y, groups)
     precision = precision_score(true, pred, zero_division=0)
@@ -105,10 +124,9 @@ def main():
         "n_shuffled_ge_real": n_ge, "p_value": p_value,
         "p_value_reported": p_value_reported,
         "p_value_note": "rank-based p-value from N_SHUFFLES permutations is bounded below by 1/N_SHUFFLES; 0/N_SHUFFLES is reported as a bound, not an exact 0.",
-        "comparison_full_raw_features_f1": 0.9677419354838709,
-        "comparison_std_only_f1": 0.7777777777777778,
-        "comparison_std_only_p": 0.05,
-        "comparison_std_only_p_note": "corrected from 0.08 after the normal-reference stride bug fix (commit d75783f); 0.08 was computed on pre-fix data and is stale",
+        "comparison_full_raw_features_f1": comparison_full_raw_features_f1,
+        "comparison_std_only_f1": comparison_std_only_f1,
+        "comparison_std_only_p": comparison_std_only_p,
     }
     with open(REPO / "results" / "ml-first-pass" / "disk_pressure_delta_features.json", "w") as f:
         json.dump(result, f, indent=2)

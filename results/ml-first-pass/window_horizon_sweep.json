@@ -52,7 +52,7 @@
         }
       }
     },
-    "G1": {
+    "G1_current_default": {
       "window_s": 15,
       "horizons_s": [
         10,
@@ -144,7 +144,7 @@
         }
       }
     },
-    "G3_current_default": {
+    "G3_original_default": {
       "window_s": 30,
       "horizons_s": [
         15,

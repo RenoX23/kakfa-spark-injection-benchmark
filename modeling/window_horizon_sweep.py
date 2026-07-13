@@ -1,6 +1,13 @@
 """Closes the second accepted-limitation gap from the Weeks 8-9 gate-audit (Section 8):
 a real window/horizon sensitivity sweep, not a single corrected-then-fixed value.
 
+UPDATE (2026-07-13, same day): this sweep's own finding below was acted on. G1
+([10s,15s]/15s) is now `extract_and_train.py`'s actual default (Section 6.3's second
+correction) -- everywhere this docstring says "current shipped default" or "current"
+about G3 ([15s,30s]/30s), that describes the state at the moment this sweep first ran,
+not the state after. Grid point names in GRID reflect this (`G1_current_default`,
+`G3_original_default`).
+
 Grid bounded by REAL measured inter-episode gaps (modeling/extract_and_train.py's
 [15s,30s]/30s default needs max(horizons)+window=60s of lookback -- computed against
 the actual ground-truth timestamps this run, the tightest real gap in EVERY class is
@@ -49,9 +56,12 @@ CAMPAIGN_DIR = REPO / "results" / "campaign-n8"
 
 GRID = [
     {"name": "G0", "window_s": 10, "horizons_s": [5, 10]},
-    {"name": "G1", "window_s": 15, "horizons_s": [10, 15]},
+    {"name": "G1_current_default", "window_s": 15, "horizons_s": [10, 15]},  # adopted as the
+    # official config (Section 6.3's second correction) after this sweep found G3 unsafe
     {"name": "G2", "window_s": 20, "horizons_s": [10, 20]},
-    {"name": "G3_current_default", "window_s": 30, "horizons_s": [15, 30]},
+    {"name": "G3_original_default", "window_s": 30, "horizons_s": [15, 30]},  # the config in
+    # place when this sweep ran; superseded by G1 the same day this sweep's own finding
+    # (below) was acted on
 ]
 
 

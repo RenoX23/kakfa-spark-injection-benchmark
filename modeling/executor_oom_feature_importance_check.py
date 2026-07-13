@@ -74,7 +74,12 @@ def main():
         ),
         "full_5_episode": {"feature_importance_ranked": full_ranked, "n_folds_averaged": full_folds},
         "clean_3_episode": {"feature_importance_ranked": clean_ranked, "n_folds_averaged": clean_folds},
-        "verdict": "no single feature dominates in either version -- top feature is last=0.200 (full set) or std=0.204 (clean subset), both essentially tied with the rest. No n_samples-style leak.",
+        "verdict": (
+            f"no single feature dominates in either version -- top feature is "
+            f"{full_ranked[0][0]}={full_ranked[0][1]:.3f} (full set) or "
+            f"{clean_ranked[0][0]}={clean_ranked[0][1]:.3f} (clean subset), both essentially "
+            f"tied with the rest. No n_samples-style leak."
+        ),
     }
     with open(REPO / "results" / "ml-first-pass" / "executor_oom_feature_importance_check.json", "w") as f:
         json.dump(result, f, indent=2)
