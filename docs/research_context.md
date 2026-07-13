@@ -714,9 +714,104 @@ recoverable detection — same rigor as the baseline detector's own lead-time re
 in `docs/baseline_thresholds.md`. Lead time for a given episode = `severity_utc` minus
 that episode's earliest-positive window's end timestamp.
 
-**Not run yet.** Per instruction, this methodology is reported for sign-off before any
-extraction or model evaluation happens against real episodes — no numbers in this
-addendum are computed results.
+**Correction found before the first real run, 2026-07-13 (user review, not
+self-caught):** point 5's backward-scan bound originally checked only disk_pressure's
+own previous episode. That misses episodes of *other* classes running in the same
+tight testing window — exactly the class of bug already found once this session
+(executor_oom's ramptest3 overlapping the old normal-reference windows). Recomputed
+using every episode's real timestamp across all 5 classes: disk_pressure's campaign1 is
+preceded by **backpressure_cascade's campaign8, ending only 46s before campaign1's own
+onset** (not the 73s same-class-median placeholder originally used), and — more
+consequentially — **campaign7's true nearest neighbor turned out to be a *discarded*
+disk_pressure repetition (`campaign6`, excluded from the active N=8 for an unconfirmed
+`drop_confirmed_utc` timestamp, not because nothing happened), ending 73s before
+campaign7's onset, not the 254s gap to the previous *active* disk_pressure episode.**
+Discarded reps still had a real fault physically injected — their telemetry is real and
+present in Prometheus regardless of dataset-inclusion status. `modeling/
+disk_pressure_lead_time.py`'s neighbor search now includes `results/campaign-n8/
+_discarded/` for exactly this reason.
+
+**Results, `modeling/disk_pressure_lead_time.py` → `results/ml-first-pass/
+disk_pressure_lead_time.json`:**
+
+*Flagged-episode trace (item 4 of the review), both resolved before any number was
+trusted:*
+- **campaign7 — confirmed contamination, corrected, not just excluded.** Under the
+  original (same-class-only) 254s bound, the earliest positive landed at horizon=240s
+  (window_end 11:13:29). Traced: that window's raw mean (995,148,230,656.0) is
+  byte-for-byte identical to discarded campaign6's own `baseline_avail_bytes`
+  (995,148,230,656.0); the next cluster back (h=75-120s window) matches campaign6's
+  `post_fill_avail_bytes` (991,926,218,752.0) exactly. The model wasn't detecting a
+  campaign7 precursor at all — it was reading campaign6's own real fill-and-cleanup
+  telemetry. With the corrected 73s bound (bounded by campaign6, found via the fix
+  above), the scan never reaches that contaminated region: campaign7 now resolves
+  cleanly to horizon=60s, lead_time=105s — landing inside the same 55-110s range as
+  every other clean episode, which is itself corroborating evidence the correction is
+  right, not just defensible in isolation.
+- **topup1 — flagged, traced, NOT contamination, but still excluded as unresolved.**
+  No episode of any class (active or discarded) falls within topup1's true 630s gap to
+  the previous episode (network_degradation's campaign8) — the practical 300s cap
+  applies, and the model predicts pre_failure at every single scan point out to that
+  cap, hitting the flag threshold by saturating it rather than by finding a genuine
+  detection point. Traced the real underlying Prometheus series (not just the
+  window-aggregated mean): a real, small, monotonic decline from 995,052,072,960 to
+  995,050,299,392 bytes (≈1.77MB) over the full 5 minutes before onset — not noise, not
+  a different episode's fault, just an unusually stable pre-injection period for this
+  specific rep. Excluded from the headline numbers: not confirmed genuine (no negative
+  region was ever found to bound it), not contamination either — a third, honestly
+  labeled category, not forced into one of the other two to make the count come out
+  even.
+
+**A more consequential finding surfaced while resolving the above, worth stating
+plainly rather than only in a footnote:** every one of the 7 clean episodes' earliest
+positive prediction lands at *exactly* the last scannable point before that episode's
+own contamination-safety bound (campaign1: 45s of 46s available; campaign2: 45s of 49s;
+campaign3: 75s of 84s; campaign4: 60s of 73s; campaign5: 45s of 59s; campaign7: 60s of
+73s; campaign8: 60s of 70s) — **zero episodes show a negative (correctly-normal)
+prediction anywhere within their safe scan range.** That is a systematic pattern, not
+scattered noise. It means the reported lead times are a *lower bound* set by how far it
+was safe to look, not a *ceiling* reflecting the model's true detection horizon — the
+model may be able to detect much further back, or (the less flattering but equally
+plausible read) it may simply be classifying "resembles this episode's own baseline
+range" rather than genuinely escalating precursor signal, and would keep predicting
+positive indefinitely into any sufficiently quiet pre-injection stretch, exactly as
+topup1's 300s-saturated, never-negative scan suggests. This is disclosed as an explicit
+caveat on every number below, not resolved by scanning further this pass (each larger
+bound needs the same discarded-episode-aware contamination check redone, real
+additional work, not assumed safe by extrapolation).
+
+**Final disk_pressure ML lead-time distribution (7 of 8 episodes; topup1 excluded,
+above):**
+
+| episode | earliest horizon before onset | lead time (vs. severity_utc) |
+|---|---|---|
+| campaign1 | 45s | 100s |
+| campaign2 | 45s | 55s |
+| campaign3 | 75s | 110s |
+| campaign4 | 60s | 105s |
+| campaign5 | 45s | 105s |
+| campaign7 | 60s (corrected) | 105s |
+| campaign8 | 60s | 110s |
+
+**Mean: 98.6s. Range: 55-110s. n=7/8 (topup1 excluded as unresolved, not averaged in
+and not scored as 0).** Reported as a lower bound per the caveat above, not a confirmed
+maximum detection horizon.
+
+**ML-vs-baseline comparison table, all 5 fault classes:**
+
+| class | baseline lead time | ML lead time | verdict |
+|---|---|---|---|
+| disk_pressure | 0.0s (8/8 reps — crossing coincides with severity on the identical real sample every time; no intermediate real data point exists for a raw threshold to fire earlier) | 98.6s mean, range 55-110s (n=7/8, lower bound — see caveat above) | **ML meaningfully outperforms baseline.** The static threshold is structurally incapable of firing early for this fault (confirmed, not assumed — Section 4 of `baseline_thresholds.md`); the delta-feature model uses information (relative-to-own-baseline drift) a fixed-value threshold cannot access at all, and the significance test (p<0.01) plus this reconstruction's 7-episode consistency (55-110s, no outliers once contamination is corrected) both support the claim. |
+| broker_kill | 57.0s (n=1 — only 1 of 8 reps ever captured a real in-fault sample at this pipeline's 60s scrape interval) | not computed — no signal survived significance testing | **No comparison possible.** ML has no validated signal to compare (Section 6.5, F1=0.762 de-confounded, p=0.25, chance). The baseline's own 57s figure is a single data point from 12.5% recall, not a reliable number to beat or lose to either. |
+| network_degradation | 0s in 3 of 4 reps that reach severity, 65s in the 4th; only 4 of 8 reps reach the severity bar at all | not computed — no signal survived significance testing | **No comparison possible.** ML has no validated signal (F1=0.118 std-only, p=1.00 — the cleanest negative in the whole Weeks 8-9 pass). |
+| executor_oom | 64.9s mean, range 48-83s (n=8/8 — the strongest, most consistent baseline lead time of any class) | not computed — no signal survived significance testing | **No comparison possible.** ML has no validated signal despite this class having the best baseline; the static-threshold detector remains the only validated detector here, and a small-N power problem (Section 11's risk entry), not a leak or drift artifact, is the documented reason ML hasn't cleared chance yet. |
+| backpressure_cascade | excluded — no independently-scraped Prometheus metric exists for Spark processing lag on this deployment; the only lag field is the driver-log-parsed one this class's own ground truth already uses, so any "detector" built on it would be circular (`baseline_thresholds.md` Section 3) | not computed — same reason, carried forward | **No comparison possible, same root cause at both stages.** This class was never modeled in Weeks 8-9 either, for the identical reason: no independently-scraped telemetry exists to build features from in the first place, not a modeling failure. |
+
+**Reading this honestly:** one real, defensible, significance-tested win (disk_pressure)
+against a baseline that is structurally shut out of ever beating it — not four
+head-to-head contests ML happened to win one of. The other three "no comparison
+possible" rows are not ML losses; they are the honest consequence of Weeks 8-9 already
+establishing, with proper testing, that there is nothing there to compare.
 
 ### 6.6 Explainability
 SHAP or permutation feature importance per fault class, to show *which* signals drive early warning for *which* failure type — this is the actionable-insight narrative for the write-up and for real operator adoption.
