@@ -909,6 +909,70 @@ disclosed result in its own right, not a null turn that needs padding.
 ### 6.6 Explainability
 SHAP or permutation feature importance per fault class, to show *which* signals drive early warning for *which* failure type — this is the actionable-insight narrative for the write-up and for real operator adoption.
 
+**Weeks 12 result, 2026-07-13 — disk_pressure only.** SHAP is only meaningful applied to
+a model with a validated classification signal to explain; of the 5 fault classes, only
+disk_pressure clears that bar (F1=0.941, 0/100 shuffled≥real, p<0.01 — Section 6.5).
+broker_kill, network_degradation, executor_oom, and backpressure_cascade have no
+significance-tested signal at any N reached so far, so there is no fitted decision
+boundary worth explaining for them, and none was computed — same discipline as Weeks
+10-11's lead-time scope rule (Section 6.5's addendum, point 1).
+
+`modeling/disk_pressure_shap.py` runs `shap.TreeExplainer` (exact for tree ensembles,
+no sampling approximation) against the identical 8 real-episode LOO folds from
+`disk_pressure_delta_features.py` — same `X`/`y`/`groups`, same
+`RandomForestClassifier(n_estimators=200, max_depth=5, random_state=42,
+class_weight="balanced")`, same per-fold `StandardScaler` — explaining the actual
+reported F1=0.941 model, not a stand-in trained separately for this check. Explained all
+16 true-positive `pre_failure` windows (recall=1.0, matches Section 6.5's delta-feature
+result).
+
+**Attribution result:** magnitude features (`delta_mean`/`delta_min`/`delta_max`/
+`delta_last`) carry **97.4%** of mean |SHAP| combined (delta_mean alone 27.2%, followed
+by delta_min 25.1%, delta_last 23.0%, delta_max 22.1%); `std` and `n_samples` carry
+0.7% and 1.8% respectively — negligible, and consistent with Weeks 8-9's separate
+n_samples-leak check staying clean at the delta-feature level too. A pre-registered gate
+(magnitude share ≥80%, no single non-magnitude feature ≥15%) was checked in code before
+any figure was produced — passed at 97.4%/1.8%, not a borderline call requiring
+judgment.
+
+**This independently corroborates the Weeks 10-11 mechanism trace, via a different
+method on different (real classification, not synthetic-sweep) data.** The ablation
+(`disk_pressure_lead_time_ablation.py`) found the lead-time-reconstruction model's
+decision boundary sits at a static ≈-350,000-byte threshold with zero cross-fold
+variance. SHAP here shows the *same* qualitative mechanism from the classification
+side: two further observations beyond the headline attribution percentages make this
+more than a restated conclusion —
+
+1. **The raw delta values at the actual trained horizons (10s/15s pre-onset) are all
+   ≥0** (range 0 to +684,032 bytes across the 16 true-positive windows) — avail_bytes
+   has not started declining at the windows the classifier is actually evaluated on.
+   There is no downward trend present in this data for any feature to detect, let alone
+   a rate-of-change one (`DELTA_FEATURE_COLS` has no slope/derivative term — confirmed
+   by inspection, not assumed).
+2. **SHAP attribution vectors are near-identical across episodes with very different
+   raw delta values** — e.g. campaign1 (delta_mean=+684,032B) and campaign2
+   (delta_mean=+0B) produce almost the same per-feature SHAP vector at both horizons.
+   Checked directly, not assumed a coincidence: the two folds' fitted scalers
+   (`StandardScaler.mean_`) and tree thresholds are genuinely different (verified by
+   direct comparison), but every real observed delta value sits so far above the
+   ablation's ≈-350,000-byte boundary that all 16 instances land on the identical side
+   of every split that matters, producing the same leaf path regardless of exactly how
+   far above threshold each one sits. This is the fingerprint of a coarse, single-
+   threshold step function, not a classifier sensitive to graded magnitude — the same
+   qualitative shape as the ablation's zero-cross-fold-variance finding, arrived at from
+   the model's actual behavior on real data rather than a synthetic parameter sweep.
+
+**Verdict: no discrepancy found.** SHAP attributes the classification decision to
+static magnitude/proximity features (97.4% combined share) with no trend-like or
+unexpected non-magnitude attribution, matching what the mechanism trace already
+concluded — the F1=0.941 result is a real, significance-tested "which recording era"
+discriminator, not evidence of an escalating physical precursor signal, and this
+finding does not change the Section 6.5 comparison table's verdict for disk_pressure.
+Evidence: `modeling/disk_pressure_shap.py`,
+`results/ml-first-pass/disk_pressure_shap.json` (full per-instance SHAP breakdown, gate
+check, sign check), `results/ml-first-pass/disk_pressure_shap_summary.png` (mean-
+attribution bar chart + per-instance beeswarm, the Section 12 candidate figure).
+
 ## 7. Novelty and Expected Contribution
 
 1. First reproducible fault-injection benchmark specifically targeting Kafka + Spark Structured Streaming pipeline failure prediction, as distinct from data-stream anomaly detection and from Spark job runtime/performance prediction (both separately, differently studied).
@@ -969,6 +1033,19 @@ original criteria, verified at a configuration confirmed safe for every class, n
 carried forward and not left resting on stale numbers.
 | 10–11 | Lead-time evaluation | Full metric suite computed per fault class; ML vs. baseline comparison table |
 | 12 | Explainability | SHAP analysis per fault class |
+
+**Weeks 12 complete, 2026-07-13.** SHAP analysis run against disk_pressure's
+delta-feature LOO-CV models (Section 6.6) — the only class with a validated
+classification signal to explain, per the same scope discipline used for Weeks 10-11's
+lead-time reconstruction. Result: SHAP attribution independently corroborates the
+Weeks 10-11 mechanism trace (magnitude features 97.4% combined share, no trend-like or
+unexpected non-magnitude attribution) rather than contradicting it — the pre-registered
+gate for producing a paper figure passed, and the figure
+(`results/ml-first-pass/disk_pressure_shap_summary.png`) is the Section 12 deliverable.
+No SHAP was computed for broker_kill, network_degradation, executor_oom, or
+backpressure_cascade — none has a significance-tested signal at any N reached so far,
+so "SHAP analysis per fault class" is satisfied as "per fault class with something
+valid to explain," not silently narrowed without comment.
 | 13–16 | Writing | Full draft, review/audit pass |
 
 ## 9. Target Venues
