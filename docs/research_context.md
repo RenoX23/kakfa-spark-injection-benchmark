@@ -581,20 +581,27 @@ of the full re-derivation:
   contamination-risk status — consistent with the null-baseline finding that this
   class's problem is small N, not window/horizon choice; no grid point rescued it.
 
-Net: **one class with real signal** on corrected, delta-baselined features
-(disk_pressure, F1=0.941, p<0.01, bit-identical across both the superseded and
-corrected window/horizon configs — the single most stable result in this whole pass) —
-and **three honest negatives**, all reconfirmed (not just carried over) at the
-corrected config: broker_kill's n_samples leak (now 100% of feature importance, F1=0.667
-full / F1=0.762/p=0.25 de-confounded), network_degradation's absence of shape-
-independent signal (now the cleanest negative in the pass, p=1.00), and executor_oom's
-small-N null (F1 below trivial baseline and near-chance, p=0.48/0.56). One-for-four,
-reconfirmed after a full re-derivation at the corrected window/horizon config, not just
-asserted to still hold. Follow-ups (lead-time reconstruction, and — per Section 11's
-risk entry — a possible executor_oom top-up if more episodes are collected) remain
-explicitly out of scope for this pass; RF/XGBoost/LightGBM comparison, hyperparameter
-tuning, and a real window/horizon sweep — the three gaps gate-audit originally flagged
-— are done, and the sweep's own finding (the shipped config was itself unsafe) has
+**This is not a "four classes, two positive two negative" result — it never was, and
+the framing matters.** What was actually proven: **one class (disk_pressure) with
+significance-tested positive predictive signal** (delta-baselined features, F1=0.941,
+0/100 shuffled≥real, p<0.01, bit-identical across both the superseded and corrected
+window/horizon configs — the single most stable result in this whole pass); **three
+classes (broker_kill, network_degradation, executor_oom) with no signal surviving
+rigorous testing, each for a distinct, documented reason** — broker_kill's apparent
+signal is a resolved n_samples grid-misalignment leak (100% of feature importance at
+the current config; de-confounded F1=0.762, p=0.25, chance), network_degradation shows
+a confirmed absence of shape-independent signal (std-only F1=0.118, p=1.00 — the
+cleanest negative in the pass), and executor_oom shows no demonstrated discrimination
+above chance or a trivial constant classifier at this N (F1 below baseline in both
+subsets, p=0.48/0.56) — a small-N power problem, not a leak or a drift artifact, and
+the one negative left genuinely open rather than closed (Section 11's risk entry: more
+episodes could still change this). All four verdicts were reconfirmed, not just carried
+over, after a full re-derivation at the corrected window/horizon config. Follow-ups
+(lead-time reconstruction, and — per Section 11's risk entry — a possible executor_oom
+top-up if more episodes are collected) remain explicitly out of scope for this pass;
+RF/XGBoost/LightGBM comparison, hyperparameter tuning, and a real window/horizon sweep
+— the three gaps gate-audit originally flagged — are done, and the sweep's own finding
+(the shipped config was itself unsafe) has
 also been corrected and re-verified, not left as a caveat on top of stale numbers.
 
 ### 6.6 Explainability
