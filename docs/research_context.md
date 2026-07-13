@@ -794,24 +794,99 @@ above):**
 | campaign8 | 60s | 110s |
 
 **Mean: 98.6s. Range: 55-110s. n=7/8 (topup1 excluded as unresolved, not averaged in
-and not scored as 0).** Reported as a lower bound per the caveat above, not a confirmed
-maximum detection horizon.
+and not scored as 0).**
+
+**Mechanism trace, 2026-07-13 (user review, before this number could be trusted or
+described in the write-up) — this reframes the claim, it does not just add a caveat.**
+For all 7 episodes, pulled the earliest-positive window's raw `avail_bytes` (not just
+the classifier's binary output) and compared to that episode's own settled baseline:
+
+| episode | raw avail_bytes at detection | baseline_avail_bytes | delta (raw − baseline) |
+|---|---|---|---|
+| campaign1 | 995,153,293,312 | 995,152,609,280 | **+684,032** |
+| campaign2 | 995,152,027,648 | 995,152,027,648 | 0 |
+| campaign3 | 995,151,241,216 | 995,150,802,944 | **+438,272** |
+| campaign4 | 995,150,311,424 | 995,149,934,592 | **+376,832** |
+| campaign5 | 995,149,176,832 | 995,148,972,032 | **+204,800** |
+| campaign7 | 995,147,304,960 | 995,146,944,512 | **+360,448** |
+| campaign8 | 995,146,117,120 | 995,145,748,480 | **+368,640** |
+
+**avail_bytes is not declining toward the fault in any of the 7 windows — every delta
+is zero or positive** (more free space than the eventual baseline, the opposite of
+what a physical precursor to a disk-*filling* fault would show), and every magnitude
+(0-684KB) is 0.00002-0.00007% of the disk — three to four orders of magnitude below
+the ~3.22GB real fault drop (`docs/baseline_thresholds.md` Section 4). Each window's
+`std=0.0, n_samples=1` — a single real Prometheus scrape, no dispersion — so
+`delta_mean=delta_min=delta_max=delta_last` at every one of these instances by
+construction; there is no rate-of-change or slope feature in this feature set to
+detect a trend even if one existed.
+
+**Per-instance ablation, not aggregate training importance, to find what actually
+drove each decision:** swept `delta_mean` (with its three collinear siblings) through
+a range for every one of the 7 held-out fold models, holding `std=0, n_samples=1`
+fixed. **Every fold's decision boundary sits at ≈-350,000 bytes, with essentially no
+variation across folds** — the classifier predicts pre_failure whenever raw
+`avail_bytes` is at or within ~350KB below *some* baseline-like reference value, and
+predicts normal otherwise. This is a static absolute-value-proximity threshold, not a
+trend detector — `std`/`n_samples` were confirmed not to matter by direct swap (both
+classes commonly show `std=0, n_samples=1` at single-sample windows, so they carry no
+discriminating information here). All 7 real deltas (0 to +684,032) sit comfortably on
+the positive side of every fold's ≈-350,000 threshold — none is a close call.
+
+**Item 3 (harness-setup timing) checked and ruled out, not assumed:** read
+`fault_injection/disk_pressure.py` directly — `baseline_avail = avail_bytes(port)` is
+queried immediately before the `dd` injection command with no intervening sleep or
+extended setup phase (the only prior step is starting a port-forward, ordinary tooling
+overhead, not something that leaves a multi-minute disk-usage signature). No
+script-driven procedural mechanism explains the 45-84s timing. The actual explanation
+is the real Prometheus scrape cadence for this metric (distinct real samples land
+roughly 45-90s apart, confirmed by de-duplicating raw range-query output for topup1
+earlier this pass) combined with where the ≈350KB threshold happens to sit relative to
+ordinary background disk-usage drift (a few hundred bytes/second, unrelated to the
+fault) — not a harness artifact, but not a physical fault signature either.
+
+**Verdict: unresolved artifact, not genuine physical precursor signal, and not
+harness-setup-timing correlated.** None of the three categories fits cleanly except by
+elimination — it is closest to "unresolved artifact," except the mechanism itself is
+now well understood, not mysterious: the classifier has learned a coarse "does this
+absolute value resemble *some* disk_pressure-campaign-era baseline" discriminator
+(baselines cluster tightly across all 8 episodes, 995.05-995.2 billion bytes, distinctly
+above the quiet-reference period's 994.9 billion) rather than anything resembling
+escalating fault detection. This is very likely the same underlying mechanism behind
+the original Weeks 8-9 significance test at the trained 10-15s horizons too, not a
+separate phenomenon specific to the extended lead-time scan — that test's windows are,
+by the same construction, also just "close to this episode's own baseline" vs. "close
+to the quiet-period's different baseline." **"Early warning of physical disk pressure"
+and "reliably distinguishes disk_pressure-campaign-era telemetry from quiet-reference-
+period telemetry" are different claims, and the evidence in this section supports only
+the second one.** The 98.6s figure describes how far back that era-distinction remains
+detectable within a contamination-safe window, not a physical detection horizon — RO3
+asked whether ML can predict failure onset with a meaningfully positive lead time, and
+this mechanism trace does not support answering yes on the strength of this number.
 
 **ML-vs-baseline comparison table, all 5 fault classes:**
 
 | class | baseline lead time | ML lead time | verdict |
 |---|---|---|---|
-| disk_pressure | 0.0s (8/8 reps — crossing coincides with severity on the identical real sample every time; no intermediate real data point exists for a raw threshold to fire earlier) | 98.6s mean, range 55-110s (n=7/8, lower bound — see caveat above) | **ML meaningfully outperforms baseline.** The static threshold is structurally incapable of firing early for this fault (confirmed, not assumed — Section 4 of `baseline_thresholds.md`); the delta-feature model uses information (relative-to-own-baseline drift) a fixed-value threshold cannot access at all, and the significance test (p<0.01) plus this reconstruction's 7-episode consistency (55-110s, no outliers once contamination is corrected) both support the claim. |
+| disk_pressure | 0.0s (8/8 reps — crossing coincides with severity on the identical real sample every time; no intermediate real data point exists for a raw threshold to fire earlier) | 98.6s mean, range 55-110s (n=7/8) — **not comparable as a detection-lead-time claim, see mechanism trace above** | **No meaningful ML-vs-baseline comparison can be drawn from this number.** The classification signal is real and significance-tested (p<0.01), but per-instance ablation shows it is a static, era-level absolute-value discriminator, not an escalating physical precursor to the fault — none of the 7 "detections" show avail_bytes declining, and the ≈350KB decision margin is three to four orders of magnitude below the fault's real ~3.22GB magnitude. The honest finding is that this pipeline's telemetry lets a classifier tell "disk_pressure recording session" apart from "quiet reference period," not that it gives 98.6s of physical early warning — reporting the latter as an ML-vs-baseline win would overclaim what Sections 6.4-6.5 and this trace actually established. |
 | broker_kill | 57.0s (n=1 — only 1 of 8 reps ever captured a real in-fault sample at this pipeline's 60s scrape interval) | not computed — no signal survived significance testing | **No comparison possible.** ML has no validated signal to compare (Section 6.5, F1=0.762 de-confounded, p=0.25, chance). The baseline's own 57s figure is a single data point from 12.5% recall, not a reliable number to beat or lose to either. |
 | network_degradation | 0s in 3 of 4 reps that reach severity, 65s in the 4th; only 4 of 8 reps reach the severity bar at all | not computed — no signal survived significance testing | **No comparison possible.** ML has no validated signal (F1=0.118 std-only, p=1.00 — the cleanest negative in the whole Weeks 8-9 pass). |
 | executor_oom | 64.9s mean, range 48-83s (n=8/8 — the strongest, most consistent baseline lead time of any class) | not computed — no signal survived significance testing | **No comparison possible.** ML has no validated signal despite this class having the best baseline; the static-threshold detector remains the only validated detector here, and a small-N power problem (Section 11's risk entry), not a leak or drift artifact, is the documented reason ML hasn't cleared chance yet. |
 | backpressure_cascade | excluded — no independently-scraped Prometheus metric exists for Spark processing lag on this deployment; the only lag field is the driver-log-parsed one this class's own ground truth already uses, so any "detector" built on it would be circular (`baseline_thresholds.md` Section 3) | not computed — same reason, carried forward | **No comparison possible, same root cause at both stages.** This class was never modeled in Weeks 8-9 either, for the identical reason: no independently-scraped telemetry exists to build features from in the first place, not a modeling failure. |
 
-**Reading this honestly:** one real, defensible, significance-tested win (disk_pressure)
-against a baseline that is structurally shut out of ever beating it — not four
-head-to-head contests ML happened to win one of. The other three "no comparison
-possible" rows are not ML losses; they are the honest consequence of Weeks 8-9 already
-establishing, with proper testing, that there is nothing there to compare.
+**Reading this honestly:** zero of the 5 classes support an "ML gives meaningfully
+positive lead time" claim once disk_pressure's own mechanism is traced through, not
+one win and three non-comparisons. broker_kill, network_degradation, and executor_oom
+have no validated classification signal at all (Weeks 8-9), so no lead time was ever
+computable for them — honest non-comparisons, not losses. disk_pressure *does* have a
+validated, significance-tested classification signal (p<0.01, reproducible across two
+window/horizon configs, corroborated by the sensitivity sweep) — but this pass's
+mechanism trace shows that signal is a static absolute-value discriminator between two
+recording sessions, not an escalating physical precursor, so the 98.6s figure it would
+otherwise produce cannot honestly be reported as a lead-time win either. Weeks 10-11's
+actual finding is negative across the board on RO3's specific question ("can ML predict
+failure onset with a meaningfully positive lead time") — a real, defensible, and
+disclosed result in its own right, not a null turn that needs padding.
 
 ### 6.6 Explainability
 SHAP or permutation feature importance per fault class, to show *which* signals drive early warning for *which* failure type — this is the actionable-insight narrative for the write-up and for real operator adoption.
