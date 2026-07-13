@@ -604,6 +604,120 @@ RF/XGBoost/LightGBM comparison, hyperparameter tuning, and a real window/horizon
 (the shipped config was itself unsafe) has
 also been corrected and re-verified, not left as a caveat on top of stale numbers.
 
+**Weeks 10-11 addendum — ML lead-time reconstruction methodology, defined before
+computing anything, 2026-07-13.** Same checkpoint discipline as every phase before this
+one (Section 6.3's split methodology was signed off before window extraction; here, the
+lead-time methodology is defined and reported before it's run against real episodes).
+
+**1. Scope: disk_pressure only.** The only class with significance-tested positive
+signal (delta features, F1=0.941, 0/100 shuffled≥real, p<0.01 —
+`disk_pressure_delta_features.json`). broker_kill, network_degradation, and
+executor_oom get no lead-time computation under any framing — there is no validated
+signal to reconstruct a detection timestamp from, and computing one anyway (e.g., "the
+model would have fired at horizon X") would misrepresent a chance-level classifier as
+having a meaningful lead time. Their comparison-table entries will read "ML lead time:
+not computed — no signal survived significance testing," per instruction.
+
+**2. Per-episode model: reuse the existing LOO-held-out fold, no retraining.**
+disk_pressure's delta-feature LOO-CV (`disk_pressure_delta_features.py`) already trains
+18 models, one per held-out group (8 real episodes + 10 synthetic `normal_reference`
+windows). Lead-time reconstruction only concerns the 8 folds where a real episode
+(campaign1/2/3/4/5/7/8, topup1) was the held-out group — each such fold's fitted
+`RandomForestClassifier` and `StandardScaler` were trained with zero knowledge of that
+episode's own data, matching the anti-leakage discipline already established (Section
+6.3 addendum point 4). The classifier's feature vector never includes the horizon or a
+timestamp — it only sees `[delta_mean, delta_min, delta_max, delta_last, std,
+n_samples]` — so the exact same fitted model can be evaluated on windows at horizons it
+was never trained on, without retraining or leakage. This is what makes reconstructing
+a continuous detection curve from an 18-fold LOO setup valid at all.
+
+**3. Reference "failure/severity event": the same severity-threshold crossing the
+baseline detector is scored against, not injection onset.** `docs/baseline_thresholds.md`
+Section 4 defines disk_pressure's severity-target as a drop of >2.90GB, and the
+baseline's own reported lead time (0.0s, 8/8 reps) is measured from threshold-crossing
+to that severity event — not from injection. Using the identical reference event
+(`severity_utc`, `results/baseline-threshold-evidence/evaluation_output.json`'s
+`severity_detail` array) is what makes the ML-vs-baseline comparison in item 4 apples-
+to-apples; anchoring ML lead time to `injection_timestamp_utc` instead would silently
+compare two different questions. **Real, measured onset→severity gaps per episode (not
+a fixed offset — checked, not assumed):**
+
+| episode | onset | severity_utc | onset→severity |
+|---|---|---|---|
+| campaign1 | 11:00:18 | 11:01:13 | 55s |
+| campaign2 | 11:03:03 | 11:03:13 | 10s |
+| campaign3 | 11:05:39 | 11:06:14 | 35s |
+| campaign4 | 11:08:28 | 11:09:13 | 45s |
+| campaign5 | 11:11:14 | 11:12:14 | 60s |
+| campaign7 | 11:17:29 | 11:18:14 | 45s |
+| campaign8 | 11:20:25 | 11:21:15 | 50s |
+| topup1 | 14:33:37 | 14:33:52 | 15s |
+
+This varies 10-60s per episode (fill duration + time-to-next-scrape, not a constant) —
+already implies the model's existing [10s,15s]-horizon training windows (anchored to
+onset) sit roughly 20-70s before the severity event depending on the episode, before
+any backward scan even begins. Worth stating plainly now, not discovering as a surprise
+once numbers come back.
+
+**4. Continuous window scan: same feature construction, evaluated at a horizon
+continuum instead of the training set's 2 fixed points.** For each held-out episode,
+slide the identical `WINDOW_S=15s` window backward from onset in `STEP_S=15s`
+increments (horizon = 15s, 30s, 45s, 60s, ... — matching this pipeline's real 15s
+Prometheus scrape cadence, the same granularity every extraction in this project has
+used; a finer step would not generally surface new real samples). At each horizon,
+extract `[mean, std, min, max, last, n_samples]` from real Prometheus data exactly as
+`window_features()` already does, compute the delta features using that episode's own
+`baseline_avail_bytes` (real, ground-truth, already in `EPISODE_BASELINES` —
+independent of horizon, so this doesn't change), scale with the held-out fold's already-
+fitted `StandardScaler` (never refit), and get the held-out model's hard classification
+(`predict()`, not a probability threshold — matching how every other result in this
+pass was evaluated).
+
+**5. Backward scan bound per episode: real measured gap to that episode's own previous
+disk_pressure episode, capped at a practical ceiling.** Same anti-contamination
+principle Section 6.3's second correction established for training windows — the scan
+must not reach into the *previous* disk_pressure episode's own fault/recovery period.
+Real gaps (`cleaned_up_utc` of episode *i*-1 to onset of episode *i*, already measured
+this session): campaign1→2: 49s, campaign2→3: 84s, campaign3→4: 73s, campaign4→5: 59s,
+campaign5→7: 254s, campaign7→8: 70s, campaign8→topup1: 11481s. Bound = `min(real gap,
+300s)` — the 300s cap is deliberate, not arbitrary: it's >3x the longest lead time
+observed anywhere in this project so far (executor_oom's baseline mean of 64.9s,
+range 48-83s), so it can't truncate a real result, but it stops topup1's 11481s gap
+(3+ hours) from turning into a scientifically meaningless "the model predicted
+pre-failure 2 hours early" claim, and stops the scan itself from becoming an expensive,
+pointless Prometheus query over a multi-hour range. **campaign1 has no preceding
+disk_pressure episode in this dataset** (it's the first rep) — bounded instead at 73s,
+the median of the other 7 episodes' own real gaps (a specific, computed, disclosed
+judgment call, not a default silently reused).
+
+**6. Earliest-positive selection rule.** Scanning outward from onset (horizon
+increasing) toward the scan bound, the reported detection point is the **first
+(chronologically earliest, i.e., largest-horizon) window at which the held-out model
+predicts pre_failure** — matching Section 6.5's own stated headline-metric definition
+("lead time... between *first* true-positive alert and actual recorded failure
+onset"). If predictions flicker (a later, smaller-horizon window predicts normal again
+after an earlier positive), the first positive is still what's reported — an
+operational alert fires once and doesn't wait for a stable run of positives before
+being trusted. This is stated now so the rule isn't picked reactively after seeing
+which choice produces a nicer number.
+
+**7. No-detection handling.** If a held-out model never predicts pre_failure anywhere
+in its episode's scanned range, that episode reports "no lead time recoverable" —
+excluded from the mean/range calculation but explicitly counted (e.g., "lead time
+computed for 6 of 8 episodes"), the same disclosure standard `baseline_thresholds.md`
+already uses for its own "gaps checked: 4 of 6" reporting. Not silently dropped, not
+treated as a lead time of 0.
+
+**8. Reported outputs, once run:** per-episode lead time (up to 8 values, unrecoverable
+ones flagged not averaged in), mean, range, and the count of episodes with a
+recoverable detection — same rigor as the baseline detector's own lead-time reporting
+in `docs/baseline_thresholds.md`. Lead time for a given episode = `severity_utc` minus
+that episode's earliest-positive window's end timestamp.
+
+**Not run yet.** Per instruction, this methodology is reported for sign-off before any
+extraction or model evaluation happens against real episodes — no numbers in this
+addendum are computed results.
+
 ### 6.6 Explainability
 SHAP or permutation feature importance per fault class, to show *which* signals drive early warning for *which* failure type — this is the actionable-insight narrative for the write-up and for real operator adoption.
 
