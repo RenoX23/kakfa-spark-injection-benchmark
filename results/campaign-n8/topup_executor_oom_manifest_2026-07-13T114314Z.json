@@ -1,0 +1,112 @@
+{
+  "fault_class": "executor_oom",
+  "target_valid": 15,
+  "start_utc": "2026-07-13T11:43:14Z",
+  "runs": [
+    {
+      "fault_class": "executor_oom",
+      "rep": "topup1",
+      "run_id": "topup1",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 97.6,
+      "started_utc": "2026-07-13T11:44:53Z"
+    },
+    {
+      "fault_class": "executor_oom",
+      "rep": "topup2",
+      "run_id": "topup2",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 238.2,
+      "started_utc": "2026-07-13T11:50:20Z"
+    },
+    {
+      "fault_class": "executor_oom",
+      "rep": "topup3",
+      "run_id": "topup3",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 238.3,
+      "started_utc": "2026-07-13T11:55:33Z"
+    },
+    {
+      "fault_class": "executor_oom",
+      "rep": "topup4",
+      "run_id": "topup4",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 238.3,
+      "started_utc": "2026-07-13T12:00:28Z"
+    },
+    {
+      "fault_class": "executor_oom",
+      "rep": "topup5",
+      "run_id": "topup5",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 240.5,
+      "started_utc": "2026-07-13T12:05:41Z"
+    },
+    {
+      "fault_class": "executor_oom",
+      "rep": "topup6",
+      "run_id": "topup6",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 241.4,
+      "started_utc": "2026-07-13T12:11:01Z"
+    },
+    {
+      "fault_class": "executor_oom",
+      "rep": "topup7",
+      "run_id": "topup7",
+      "status": "ok",
+      "error": null,
+      "elapsed_seconds": 240.9,
+      "started_utc": "2026-07-13T12:16:06Z"
+    }
+  ],
+  "crash_events": [],
+  "end_utc": "2026-07-13T12:16:06Z",
+  "attempts": 7,
+  "final_valid": 15,
+  "reached_target": true,
+  "checkpoint": {
+    "fault_class": "executor_oom",
+    "record_count": 15,
+    "expected_reps": 15,
+    "storage_type": "persistent-claim",
+    "storage_ok": true,
+    "prom_ok": true,
+    "prom_detail": "1 series, 132 data points for 'up{job=\"spark-driver\"}' over 2026-07-13T11:43:14Z..2026-07-13T12:16:07Z",
+    "status": "PASS",
+    "timing": {
+      "metric_name": "detection_latency_s",
+      "metric_kind": "latency",
+      "metric_desc": "injection -> OOM confirmed",
+      "n": 15,
+      "values": [
+        223.0,
+        209.0,
+        230.0,
+        233.0,
+        228.0,
+        229.0,
+        230.0,
+        227.0,
+        97.0,
+        238.0,
+        238.0,
+        237.0,
+        239.0,
+        240.0,
+        240.0
+      ],
+      "min": 97.0,
+      "max": 240.0,
+      "mean": 222.53,
+      "stdev": 35.68
+    }
+  }
+}

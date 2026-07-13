@@ -1,0 +1,14 @@
+--- SPARK CRASH RECOVERY --- 2026-07-13T11:42:53Z
+fault_class_active: executor_oom
+rep_lost: topup1
+signature_matched ('[INTERNAL_ERROR]'): False
+log_snippet: '---------------------------\nBatch: 1487\n-------------------------------------------\n+-----+--------------------+-----+\n|seq  |ts                  |value|\n+-----+--------------------+-----+\n|27694|2026-07-11T18:47:29Z|621  |\n|27695|2026-07-11T18:47:30Z|572  |\n|27696|2026-07-11T18:47:31Z|987  |\n|27697|2026-07-11T18:47:32Z|205  |\n|27698|2026-07-11T18:47:33Z|246  |\n+-----+--------------------+-----+\n\n'
+action: driver+executor+submit-runner deleted, submit-pod.yaml reapplied, healthy again as of 2026-07-13T11:42:53Z
+
+=== CHECKPOINT: executor_oom === 2026-07-13T12:16:07Z
+record_count: 15 (expected 15)
+kafka_storage_mode: persistent-claim (OK)
+prometheus_data_nonempty: True (1 series, 132 data points for 'up{job="spark-driver"}' over 2026-07-13T11:43:14Z..2026-07-13T12:16:07Z)
+timing (latency -- injection -> OOM confirmed): n=15 min=97.0s max=240.0s mean=222.53s stdev=35.68s values=[223.0, 209.0, 230.0, 233.0, 228.0, 229.0, 230.0, 227.0, 97.0, 238.0, 238.0, 237.0, 239.0, 240.0, 240.0]
+STATUS: PASS
+
