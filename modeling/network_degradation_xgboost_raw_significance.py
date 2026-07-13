@@ -27,14 +27,14 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 
 REPO = Path(__file__).resolve().parent.parent
 FIXED_CONFIG = {"learning_rate": 0.1, "max_depth": 3, "n_estimators": 100}  # established mode_config
-HISTORICAL_HORIZONS_S = {10.0, 15.0}  # the [15s,30s]/30s config's horizon_s values were {15.0, 30.0}
+HISTORICAL_HORIZONS_S = {15.0, 30.0}  # the [15s,30s]/30s config this frozen result documents
 
 
 def main():
     df = pd.read_csv(REPO / "results" / "ml-first-pass" / "extracted_windows.csv")
     sub = df[df.fault_class == "network_degradation"].reset_index(drop=True)
     current_horizons = set(sub["horizon_s"].dropna().unique())
-    if current_horizons != {15.0, 30.0}:
+    if current_horizons != HISTORICAL_HORIZONS_S:
         raise SystemExit(
             f"extracted_windows.csv is at horizons={current_horizons}, not the "
             f"[15s,30s]/30s config this script's frozen historical result documents. "

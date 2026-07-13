@@ -2,6 +2,12 @@
 F1=0.778, p=0.08) -- is the signal spread across most episodes, or carried by 1-2?
 Same data/features/model/CV as magnitude_ablation_check.py, just capturing per-fold
 true/pred instead of only the aggregate F1.
+
+FROZEN HISTORICAL RESULT: computed at the superseded [15s,30s]/30s config. Not
+re-run after the 2026-07-13 recalibration to [10s,15s]/15s (std-only ablation there
+is F1=0.316/p=0.68 -- see magnitude_ablation_check.json) -- this file's per-fold
+breakdown is not cited in research_context.md's current verdict table and is kept
+only as a record of the diagnostic step that motivated building delta features.
 """
 import json
 from pathlib import Path
