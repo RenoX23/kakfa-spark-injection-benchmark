@@ -6,14 +6,14 @@
     "max",
     "last"
   ],
-  "precision": 1.0,
-  "recall": 0.125,
-  "f1": 0.2222222222222222,
+  "precision": 0.6153846153846154,
+  "recall": 1.0,
+  "f1": 0.7619047619047619,
   "n_shuffles": 100,
-  "shuffled_f1_mean": 0.3861578947368421,
-  "shuffled_f1_std": 0.32347762806378605,
-  "n_shuffled_ge_real": 66,
-  "p_value": 0.66,
+  "shuffled_f1_mean": 0.5411132767588502,
+  "shuffled_f1_std": 0.24095088293935765,
+  "n_shuffled_ge_real": 25,
+  "p_value": 0.25,
   "comparison_full_features_incl_nsamples_f1": 0.9411764705882353,
   "comparison_full_features_incl_nsamples_n_samples_importance": 0.969
 }

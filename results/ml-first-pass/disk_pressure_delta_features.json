@@ -11,14 +11,15 @@
   "recall": 1.0,
   "f1": 0.9411764705882353,
   "n_shuffles": 100,
-  "shuffled_f1_mean": 0.5715459106300286,
-  "shuffled_f1_std": 0.10756221713639146,
+  "shuffled_f1_mean": 0.5587373162491989,
+  "shuffled_f1_std": 0.13709283463225416,
   "n_shuffled_ge_real": 0,
   "p_value": 0.0,
-  "p_value_reported": "p < 0.01",
-  "p_value_note": "0/100 shuffled draws bounds significance at p < 1/n_shuffles; it does not establish an exact probability of 0.",
-  "comparison_full_raw_features_f1": 0.9677419354838709,
-  "comparison_std_only_f1": 0.7777777777777778,
-  "comparison_std_only_p": 0.05,
-  "comparison_std_only_p_note": "corrected from 0.08 after the normal-reference stride bug fix (commit d75783f); 0.08 was computed on pre-fix data and is stale"
+  "p_value_reported": "< 0.01",
+  "p_value_note": "rank-based p-value from N_SHUFFLES permutations is bounded below by 1/N_SHUFFLES; 0/N_SHUFFLES is reported as a bound, not an exact 0.",
+  "comparison_full_raw_features_f1": 1.0,
+  "comparison_std_only_f1": 0.3157894736842105,
+  "comparison_std_only_p": 0.68,
+  "comparison_std_only_p_note": "recomputed at the [10,15]s/15s config (window_horizon_sweep.py found [15,30]s/30s unsafe for every class's tightest real gap, 2026-07-13). Prior values (raw=0.968, std_only_f1=0.778, std_only_p=0.05) were correct for the superseded [15,30]s/30s config -- superseded, not wrong at the time.",
+  "config_note": "[10,15]s horizons / 15s window -- the new official config as of 2026-07-13. Delta-feature F1/p are UNCHANGED from the superseded [15,30]s/30s config (0.941/p<0.01 both times); std-only ablation is NOT stable across configs (0.778/p=0.05 at [15,30]s/30s vs 0.316/p=0.68 here) -- smaller windows leave std with too few samples to be informative on its own, but the delta-feature result does not depend on std alone and is robust."
 }

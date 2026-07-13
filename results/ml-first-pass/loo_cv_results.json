@@ -7,9 +7,9 @@
       "normal": 10,
       "pre_failure": 16
     },
-    "precision": 0.8888888888888888,
-    "recall": 1.0,
-    "f1": 0.9411764705882353,
+    "precision": 0.8181818181818182,
+    "recall": 0.5625,
+    "f1": 0.6666666666666666,
     "per_fold": [
       {
         "held_out_episode": "campaign1",
@@ -19,7 +19,7 @@
           1
         ],
         "pred": [
-          1,
+          0,
           1
         ],
         "train_class_balance": {
@@ -35,7 +35,7 @@
           1
         ],
         "pred": [
-          1,
+          0,
           1
         ],
         "train_class_balance": {
@@ -51,7 +51,7 @@
           1
         ],
         "pred": [
-          1,
+          0,
           1
         ],
         "train_class_balance": {
@@ -67,7 +67,7 @@
           1
         ],
         "pred": [
-          1,
+          0,
           1
         ],
         "train_class_balance": {
@@ -99,7 +99,7 @@
           1
         ],
         "pred": [
-          1,
+          0,
           1
         ],
         "train_class_balance": {
@@ -115,7 +115,7 @@
           1
         ],
         "pred": [
-          1,
+          0,
           1
         ],
         "train_class_balance": {
@@ -131,7 +131,7 @@
           1
         ],
         "pred": [
-          1,
+          0,
           1
         ],
         "train_class_balance": {
@@ -279,20 +279,19 @@
           "pre_failure": 16
         }
       }
-    ],
-    "full_feature_set_caveat": "This full-feature (incl. n_samples) F1=0.941 is NOT trustworthy as a genuine-signal result. feature_importances_ shows n_samples carries 0.969 of total importance -- mean/std/min/max/last are flat (1.0/0.0) across nearly every window because the up{} metric barely moves in a 30s window. The apparent separation is a sample-count-parity artifact between differently-constructed pre_failure vs normal_reference query windows, not broker-health signal (same class of bug as the earlier n_samples window-size leak). See broker_kill_no_nsamples_check.json for the de-confounded result: F1=0.222, p=0.660 (near chance) once n_samples is dropped -- consistent with the baseline detectors recall-limited mechanism (12.5% baseline recall), not a real ML improvement."
+    ]
   },
   "executor_oom": {
     "fault_class": "executor_oom",
-    "n_windows_total": 11,
+    "n_windows_total": 12,
     "n_episodes": 5,
     "class_balance": {
       "normal": 2,
-      "pre_failure": 9
+      "pre_failure": 10
     },
     "precision": 0.8,
-    "recall": 0.8888888888888888,
-    "f1": 0.8421052631578947,
+    "recall": 0.8,
+    "f1": 0.8,
     "per_fold": [
       {
         "held_out_episode": "ramptest10",
@@ -309,7 +308,7 @@
         ],
         "train_class_balance": {
           "normal": 1,
-          "pre_failure": 7
+          "pre_failure": 8
         }
       },
       {
@@ -327,7 +326,7 @@
         ],
         "train_class_balance": {
           "normal": 1,
-          "pre_failure": 7
+          "pre_failure": 8
         }
       },
       {
@@ -343,16 +342,18 @@
         ],
         "train_class_balance": {
           "normal": 2,
-          "pre_failure": 7
+          "pre_failure": 8
         }
       },
       {
         "held_out_episode": "ramptest7",
-        "n_test_windows": 1,
+        "n_test_windows": 2,
         "true": [
+          1,
           1
         ],
         "pred": [
+          0,
           0
         ],
         "train_class_balance": {
@@ -373,7 +374,7 @@
         ],
         "train_class_balance": {
           "normal": 2,
-          "pre_failure": 7
+          "pre_failure": 8
         }
       }
     ]
@@ -387,8 +388,8 @@
       "pre_failure": 16
     },
     "precision": 1.0,
-    "recall": 0.9375,
-    "f1": 0.967741935483871,
+    "recall": 1.0,
+    "f1": 1.0,
     "per_fold": [
       {
         "held_out_episode": "campaign1",
@@ -415,7 +416,7 @@
         ],
         "pred": [
           1,
-          0
+          1
         ],
         "train_class_balance": {
           "normal": 10,
@@ -668,9 +669,9 @@
       "normal": 10,
       "pre_failure": 16
     },
-    "precision": 0.8461538461538461,
-    "recall": 0.6875,
-    "f1": 0.7586206896551724,
+    "precision": 0.46153846153846156,
+    "recall": 0.375,
+    "f1": 0.41379310344827586,
     "per_fold": [
       {
         "held_out_episode": "campaign1",
@@ -697,7 +698,7 @@
         ],
         "pred": [
           0,
-          1
+          0
         ],
         "train_class_balance": {
           "normal": 10,
@@ -728,7 +729,7 @@
           1
         ],
         "pred": [
-          1,
+          0,
           1
         ],
         "train_class_balance": {
@@ -760,8 +761,8 @@
           1
         ],
         "pred": [
-          1,
-          1
+          0,
+          0
         ],
         "train_class_balance": {
           "normal": 10,
@@ -776,7 +777,7 @@
           1
         ],
         "pred": [
-          1,
+          0,
           1
         ],
         "train_class_balance": {
@@ -835,7 +836,7 @@
           0
         ],
         "pred": [
-          0
+          1
         ],
         "train_class_balance": {
           "normal": 9,
@@ -863,7 +864,7 @@
           0
         ],
         "pred": [
-          0
+          1
         ],
         "train_class_balance": {
           "normal": 9,
@@ -877,7 +878,7 @@
           0
         ],
         "pred": [
-          0
+          1
         ],
         "train_class_balance": {
           "normal": 9,
@@ -905,7 +906,7 @@
           0
         ],
         "pred": [
-          0
+          1
         ],
         "train_class_balance": {
           "normal": 9,
@@ -933,7 +934,7 @@
           0
         ],
         "pred": [
-          0
+          1
         ],
         "train_class_balance": {
           "normal": 9,

@@ -35,9 +35,20 @@ CAMPAIGN_DIR = REPO / "results" / "campaign-n8"
 # (needing ~210s of lookback room), which collapsed almost every episode's "normal"
 # window (7 of 8 skipped for most classes) because real inter-episode gaps in this
 # campaign are only 32-90s (measured directly from the ground-truth JSONs, not
-# assumed). Shrunk to fit what the actual campaign spacing supports.
-HORIZONS_S = [15, 30]
-WINDOW_S = 30
+# assumed). Shrunk to [15,30]s/30s to fit that spacing -- but that fix only checked
+# "does a real sample exist here at all," not "does this window stay inside its own
+# episode." [15,30]s/30s needs 60s of lookback, and modeling/window_horizon_sweep.py
+# (2026-07-13) found the real tightest gap in EVERY class sits below 60s (broker_kill
+# 47s, executor_oom 32-33s, disk_pressure 49s, network_degradation 54s) -- meaning that
+# config's pre-failure windows could reach back into the PREVIOUS episode's own active
+# fault/recovery period, not just quiet pre-onset time. Confirmed concretely, not just
+# in the abstract: executor_oom's ramptest4 (onset 17:17:38) reached back to 17:16:38
+# under the old config -- 28s *before* ramptest3's own OOM confirmation at 17:17:06.
+# Recalibrated a second time to [10,15]s/15s (needs 30s), the largest grid point in the
+# sweep that is contamination-safe for all 4 classes simultaneously (bounded by
+# executor_oom's 32s tightest gap -- the next grid point up, 40s, is not safe for it).
+HORIZONS_S = [10, 15]
+WINDOW_S = 15
 
 # Quiet reference period for broker_kill/disk_pressure/network_degradation's "normal"
 # windows -- these three share the same broker-side telemetry surface. Reusing the

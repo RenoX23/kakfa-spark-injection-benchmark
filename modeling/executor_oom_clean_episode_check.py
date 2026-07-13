@@ -18,8 +18,32 @@ FEATURE_COLS = ["mean", "std", "min", "max", "last", "n_samples"]
 CLEAN_EPISODES = ["ramptest3", "ramptest7", "ramptest10"]
 
 
+def loo_cv_f1(sub):
+    X = sub[FEATURE_COLS].values
+    y = sub["label"].values
+    groups = sub["episode_id"].values
+    logo = LeaveOneGroupOut()
+    all_true, all_pred = [], []
+    for train_idx, test_idx in logo.split(X, y, groups):
+        scaler = StandardScaler()
+        X_train = scaler.fit_transform(X[train_idx])
+        X_test = scaler.transform(X[test_idx])
+        y_train = y[train_idx]
+        if len(set(y_train)) < 2:
+            preds = np.full(len(test_idx), y_train[0])
+        else:
+            clf = RandomForestClassifier(n_estimators=200, max_depth=5, random_state=42, class_weight="balanced")
+            clf.fit(X_train, y_train)
+            preds = clf.predict(X_test)
+        all_true.extend(y[test_idx].tolist())
+        all_pred.extend(preds.tolist())
+    return f1_score(all_true, all_pred, zero_division=0)
+
+
 def main():
     df = pd.read_csv(REPO / "results" / "ml-first-pass" / "extracted_windows.csv")
+    full = df[df.fault_class == "executor_oom"].reset_index(drop=True)
+    full_5ep_f1 = loo_cv_f1(full)
     sub = df[(df.fault_class == "executor_oom") & (df.episode_id.isin(CLEAN_EPISODES))].reset_index(drop=True)
     print("Rows used:")
     print(sub[["episode_id", "window_kind", "label"]].to_string(index=False))
@@ -62,10 +86,10 @@ def main():
         "class_balance": {"normal": int((y == 0).sum()), "pre_failure": int((y == 1).sum())},
         "precision": precision, "recall": recall, "f1": f1,
         "per_fold": per_fold,
-        "comparison_5episode_f1": 0.8421052631578947,
+        "comparison_5episode_f1": full_5ep_f1,
     }
     print(f"3-clean-episode LOO-CV: precision={precision:.3f} recall={recall:.3f} f1={f1:.3f}")
-    print(f"(for comparison, original 5-episode result: f1=0.842)")
+    print(f"(for comparison, 5-episode result at current config: f1={full_5ep_f1:.3f})")
 
     with open(REPO / "results" / "ml-first-pass" / "executor_oom_clean_episode_check.json", "w") as f:
         json.dump(result, f, indent=2)
