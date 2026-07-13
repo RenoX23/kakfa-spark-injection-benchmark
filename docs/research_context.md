@@ -822,16 +822,20 @@ construction; there is no rate-of-change or slope feature in this feature set to
 detect a trend even if one existed.
 
 **Per-instance ablation, not aggregate training importance, to find what actually
-drove each decision:** swept `delta_mean` (with its three collinear siblings) through
-a range for every one of the 7 held-out fold models, holding `std=0, n_samples=1`
-fixed. **Every fold's decision boundary sits at ≈-350,000 bytes, with essentially no
-variation across folds** — the classifier predicts pre_failure whenever raw
-`avail_bytes` is at or within ~350KB below *some* baseline-like reference value, and
-predicts normal otherwise. This is a static absolute-value-proximity threshold, not a
-trend detector — `std`/`n_samples` were confirmed not to matter by direct swap (both
-classes commonly show `std=0, n_samples=1` at single-sample windows, so they carry no
-discriminating information here). All 7 real deltas (0 to +684,032) sit comfortably on
-the positive side of every fold's ≈-350,000 threshold — none is a close call.
+drove each decision (`modeling/disk_pressure_lead_time_ablation.py` →
+`results/ml-first-pass/disk_pressure_lead_time_ablation.json`, committed after
+gate-audit flagged this was otherwise asserted from prose):** swept `delta_mean` (with
+its three collinear siblings) through a fine 5KB-resolution grid for every one of the 7
+held-out fold models, holding `std=0, n_samples=1` fixed at their observed values.
+**Every fold's decision boundary lands at exactly -350,000 bytes, with zero variation
+across folds (std=0 across the 7 thresholds)** — the classifier predicts pre_failure
+whenever raw `avail_bytes` is at or within 350KB below *some* baseline-like reference
+value, and predicts normal otherwise. This is a static absolute-value-proximity
+threshold, not a trend detector — `std`/`n_samples` were confirmed not to matter by
+direct swap (both classes commonly show `std=0, n_samples=1` at single-sample windows,
+so they carry no discriminating information here). All 7 real deltas (0 to +684,032)
+sit comfortably on
+the positive side of every fold's -350,000 threshold — none is a close call.
 
 **Item 3 (harness-setup timing) checked and ruled out, not assumed:** read
 `fault_injection/disk_pressure.py` directly — `baseline_avail = avail_bytes(port)` is

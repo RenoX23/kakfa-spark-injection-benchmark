@@ -1,0 +1,52 @@
+{
+  "per_fold": {
+    "campaign1": {
+      "actual_delta_at_detection": 684032.0,
+      "fold_flip_threshold": -350000,
+      "margin_above_threshold": 1034032.0,
+      "sweep_resolution_bytes": 5000
+    },
+    "campaign2": {
+      "actual_delta_at_detection": 0.0,
+      "fold_flip_threshold": -350000,
+      "margin_above_threshold": 350000.0,
+      "sweep_resolution_bytes": 5000
+    },
+    "campaign3": {
+      "actual_delta_at_detection": 438272.0,
+      "fold_flip_threshold": -350000,
+      "margin_above_threshold": 788272.0,
+      "sweep_resolution_bytes": 5000
+    },
+    "campaign4": {
+      "actual_delta_at_detection": 376832.0,
+      "fold_flip_threshold": -350000,
+      "margin_above_threshold": 726832.0,
+      "sweep_resolution_bytes": 5000
+    },
+    "campaign5": {
+      "actual_delta_at_detection": 204800.0,
+      "fold_flip_threshold": -350000,
+      "margin_above_threshold": 554800.0,
+      "sweep_resolution_bytes": 5000
+    },
+    "campaign7": {
+      "actual_delta_at_detection": 360448.0,
+      "fold_flip_threshold": -350000,
+      "margin_above_threshold": 710448.0,
+      "sweep_resolution_bytes": 5000
+    },
+    "campaign8": {
+      "actual_delta_at_detection": 368640.0,
+      "fold_flip_threshold": -350000,
+      "margin_above_threshold": 718640.0,
+      "sweep_resolution_bytes": 5000
+    }
+  },
+  "cross_fold_summary": {
+    "mean_threshold": -350000.0,
+    "std_threshold": 0.0,
+    "min_threshold": -350000.0,
+    "max_threshold": -350000.0
+  }
+}
