@@ -2,7 +2,7 @@
 # fault_injection/, campaign orchestration, and baseline threshold evaluation used only
 # Python stdlib (json, urllib). scikit-learn/pandas/numpy added starting Weeks 8-9
 # (window extraction + Random Forest baseline model), actually in use, not speculative.
-numpy==2.5.1
+numpy==2.4.6
 pandas==3.0.3
 scikit-learn==1.9.0
 scipy==1.18.0
@@ -12,3 +12,8 @@ threadpoolctl==3.6.0
 # Section 8's work-plan row (RF/XGBoost/LightGBM) -- CPU-only use confirmed working.
 xgboost==3.3.0
 lightgbm==4.6.0
+# shap added for Section 6.6 explainability (disk_pressure delta-feature LOO-CV models) --
+# pulled numpy down from 2.5.1 to 2.4.6 (its own dependency ceiling); re-verified
+# numpy/pandas/scikit-learn/shap still interoperate correctly, not just "pip didn't error."
+shap==0.52.0
+matplotlib==3.11.0

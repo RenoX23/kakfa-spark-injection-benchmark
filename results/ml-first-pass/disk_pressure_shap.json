@@ -1,0 +1,573 @@
+{
+  "n_instances_explained": 16,
+  "n_true_positive_pre_failure": 16,
+  "mean_abs_shap_per_feature": {
+    "delta_mean": 0.13617275350345748,
+    "delta_min": 0.1259430352201313,
+    "delta_max": 0.11101364629919791,
+    "delta_last": 0.11549014725005903,
+    "std": 0.003637563026428119,
+    "n_samples": 0.009154830530895872
+  },
+  "ranked_features": [
+    [
+      "delta_mean",
+      0.13617275350345748
+    ],
+    [
+      "delta_min",
+      0.1259430352201313
+    ],
+    [
+      "delta_last",
+      0.11549014725005903
+    ],
+    [
+      "delta_max",
+      0.11101364629919791
+    ],
+    [
+      "n_samples",
+      0.009154830530895872
+    ],
+    [
+      "std",
+      0.003637563026428119
+    ]
+  ],
+  "magnitude_features": [
+    "delta_last",
+    "delta_max",
+    "delta_mean",
+    "delta_min"
+  ],
+  "magnitude_feature_combined_share": 0.9744872596308772,
+  "largest_non_magnitude_feature": {
+    "feature": "n_samples",
+    "mean_abs_shap": 0.009154830530895872,
+    "share": 0.01825810106696903
+  },
+  "sign_check_negative_delta_pushes_positive_class": {
+    "consistent": 0,
+    "total": 16
+  },
+  "gate": {
+    "magnitude_share_threshold": 0.8,
+    "nonmagnitude_single_feature_threshold": 0.15,
+    "corroborated": true
+  },
+  "per_instance": [
+    {
+      "episode_id": "campaign1",
+      "horizon_s": 10.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 684032.0,
+        "delta_min": 684032.0,
+        "delta_max": 684032.0,
+        "delta_last": 684032.0,
+        "std": 0.0,
+        "n_samples": 1.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.07974068122656267,
+        "delta_min": 0.08158653456906617,
+        "delta_max": 0.07789321554469922,
+        "delta_last": 0.08158653456906617,
+        "std": -0.3763957894140118,
+        "n_samples": -0.7745966692414834
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.13976969770049782,
+        "delta_min": 0.12738513763426693,
+        "delta_max": 0.11381000988761115,
+        "delta_last": 0.11949744414936722,
+        "std": -0.0018363095195099636,
+        "n_samples": -0.007792646518899845
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign1",
+      "horizon_s": 15.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 684032.0,
+        "delta_min": 684032.0,
+        "delta_max": 684032.0,
+        "delta_last": 684032.0,
+        "std": 0.0,
+        "n_samples": 2.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.07974068122656267,
+        "delta_min": 0.08158653456906617,
+        "delta_max": 0.07789321554469922,
+        "delta_last": 0.08158653456906617,
+        "std": -0.3763957894140118,
+        "n_samples": 1.2909944487358056
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.13195411120706207,
+        "delta_min": 0.12318068944084815,
+        "delta_max": 0.10997312696525027,
+        "delta_last": 0.11539849708948267,
+        "std": -0.0018349942838197277,
+        "n_samples": 0.012161902914509881
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign2",
+      "horizon_s": 10.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 0.0,
+        "delta_min": 0.0,
+        "delta_max": 0.0,
+        "delta_last": 0.0,
+        "std": 0.0,
+        "n_samples": 1.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.024050424096439014,
+        "delta_min": 0.02589190447629774,
+        "delta_max": 0.0222086326184744,
+        "delta_last": 0.02589190447629774,
+        "std": -0.3763957894140118,
+        "n_samples": -0.7745966692414834
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.13976969770049782,
+        "delta_min": 0.12738513763426693,
+        "delta_max": 0.11381000988761115,
+        "delta_last": 0.11949744414936722,
+        "std": -0.0018363095195099636,
+        "n_samples": -0.007792646518899845
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign2",
+      "horizon_s": 15.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 0.0,
+        "delta_min": 0.0,
+        "delta_max": 0.0,
+        "delta_last": 0.0,
+        "std": 0.0,
+        "n_samples": 2.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.024050424096439014,
+        "delta_min": 0.02589190447629774,
+        "delta_max": 0.0222086326184744,
+        "delta_last": 0.02589190447629774,
+        "std": -0.3763957894140118,
+        "n_samples": 1.2909944487358056
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.13195411120706207,
+        "delta_min": 0.12318068944084815,
+        "delta_max": 0.10997312696525027,
+        "delta_last": 0.11539849708948267,
+        "std": -0.0018349942838197277,
+        "n_samples": 0.012161902914509881
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign3",
+      "horizon_s": 10.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 0.0,
+        "delta_min": 0.0,
+        "delta_max": 0.0,
+        "delta_last": 0.0,
+        "std": 0.0,
+        "n_samples": 1.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.024736947470212364,
+        "delta_min": 0.02589190447629774,
+        "delta_max": 0.023581730838595893,
+        "delta_last": 0.02589190447629774,
+        "std": -0.3014301622002614,
+        "n_samples": -0.7745966692414834
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.14339770828944592,
+        "delta_min": 0.1291613652734808,
+        "delta_max": 0.11151805649579362,
+        "delta_last": 0.11579982713365451,
+        "std": -0.0008920735376238088,
+        "n_samples": -0.008151550321417777
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign3",
+      "horizon_s": 15.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 219136.0,
+        "delta_min": 0.0,
+        "delta_max": 438272.0,
+        "delta_last": 0.0,
+        "std": 219136.0,
+        "n_samples": 2.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.04120059016162792,
+        "delta_min": 0.02589190447629774,
+        "delta_max": 0.0565073086500542,
+        "delta_last": 0.02589190447629774,
+        "std": 3.998973485190135,
+        "n_samples": 1.2909944487358056
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.13123825645995732,
+        "delta_min": 0.11765534003391975,
+        "delta_max": 0.10782210965526556,
+        "delta_last": 0.1114730424298318,
+        "std": 0.010069722667378921,
+        "n_samples": 0.012574862086979926
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign4",
+      "horizon_s": 10.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 0.0,
+        "delta_min": 0.0,
+        "delta_max": 0.0,
+        "delta_last": 0.0,
+        "std": 0.0,
+        "n_samples": 1.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.02464068655271521,
+        "delta_min": 0.02589190447629774,
+        "delta_max": 0.02338916516904729,
+        "delta_last": 0.02589190447629774,
+        "std": -0.2999620190483007,
+        "n_samples": -0.7745966692414834
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.14339770828944592,
+        "delta_min": 0.1291613652734808,
+        "delta_max": 0.11151805649579362,
+        "delta_last": 0.11579982713365451,
+        "std": -0.0008920735376238088,
+        "n_samples": -0.008151550321417777
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign4",
+      "horizon_s": 15.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 188416.0,
+        "delta_min": 0.0,
+        "delta_max": 376832.0,
+        "delta_last": 0.0,
+        "std": 188416.0,
+        "n_samples": 2.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.03879628750149149,
+        "delta_min": 0.02589190447629774,
+        "delta_max": 0.051698713206411465,
+        "delta_last": 0.02589190447629774,
+        "std": 3.0965309966370738,
+        "n_samples": 1.2909944487358056
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.13123825645995732,
+        "delta_min": 0.11765534003391975,
+        "delta_max": 0.10782210965526556,
+        "delta_last": 0.1114730424298318,
+        "std": 0.010069722667378921,
+        "n_samples": 0.012574862086979926
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign5",
+      "horizon_s": 10.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 204800.0,
+        "delta_min": 204800.0,
+        "delta_max": 204800.0,
+        "delta_last": 204800.0,
+        "std": 0.0,
+        "n_samples": 1.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.040720539045317014,
+        "delta_min": 0.04256318984603658,
+        "delta_max": 0.038877187744401916,
+        "delta_last": 0.04256318984603658,
+        "std": -0.3763957894140118,
+        "n_samples": -0.7745966692414834
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.13734589252623308,
+        "delta_min": 0.1308090900976762,
+        "delta_max": 0.11386464165763614,
+        "delta_last": 0.1175304867586156,
+        "std": -0.0020842370726182266,
+        "n_samples": -0.006632540634209559
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign5",
+      "horizon_s": 15.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 204800.0,
+        "delta_min": 204800.0,
+        "delta_max": 204800.0,
+        "delta_last": 204800.0,
+        "std": 0.0,
+        "n_samples": 2.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.040720539045317014,
+        "delta_min": 0.04256318984603658,
+        "delta_max": 0.038877187744401916,
+        "delta_last": 0.04256318984603658,
+        "std": -0.3763957894140118,
+        "n_samples": 1.2909944487358056
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.12833842066122447,
+        "delta_min": 0.12570354762816316,
+        "delta_max": 0.11150530246741458,
+        "delta_last": 0.11664945435828175,
+        "std": -0.0020930878351454597,
+        "n_samples": 0.010729696053394775
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign7",
+      "horizon_s": 10.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 0.0,
+        "delta_min": 0.0,
+        "delta_max": 0.0,
+        "delta_last": 0.0,
+        "std": 0.0,
+        "n_samples": 1.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.024615018060973184,
+        "delta_min": 0.02589190447629774,
+        "delta_max": 0.02333781864564759,
+        "delta_last": 0.02589190447629774,
+        "std": -0.30058125362317967,
+        "n_samples": -0.7745966692414834
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.13880776358270072,
+        "delta_min": 0.1316921293101392,
+        "delta_max": 0.11346552453701166,
+        "delta_last": 0.11414302514699445,
+        "std": -0.0012207660307184758,
+        "n_samples": -0.006054343212794258
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign7",
+      "horizon_s": 15.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 180224.0,
+        "delta_min": 0.0,
+        "delta_max": 360448.0,
+        "delta_last": 0.0,
+        "std": 180224.0,
+        "n_samples": 2.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.038155144739172656,
+        "delta_min": 0.02589190447629774,
+        "delta_max": 0.05041644586271425,
+        "delta_last": 0.02589190447629774,
+        "std": 2.889507227040918,
+        "n_samples": 1.2909944487358056
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.12925516410225196,
+        "delta_min": 0.12041807046117223,
+        "delta_max": 0.10877829351769944,
+        "delta_last": 0.11177622960356852,
+        "std": 0.009773381855413106,
+        "n_samples": 0.010832193793228043
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign8",
+      "horizon_s": 10.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 368640.0,
+        "delta_min": 368640.0,
+        "delta_max": 368640.0,
+        "delta_last": 368640.0,
+        "std": 0.0,
+        "n_samples": 1.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.05405845990311949,
+        "delta_min": 0.05590213237726749,
+        "delta_max": 0.05221377531659083,
+        "delta_last": 0.05590213237726749,
+        "std": -0.3763957894140118,
+        "n_samples": -0.7745966692414834
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.14164655204626977,
+        "delta_min": 0.12936372780467859,
+        "delta_max": 0.11151505920964816,
+        "delta_last": 0.1176349913356166,
+        "std": -0.003444156455693131,
+        "n_samples": -0.005882840607186671
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "campaign8",
+      "horizon_s": 15.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 368640.0,
+        "delta_min": 368640.0,
+        "delta_max": 368640.0,
+        "delta_last": 368640.0,
+        "std": 0.0,
+        "n_samples": 2.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.05405845990311949,
+        "delta_min": 0.05590213237726749,
+        "delta_max": 0.05221377531659083,
+        "delta_last": 0.05590213237726749,
+        "std": -0.3763957894140118,
+        "n_samples": 1.2909944487358056
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.13450208188822174,
+        "delta_min": 0.12648660282528085,
+        "delta_max": 0.10966392709013369,
+        "delta_last": 0.11406777792878924,
+        "std": -0.003437511350451769,
+        "n_samples": 0.009550454951359555
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "topup1",
+      "horizon_s": 10.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 0.0,
+        "delta_min": 0.0,
+        "delta_max": 0.0,
+        "delta_last": 0.0,
+        "std": 0.0,
+        "n_samples": 1.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.024050424096439014,
+        "delta_min": 0.02589190447629774,
+        "delta_max": 0.0222086326184744,
+        "delta_last": 0.02589190447629774,
+        "std": -0.3763957894140118,
+        "n_samples": -0.7745966692414834
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.14164655204626977,
+        "delta_min": 0.12936372780467859,
+        "delta_max": 0.11151505920964816,
+        "delta_last": 0.1176349913356166,
+        "std": -0.003444156455693131,
+        "n_samples": -0.005882840607186671
+      },
+      "shap_base_value_class1": 0.509166666666667
+    },
+    {
+      "episode_id": "topup1",
+      "horizon_s": 15.0,
+      "true_label": 1,
+      "pred_label": 1,
+      "correctly_classified": true,
+      "raw_feature_values": {
+        "delta_mean": 0.0,
+        "delta_min": 0.0,
+        "delta_max": 0.0,
+        "delta_last": 0.0,
+        "std": 0.0,
+        "n_samples": 2.0
+      },
+      "scaled_feature_values": {
+        "delta_mean": 0.024050424096439014,
+        "delta_min": 0.02589190447629774,
+        "delta_max": 0.0222086326184744,
+        "delta_last": 0.02589190447629774,
+        "std": -0.3763957894140118,
+        "n_samples": 1.2909944487358056
+      },
+      "shap_values_class1": {
+        "delta_mean": 0.13450208188822174,
+        "delta_min": 0.12648660282528085,
+        "delta_max": 0.10966392709013369,
+        "delta_last": 0.11406777792878924,
+        "std": -0.003437511350451769,
+        "n_samples": 0.009550454951359555
+      },
+      "shap_base_value_class1": 0.509166666666667
+    }
+  ]
+}
