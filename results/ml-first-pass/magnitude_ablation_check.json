@@ -11,7 +11,7 @@
     "shuffled_f1_max": 0.8205128205128205,
     "n_shuffled_ge_real": 68,
     "p_value": 0.68,
-    "full_feature_real_f1_for_comparison": 0.968
+    "full_feature_real_f1_for_comparison": 1.0
   },
   "network_degradation": {
     "features_used": [
@@ -25,6 +25,6 @@
     "shuffled_f1_max": 0.7804878048780488,
     "n_shuffled_ge_real": 100,
     "p_value": 1.0,
-    "full_feature_real_f1_for_comparison": 0.867
+    "full_feature_real_f1_for_comparison": 0.41379310344827586
   }
 }

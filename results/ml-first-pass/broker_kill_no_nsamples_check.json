@@ -14,6 +14,6 @@
   "shuffled_f1_std": 0.24095088293935765,
   "n_shuffled_ge_real": 25,
   "p_value": 0.25,
-  "comparison_full_features_incl_nsamples_f1": 0.9411764705882353,
-  "comparison_full_features_incl_nsamples_n_samples_importance": 0.969
+  "comparison_full_features_incl_nsamples_f1": 0.6666666666666666,
+  "comparison_full_features_incl_nsamples_n_samples_importance": 1.0
 }

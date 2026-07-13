@@ -48,10 +48,27 @@ def loo_cv_eval(X, y, groups):
 def main():
     df = pd.read_csv(REPO / "results" / "ml-first-pass" / "extracted_windows.csv")
     sub = df[df.fault_class == "broker_kill"].reset_index(drop=True)
-    X = sub[FEATURES_NO_NSAMPLES].values
-    y = sub["label"].values
     groups = sub["episode_id"].values
+    y = sub["label"].values
 
+    full_cols = FEATURES_NO_NSAMPLES + ["n_samples"]
+    X_full = sub[full_cols].values
+    full_true, full_pred = loo_cv_eval(X_full, y, groups)
+    full_f1 = f1_score(full_true, full_pred, zero_division=0)
+    full_importances = []
+    logo_imp = LeaveOneGroupOut()
+    for train_idx, _ in logo_imp.split(X_full, y, groups):
+        y_train = y[train_idx]
+        if len(set(y_train)) < 2:
+            continue
+        scaler = StandardScaler()
+        X_train = scaler.fit_transform(X_full[train_idx])
+        clf = RandomForestClassifier(n_estimators=200, max_depth=5, random_state=42, class_weight="balanced")
+        clf.fit(X_train, y_train)
+        full_importances.append(clf.feature_importances_)
+    n_samples_importance = float(np.mean(full_importances, axis=0)[full_cols.index("n_samples")])
+
+    X = sub[FEATURES_NO_NSAMPLES].values
     true, pred = loo_cv_eval(X, y, groups)
     precision = precision_score(true, pred, zero_division=0)
     recall = recall_score(true, pred, zero_division=0)
@@ -77,8 +94,8 @@ def main():
         "shuffled_f1_mean": float(np.mean(shuffled_f1s)),
         "shuffled_f1_std": float(np.std(shuffled_f1s)),
         "n_shuffled_ge_real": n_ge, "p_value": p_value,
-        "comparison_full_features_incl_nsamples_f1": 0.9411764705882353,
-        "comparison_full_features_incl_nsamples_n_samples_importance": 0.969,
+        "comparison_full_features_incl_nsamples_f1": full_f1,
+        "comparison_full_features_incl_nsamples_n_samples_importance": n_samples_importance,
     }
     with open(REPO / "results" / "ml-first-pass" / "broker_kill_no_nsamples_check.json", "w") as f:
         json.dump(result, f, indent=2)

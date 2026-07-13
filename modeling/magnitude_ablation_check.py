@@ -18,6 +18,7 @@ from sklearn.metrics import f1_score
 
 REPO = Path(__file__).resolve().parent.parent
 SHAPE_FEATURES = ["std"]
+FULL_FEATURES = ["mean", "std", "min", "max", "last", "n_samples"]
 N_SHUFFLES = 100  # raised from 30: comparing real F1 against the single observed max of
 # a 30-sample null distribution is not a real significance test -- a proper permutation
 # p-value is (count of shuffled F1 >= real F1) / n_shuffles, which needs more resolution
@@ -51,10 +52,11 @@ def main():
 
     for cls in ["disk_pressure", "network_degradation"]:
         sub = df[df.fault_class == cls].reset_index(drop=True)
-        X = sub[SHAPE_FEATURES].values
         y_true = sub["label"].values
         groups = sub["episode_id"].values
 
+        full_feature_real_f1 = loo_cv_f1(sub[FULL_FEATURES].values, y_true, groups)
+        X = sub[SHAPE_FEATURES].values
         real_f1 = loo_cv_f1(X, y_true, groups)
         shuffled_f1s = [loo_cv_f1(X, rng.permutation(y_true), groups) for _ in range(N_SHUFFLES)]
 
@@ -71,7 +73,7 @@ def main():
             "shuffled_f1_max": float(np.max(shuffled_f1s)),
             "n_shuffled_ge_real": n_shuffled_ge_real,
             "p_value": p_value,
-            "full_feature_real_f1_for_comparison": 0.968 if cls == "disk_pressure" else 0.867,
+            "full_feature_real_f1_for_comparison": full_feature_real_f1,
         }
         print(f"{cls} (std only): real_f1={real_f1:.3f}  shuffled mean={np.mean(shuffled_f1s):.3f} "
               f"std={np.std(shuffled_f1s):.3f} range=[{np.min(shuffled_f1s):.3f},{np.max(shuffled_f1s):.3f}]")
