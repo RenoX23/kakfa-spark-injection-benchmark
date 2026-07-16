@@ -73,7 +73,13 @@ for g_start, g_end in gaps:
     else:
         checked += 1
         fp_windows += int(r)
-results['broker_kill'] = dict(tp=tp, fn=fn, fp=fp_windows, gaps_checked=checked, gaps_too_short=too_short, leads=leads)
+# Named crossing_to_recovery_s, not "leads" -- this is crossing (up==0 first observed) to
+# target_recovered_utc, i.e. residual outage duration AFTER detection, not a
+# crossing-to-crash-event lead time like executor_oom's. For a binary up/down signal,
+# crossing already IS witnessing the outage; there's no distinct earlier "crash event"
+# for this class to lead into. Found ambiguous and fixed 2026-07-13 -- see
+# results/baseline-threshold-evidence/clarify_leads_fields.py for the full trace.
+results['broker_kill'] = dict(tp=tp, fn=fn, fp=fp_windows, gaps_checked=checked, gaps_too_short=too_short, crossing_to_recovery_s=leads)
 
 # ---------------- executor_oom: working_set > 900MB ----------------
 oom_reps = [
@@ -105,7 +111,12 @@ for rid, pod, inj, oom in oom_reps:
     vals = [float(v) for s in series for _, v in s['values']]
     if any(v > THRESH_MEM for v in vals):
         fp_windows += 1
-results['executor_oom'] = dict(tp=tp, fn=fn, fp=fp_windows, gaps_checked=len(oom_reps), gaps_too_short=0, leads=leads)
+# Named crossing_to_crash_event_s: OOM-confirmed is the real crash event for this class,
+# so crossing-to-OOM is a genuine predictive lead time, unlike broker_kill's
+# crossing_to_recovery_s above. Matches docs/baseline_thresholds.md Section 2's explicit
+# "lead time (threshold crossing -> OOM)" definition -- renamed for a symmetric,
+# unambiguous name across all four classes, not because the value itself was wrong.
+results['executor_oom'] = dict(tp=tp, fn=fn, fp=fp_windows, gaps_checked=len(oom_reps), gaps_too_short=0, crossing_to_crash_event_s=leads)
 
 # ---------------- disk_pressure: avail drop > 1.5GB from rolling baseline ----------------
 disk_reps = [
@@ -166,7 +177,12 @@ for g_start, g_end in disk_gaps:
     else:
         checked += 1
         fp_windows += int(r)
-results['disk_pressure'] = dict(tp=tp, fn=fn, fp=fp_windows, gaps_checked=checked, gaps_too_short=too_short, leads=leads, excluded_gap='campaign6-contaminated (real fill occurred, discarded for unrelated detection-timing reason)', severity_threshold_bytes=SEVERITY_DROP, severity_detail=severity_detail)
+# `leads` here is crossing -> natural_end (the fault simply stopping), the pre-gate-
+# audit-fix definition -- SUPERSEDED by severity_detail's own crossing_to_severity_lead_s,
+# which is the metric actually reported in docs/research_context.md. Kept, clearly
+# labeled, not silently dropped or left ambiguously named next to the current metric --
+# see results/baseline-threshold-evidence/clarify_leads_fields.py for the full trace.
+results['disk_pressure'] = dict(tp=tp, fn=fn, fp=fp_windows, gaps_checked=checked, gaps_too_short=too_short, leads_crossing_to_natural_end_s_SUPERSEDED=leads, excluded_gap='campaign6-contaminated (real fill occurred, discarded for unrelated detection-timing reason)', severity_threshold_bytes=SEVERITY_DROP, severity_detail=severity_detail)
 
 # ---------------- network_degradation: scrape_duration_seconds > 1.5s ----------------
 net_reps = [
@@ -215,7 +231,8 @@ for g_start, g_end in gaps:
     else:
         checked += 1
         fp_windows += int(r)
-results['network_degradation'] = dict(tp=tp, fn=fn, fp=fp_windows, gaps_checked=checked, gaps_too_short=too_short, leads=leads, severity_threshold_s=SEVERITY_SCRAPE, severity_detail=severity_detail)
+# Same SUPERSEDED situation as disk_pressure above -- see that comment.
+results['network_degradation'] = dict(tp=tp, fn=fn, fp=fp_windows, gaps_checked=checked, gaps_too_short=too_short, leads_crossing_to_natural_end_s_SUPERSEDED=leads, severity_threshold_s=SEVERITY_SCRAPE, severity_detail=severity_detail)
 
 pf.terminate()
 

@@ -375,3 +375,42 @@ it was calibrated on, not out-of-sample generalization. This is a real, disclose
 limitation, not hidden in the results — genuinely independent validation would need either
 additional held-out reps (the reactive top-up path already in Section 11's risk register)
 or cross-validation folds, neither in scope for Weeks 6-7.
+
+**Field-naming correction, 2026-07-13 (found while drafting the paper's Results
+section, not during original Weeks 6-7 work).** `evaluation_output.json` carried a
+plain `leads` field per class, on top of (and separate from) the `severity_detail`
+field this document actually reports numbers from for disk_pressure and
+network_degradation. Tracing the actual computation in
+`results/baseline-threshold-evidence/evaluate_baselines.py` found `leads` means three
+different things depending on class, one of them genuinely stale:
+
+- **executor_oom**: `leads` = crossing → OOM-confirmed, the real crash event. Correct
+  and already the number reported above (64.9s mean, range 48-83s) — renamed to
+  `crossing_to_crash_event_s` for clarity, no value changed.
+- **disk_pressure / network_degradation**: `leads` = crossing → fault-natural-end, the
+  *pre*-severity-redefinition metric this section's own "Lead time for
+  disk_pressure/network_degradation was corrected after a gate-audit finding" paragraph
+  above already describes replacing. It was never removed after that fix, so it sat
+  beside the correct `severity_detail.crossing_to_severity_lead_s` field under a
+  similarly-generic name — confirmed stale by direct recomputation: `severity_detail`
+  reproduces the numbers reported in the table above exactly (disk_pressure 0.0s ×8/8;
+  network_degradation 0s ×3, 65s ×1, 4/8 reach severity). Moved aside as
+  `leads_crossing_to_natural_end_s_SUPERSEDED`, kept as disclosed history rather than
+  deleted, not used in any reported number.
+- **broker_kill**: `leads` = crossing → `target_recovered_utc`, i.e. residual outage
+  duration *after* detection — not a crossing-to-crash-event lead time at all. For a
+  binary up/down signal, crossing (the JMX target first reading down) already *is*
+  witnessing the outage; there is no distinct, later "crash event" for this class the
+  way OOM is for executor_oom or the severity threshold is for disk_pressure/
+  network_degradation. The number itself (57.0s, n=1) is unchanged and matches what's
+  reported above — this was not a stale-data bug — but reporting it in the same
+  "baseline lead time" column as the other three classes' genuinely predictive
+  quantities is a category mismatch this fix surfaces without resolving. Renamed to
+  `crossing_to_recovery_s` to stop it reading as directly comparable. Whether
+  broker_kill belongs in a "lead time" comparison at all, or whether ~0s (crossing
+  already being the failure event) is the more honest figure, is a methodological call
+  for whoever finalizes the paper's Results/Discussion, not decided here.
+
+Fix and full trace: `results/baseline-threshold-evidence/clarify_leads_fields.py`. No
+numeric value in the table above changed as a result of this fix — see Section 11's
+risk register for the corresponding entry.

@@ -5,9 +5,10 @@
     "fp": 0,
     "gaps_checked": 3,
     "gaps_too_short": 4,
-    "leads": [
+    "crossing_to_recovery_s": [
       57.0
-    ]
+    ],
+    "_note": "This is crossing (up==0 first observed) -> target_recovered_utc, i.e. residual outage duration AFTER detection -- NOT comparable to executor_oom's crossing_to_crash_event_s or disk_pressure/network_degradation's crossing_to_severity_lead_s (both measure time BEFORE a worse outcome). For a binary up/down signal, crossing already IS witnessing the outage, so there is no distinct earlier 'crash event' for this class to lead into. Whether this value belongs in a 'baseline lead time' comparison at all is a methodological question this fix does not resolve on its own authority -- see docs/research_context.md's provenance note for the same finding."
   },
   "executor_oom": {
     "tp": 8,
@@ -15,7 +16,7 @@
     "fp": 0,
     "gaps_checked": 8,
     "gaps_too_short": 0,
-    "leads": [
+    "crossing_to_crash_event_s": [
       59.0,
       65.0,
       83.0,
@@ -32,16 +33,6 @@
     "fp": 0,
     "gaps_checked": 4,
     "gaps_too_short": 2,
-    "leads": [
-      61.0,
-      62.0,
-      61.0,
-      62.0,
-      61.0,
-      61.0,
-      61.0,
-      64.0
-    ],
     "excluded_gap": "campaign6-contaminated (real fill occurred, discarded for unrelated detection-timing reason)",
     "severity_threshold_bytes": 2899390464,
     "severity_detail": [
@@ -109,7 +100,18 @@
         "crossing_to_severity_lead_s": 0,
         "severity_reached": true
       }
-    ]
+    ],
+    "leads_crossing_to_natural_end_s_SUPERSEDED": [
+      61.0,
+      62.0,
+      61.0,
+      62.0,
+      61.0,
+      61.0,
+      61.0,
+      64.0
+    ],
+    "_note": "This SUPERSEDED field measures crossing -> fault-natural-end (the fault simply stopping), the pre-gate-audit-fix definition -- see docs/baseline_thresholds.md 'Full Evaluation Results' section. The current, reported metric is severity_detail[*].crossing_to_severity_lead_s, unchanged and not stale. Kept here as disclosed history, not deleted."
   },
   "network_degradation": {
     "tp": 8,
@@ -117,16 +119,6 @@
     "fp": 0,
     "gaps_checked": 4,
     "gaps_too_short": 3,
-    "leads": [
-      33.0,
-      93.0,
-      31.0,
-      57.0,
-      87.0,
-      79.0,
-      47.0,
-      32.0
-    ],
     "severity_threshold_s": 3.8525037901875,
     "severity_detail": [
       {
@@ -193,6 +185,17 @@
         "crossing_to_severity_lead_s": null,
         "severity_reached": false
       }
-    ]
+    ],
+    "leads_crossing_to_natural_end_s_SUPERSEDED": [
+      33.0,
+      93.0,
+      31.0,
+      57.0,
+      87.0,
+      79.0,
+      47.0,
+      32.0
+    ],
+    "_note": "This SUPERSEDED field measures crossing -> fault-natural-end (the fault simply stopping), the pre-gate-audit-fix definition -- see docs/baseline_thresholds.md 'Full Evaluation Results' section. The current, reported metric is severity_detail[*].crossing_to_severity_lead_s, unchanged and not stale. Kept here as disclosed history, not deleted."
   }
 }
