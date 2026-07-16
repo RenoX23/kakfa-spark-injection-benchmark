@@ -31,12 +31,13 @@ classes. F1 and p-values are from Leave-One-Group-Out cross-validation with a
 p-values are rank-based, computed as the fraction of 100 label-permuted reruns of the
 identical pipeline scoring an F1 at or above the real result. Baseline lead time is the
 static-threshold detector's own reported lead (Section 6.5, Weeks 6–7 baseline
-evaluation).
+evaluation); entries marked N/A measure a quantity that is not comparable in kind to
+the others (see footnotes).
 
 | Fault class | Classification F1 | Permutation p | Baseline lead time | ML lead time | Verdict |
 |---|---|---|---|---|---|
 | disk_pressure | 0.941 (precision 0.889, recall 1.000; delta/relative-baseline features) | < 0.01 (0/100 shuffled ≥ real) | 0.0 s (n = 8/8) | 98.6 s mean, 55–110 s range (n = 7/8)$^{a}$ | Classification signal is real and significant, but no meaningful ML-vs-baseline lead-time comparison can be drawn (§3.2–3.3) |
-| broker_kill | 0.762 (precision 0.615, recall 1.000; de-confounded, `n_samples` excluded) | 0.25 (25/100 shuffled ≥ real) | 57.0 s (n = 1/8) | not computed | No validated signal |
+| broker_kill | 0.762 (precision 0.615, recall 1.000; de-confounded, `n_samples` excluded) | 0.25 (25/100 shuffled ≥ real) | N/A — no distinct crash event; detection coincides with outage (recall 12.5%, n = 1)$^{b}$ | not computed | No validated signal |
 | network_degradation | 0.118 (std-only ablation) | 1.00 (100/100 shuffled ≥ real) | 0 s in 3 of 4 reps reaching the severity threshold, 65 s in the fourth (n = 4/8 reach severity) | not computed | No validated signal — the cleanest negative in the study |
 | executor_oom | 0.909 (N = 15 collection, 11/15 episodes usable) | 0.500 (50/100 shuffled ≥ real) | 64.9 s mean, 48–83 s range (n = 8/8) | not computed | No validated signal, confirmed at N = 15 (§3.4) |
 | backpressure_cascade | not modeled | not modeled | excluded — no independently-scraped Prometheus metric for Spark processing lag exists on this deployment | not computed | No comparison possible; excluded at both the baseline and modeling stage for the same root cause |
@@ -44,6 +45,16 @@ evaluation).
 $^{a}$ One additional episode (topup1) was traced and excluded from this mean as an
 unresolved artifact — not confirmed contamination, but not a resolvable detection
 either (§3.3).
+
+$^{b}$ broker_kill's only captured episode shows the threshold crossing (JMX target
+first reading down) 57.0 seconds before that episode's recovery — but this is
+`crossing_to_recovery_s`, residual outage duration *after* detection, not a
+crossing-to-crash-event lead time. For a binary up/down signal, crossing already *is*
+witnessing the outage; there is no distinct, later crash event the way there is for
+executor_oom's OOM kill or disk_pressure/network_degradation's severity threshold, so
+this class has no baseline quantity that is comparable in kind to the other three.
+57.0 s is real and correctly computed (`results/baseline-threshold-evidence/
+evaluation_output.json`'s `crossing_to_recovery_s`), simply not a lead time.
 
 Two results in Table 1 require methodological unpacking before they can be read at
 face value: broker_kill's reported F1 of 0.762 is not the model's raw output but a
@@ -257,17 +268,15 @@ paper-writer Pass 2 self-audit notes (not part of the manuscript text):
   `docs/baseline_thresholds.md`'s "Field-naming correction" addendum,
   `docs/research_context.md` Section 11's corresponding risk-register entry. No number
   in Table 1 changed as a result.
-- **New open item surfaced by that resolution, not yet acted on in this draft**:
-  broker_kill's Table 1 row reports 57.0s as a "baseline lead time" alongside three
-  classes whose numbers genuinely are crossing-to-worse-outcome lead times. That
-  57.0s figure is real and correctly computed, but it measures something
-  categorically different (post-detection residual outage duration, not predictive
-  early warning) -- because for broker_kill, the threshold crossing already *is*
-  witnessing the failure, not a precursor to it. Table 1 and the accompanying prose
-  in this draft do not yet reflect that distinction; before §3 is finalized, decide
-  whether to (a) add an explicit caveat to broker_kill's row/footnote, (b) exclude it
-  from the "lead time" column entirely and report it separately, or (c) something
-  else -- this is an editorial call for the user, not made unilaterally here.
+- **RESOLVED 2026-07-16** (was the open item flagged here): broker_kill's Table 1
+  "Baseline lead time" cell now reads "N/A -- no distinct crash event; detection
+  coincides with outage (recall 12.5%, n = 1)", per explicit user instruction. The
+  57.0s `crossing_to_recovery_s` figure was not removed from the paper -- it's
+  preserved in footnote b, explicitly labeled as residual outage duration rather than
+  a lead time, with the same reasoning as the Section 11 risk-register entry. §3.1's
+  prose paragraph about broker_kill (F1 de-confounding) never referenced lead time or
+  the 57.0s figure in the first place, so no mislabeling existed there to fix --
+  checked directly, not assumed clean.
 - Table 1's per-class F1 choice follows the exact number research_context.md's own
   ML-vs-baseline comparison table cites in each row (e.g. network_degradation's
   std-only F1=0.118/p=1.00, not the full-feature F1=0.414 also reported in the Final
