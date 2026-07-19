@@ -4,3 +4,7 @@ __pycache__/
 .claude/settings.local.json
 .claude/gate_passed.flag
 .claude/campaign_checkpoint*.log
+
+# Literature PDFs: copyrighted; kept locally for reading, NOT redistributed via this public repo.
+# The verified index (README.md, references.bib, _contents.md) IS tracked.
+literature/**/*.pdf
