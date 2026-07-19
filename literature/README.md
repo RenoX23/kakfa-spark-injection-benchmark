@@ -49,7 +49,7 @@ pull the PDF through your institutional (Christ University) ACM access before fi
 | 6 | ML failure pred. | Harrison, Kirkpatrick, Dutra — *Batch Task Profiling with ML for Failure Prediction* | 2018 | arXiv:1812.09537 | ✅ |
 | 7 | ML failure pred. | Alharthi et al. — *Time Machine: Failure (and Lead Time) Prediction in HPC* | 2023 | DOI 10.1109/DSN58367.2023.00054 | ✅ |
 | 8 | ML failure pred. | Lin et al. — *Predicting Node Failure in Cloud Service Systems* | 2018 | DOI 10.1145/3236024.3236060 | ✅ |
-| 9 | ML failure pred. | Pham et al. — *RCAEval: Root Cause Analysis Benchmark with Telemetry Data* | 2024 | arXiv:2412.17015 | ✅ |
+| 9 | ML failure pred. | Pham et al. — *RCAEval: Root Cause Analysis Benchmark with Telemetry Data* | 2025 | WWW'25 Companion · DOI 10.1145/3701716.3715290 · arXiv:2412.17015 | ✅ |
 | 10 | Fault injection | Basiri et al. — *Chaos Engineering* | 2016 | DOI 10.1109/MS.2016.60 · arXiv:1702.05843 | ✅ |
 | 11 | Fault injection | Natella, Cotroneo, Madeira — *Assessing Dependability with Software Fault Injection* | 2016 | DOI 10.1145/2841425 | metadata-only |
 | 12 | Fault injection | Chen, Goudarzi, Nadjaran Toosi — *Resilience Evaluation of Kubernetes via Failure Injection* | 2025 | arXiv:2507.16109 | ✅ |
@@ -65,7 +65,7 @@ pull the PDF through your institutional (Christ University) ACM access before fi
 **17 full-text PDFs · 3 metadata-only.** BibTeX for all 20: [`references.bib`](references.bib).
 
 **Recency (2021–2026), 8 of 20:** #2 Zhang 2024 · #4 Wu 2021 · #5 Porcelli 2025 · #7 Alharthi 2023 ·
-#9 Pham 2024 · #12 Chen 2025 · #13 Vogel 2024. (Foundational classics — Salfner 2010, Breiman 2001,
+#9 Pham 2025 · #12 Chen 2025 · #13 Vogel 2024. (Foundational classics — Salfner 2010, Breiman 2001,
 Kafka 2011 — are kept deliberately; a reliability-benchmark paper is expected to anchor on them.)
 
 ---
@@ -117,8 +117,8 @@ what's *unclaimed* for a fixed Kafka+Spark streaming pipeline.
   DOI: 10.1145/3236024.3236060.
   → Microsoft production cloud node-failure prediction — the "real ops payoff of prediction" citation.
   *Node/VM granularity, not pipeline components; no lead-time-to-failure metric.*
-- **[9] Pham, L., Zhang, H., Ha, H., Salim, F., Zhang, X. (2024).** *RCAEval: A Benchmark for Root Cause
-  Analysis of Microservice Systems with Telemetry Data.* arXiv:2412.17015.
+- **[9] Pham, L., Zhang, H., Ha, H., Salim, F., Zhang, X. (2025).** *RCAEval: A Benchmark for Root Cause
+  Analysis of Microservice Systems with Telemetry Data.* WWW'25 Companion, pp. 777–780. DOI: 10.1145/3701716.3715290 (arXiv:2412.17015).
   → Recent example of the *open telemetry benchmark + reproducible baselines* contribution pattern this
   project follows. *Root-cause analysis (post-hoc), not predictive lead time; microservices, not Kafka+Spark.*
 
