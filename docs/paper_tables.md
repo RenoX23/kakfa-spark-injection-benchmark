@@ -133,7 +133,11 @@ The signal (or its absence) is in the data, not the estimator.
 | executor_oom (clean 3 ep) | 0.667 | 0.000$^{g}$ | 0.667 | RF | 0.56 |
 
 $^{e}$ broker_kill's raw result is driven by an `n_samples` leak (100% feature importance);
-de-confounded (no `n_samples`) RF F1 = 0.762, *p* = 0.26 — the number reported in Table 1.
+de-confounded (no `n_samples`) RF F1 = 0.762 either way. This table's dedicated multi-model
+significance run gives *p* = 0.26 (26/100 shuffled ≥ real); Table 1 reports *p* = 0.25 (25/100)
+from a separate, purpose-built significance check on the same de-confounded feature set
+(`broker_kill_no_nsamples_check.json`) — two independent 100-shuffle draws landing a point
+apart, not a discrepancy in the underlying result. Both place broker_kill squarely at chance.
 $^{f}$ disk_pressure raw-feature F1 = 1.000 here vs Table 1's **delta**-feature F1 = 0.941;
 different experiments. Read §3.2 first — the significant result is an era-level discriminator,
 not early detection. $^{g}$ XGBoost degenerates to all-negative predictions on the small

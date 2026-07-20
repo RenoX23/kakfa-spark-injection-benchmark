@@ -285,9 +285,8 @@ paper-writer Pass 2 self-audit notes (not part of the manuscript text):
 - No citations to external literature appear in this section (Results sections
   legitimately don't need many), so citation-style.md's mechanics weren't exercised
   here -- will matter once Introduction/Related Work/Discussion are drafted.
-- Two things worth the user's attention before this goes further: (1) confirm the
-  IMRAD section-numbering assumption above is what's wanted; (2) the baseline "leads"
-  field discrepancy noted above should get resolved (or at least understood) before
-  Methodology is drafted, since Results currently sidesteps it by quoting the doc's
-  table values directly rather than re-deriving them.
+- One thing worth the user's attention before this goes further: confirm the IMRAD
+  section-numbering assumption above is what's wanted once Introduction/Methodology
+  are drafted. (The baseline "leads"-field item previously noted here is stale — it
+  was already resolved 2026-07-13, see the RESOLVED note above; removed 2026-07-19.)
 -->
