@@ -1066,7 +1066,23 @@ valid to explain," not silently narrowed without comment.
 
 ## 9. Target Venues
 
-IEEE Access, MDPI Electronics or Applied Sciences (rolling submission, consistent with your existing KSPFail venue targeting), or an AIOps/SRE-adjacent workshop track at a systems or big-data conference. No hard external deadline identified — treat as rolling, consistent with prior KSPFail scoping.
+**Decision, 2026-07-20 (supersedes the rolling-journal framing below):** targeting a
+**6-page IEEE two-column conference format**, per the user's explicit choice after
+`IEEE-Template/conference_101719.tex` (`\documentclass[conference]{IEEEtran}`) was
+provided for drafting. This is a firm page-budget assumption for writing, not yet a
+specific named venue with a submission deadline — a specific conference (with its own
+possible page-limit/deadline variation from the 6-page default assumed here) should
+still be picked before final formatting. Consequence for the draft in progress:
+the table/figure set built during the Weeks 8-12 evidence phase (6 tables, 5 figures)
+exceeds a 6-page budget and must be cut to the essentials (see
+`docs/paper_tables.md` and `results/figures/README.md` page-budget notes); the
+existing 2,444-word Results section (`docs/paper_draft.md`) will also need tightening
+once Methodology and Discussion are drafted alongside it, not treated as fixed.
+
+Previous framing (superseded, kept for history — do not draft against this):
+IEEE Access, MDPI Electronics or Applied Sciences (rolling submission), or an
+AIOps/SRE-adjacent workshop track at a systems or big-data conference. No hard
+external deadline identified.
 
 ## 10. Anticipated Reviewer Concerns and Mitigation
 

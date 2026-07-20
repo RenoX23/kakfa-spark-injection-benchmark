@@ -1,12 +1,14 @@
 <!--
 Draft status: Results section only (per author instruction, 2026-07-13). Abstract,
 Introduction, Methodology, Discussion, and Conclusion are not yet written. Section
-numbering below assumes a standard IMRAD skeleton (1 Introduction, 2 Methodology,
-3 Results) and will need adjusting once those sections exist. Target venue not yet
-finalized (IEEE Access and MDPI Electronics/Applied Sciences are both under
-consideration per research_context.md Section 9) — citation style, abstract format,
-and back matter should be revisited once a venue is picked (see
-.claude/skills/paper-writer/references/venue-notes.md).
+numbering below assumes a standard IMRAD skeleton (I Introduction, II Related Work,
+III Methodology, IV Results, V Discussion, VI Conclusion) and will need adjusting
+once those sections exist. Target: 6-page IEEE two-column conference format,
+decided 2026-07-20 (research_context.md Section 9, supersedes the earlier
+rolling-journal framing this note used to reference) — this Results section
+(2,444 words) will need tightening once Methodology/Discussion are drafted
+alongside it, and the current 6-table/5-figure evidence set will need cutting to
+the essentials to fit a 6-page budget (docs/paper_tables.md, results/figures/README.md).
 
 Every number below traces to a committed file: docs/research_context.md Section 6.5,
 cross-checked directly against the underlying JSONs in results/ml-first-pass/ (not
