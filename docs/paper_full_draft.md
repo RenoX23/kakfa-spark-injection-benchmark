@@ -166,7 +166,7 @@ We built an open, reproducible fault-injection benchmark for failure prediction 
 
 [6] Z. Wu, H. Xu, G. Pang, F. Yu, Y. Wang, S. Jian, and Y. Wang, "DRAM failure prediction in AIOps: empirical evaluation, challenges and opportunities," *arXiv:2104.15052*, 2021.
 
-[7] Q. Lin, K. Hsieh, Y. Dang, H. Zhang, K. Sui, Y. Xu, J.-G. Lou, C. Li, Y. Wu, R. Yao, M. Chintalapati, and D. Zhang, "Predicting node failure in cloud service systems," in *Proc. ACM ESEC/FSE*, 2018, pp. 480–490, doi: 10.1145/3236024.3236060. <!-- TODO verify exact page range -->
+[7] Q. Lin, K. Hsieh, Y. Dang, H. Zhang, K. Sui, Y. Xu, J.-G. Lou, C. Li, Y. Wu, R. Yao, M. Chintalapati, and D. Zhang, "Predicting node failure in cloud service systems," in *Proc. ACM ESEC/FSE*, 2018, pp. 480–490, doi: 10.1145/3236024.3236060.
 
 [8] C. Harrison, C. R. Kirkpatrick, and I. Dutra, "Bioinformatics computational cluster batch task profiling with machine learning for failure prediction," *arXiv:1812.09537*, 2018.
 
@@ -178,7 +178,7 @@ We built an open, reproducible fault-injection benchmark for failure prediction 
 
 [12] Z. Chen, M. Goudarzi, and A. Nadjaran Toosi, "Resilience evaluation of Kubernetes in cloud-edge environments via failure injection," *arXiv:2507.16109*, 2025.
 
-[13] A. Vogel, S. Henning, E. Perez-Wohlfeil, O. Ertl, and R. Rabiser, "A comprehensive benchmarking analysis of fault recovery in stream processing frameworks," in *Proc. 18th ACM Int. Conf. Distrib. Event-Based Syst. (DEBS)*, 2024. <!-- TODO verify DEBS'24 DOI and page range -->
+[13] A. Vogel, S. Henning, E. Perez-Wohlfeil, O. Ertl, and R. Rabiser, "A comprehensive benchmarking analysis of fault recovery in stream processing frameworks," in *Proc. 18th ACM Int. Conf. Distrib. Event-Based Syst. (DEBS)*, 2024, doi: 10.1145/3629104.3666040.
 
 [14] H. Al-Sayeh, S. Hagedorn, and K.-U. Sattler, "A gray-box modeling methodology for runtime prediction of Apache Spark jobs," *Distrib. Parallel Databases*, vol. 38, pp. 819–839, 2020, doi: 10.1007/s10619-020-07286-y.
 

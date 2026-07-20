@@ -8,3 +8,6 @@ __pycache__/
 # Literature PDFs: copyrighted; kept locally for reading, NOT redistributed via this public repo.
 # The verified index (README.md, references.bib, _contents.md) IS tracked.
 literature/**/*.pdf
+
+# Windows download metadata (WSL)
+*:Zone.Identifier
