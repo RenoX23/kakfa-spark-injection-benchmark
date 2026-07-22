@@ -293,13 +293,8 @@ def main():
     shap.plots.beeswarm(explanation, show=False, plot_size=None)
     ax_bee.set_title("(b) Per-instance SHAP (n=16 true-positive windows)")
 
-    fig.suptitle(
-        "disk_pressure delta-feature classifier (F1=0.941, p<0.01): SHAP attribution\n"
-        "confirms a static magnitude/proximity check, not an escalating trend "
-        "(no rate-of-change feature in the pipeline)",
-        fontsize=10,
-    )
-    fig.tight_layout(rect=[0, 0, 1, 0.90])
+    # No in-image suptitle — caption is supplied by the LaTeX \caption{} in the paper.
+    fig.tight_layout()
     fig_path = REPO / "results" / "ml-first-pass" / "disk_pressure_shap_summary.png"
     fig.savefig(fig_path, dpi=200)
     print(f"wrote {fig_path}")

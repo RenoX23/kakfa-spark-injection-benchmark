@@ -90,7 +90,7 @@ def fig_architecture():
     arrow(19, 20, 40, 60, color=C["red"], ls=(0, (3, 3)), lw=1.0)
     arrow(19, 20, 66, 60, color=C["red"], ls=(0, (3, 3)), lw=1.0)
 
-    ax.set_title("Figure 2. System under test and fault-injection points", loc="left", fontweight="bold")
+    # No in-image title — caption is supplied by the LaTeX \caption{} in the paper.
     save(fig, "fig2_architecture")
 
 
@@ -118,8 +118,7 @@ def fig_executor_oom_ramp():
     ax.set_ylim(300, 1320)
     ax.set_xticks(t)
     ax.legend(loc="lower right", frameon=False, fontsize=9)
-    ax.set_title("Figure 3. executor_oom gradual ramp gives the static threshold a real\n"
-                 "lead time (mean 64.9 s, 48–83 s across 8 reps)", loc="left", fontweight="bold", fontsize=11)
+    # No in-image title — caption is supplied by the LaTeX \caption{} in the paper.
     save(fig, "fig3_executor_oom_ramp")
 
 
@@ -160,9 +159,7 @@ def fig_baseline_leadtime():
     ax.set_xlim(-0.95, 3.6)
     ax.set_ylim(-8, 92)
     ax.axhline(0, color=C["grey"], lw=0.8)
-    ax.set_title("Figure 4. Static-threshold warning time by fault class:\n"
-                 "only executor_oom's engineered ramp yields a real lead window",
-                 loc="left", fontweight="bold", fontsize=11)
+    # No in-image title — caption is supplied by the LaTeX \caption{} in the paper.
     ax.text(-0.9, -6.8, "backpressure_cascade excluded (no independently-scraped lag metric)",
             fontsize=8, color=C["grey"], ha="left")
     save(fig, "fig4_baseline_leadtime")
@@ -191,9 +188,7 @@ def fig_executor_oom_n8_n15():
     ax.set_xticks(x); ax.set_xticklabels(groups)
     ax.set_ylabel("F1")
     ax.legend(loc="lower center", frameon=False, fontsize=9, bbox_to_anchor=(0.5, -0.32), ncol=1)
-    ax.set_title("Figure 5. executor_oom: doubling the sample count does not move the\n"
-                 "result off chance — the model never beats the trivial baseline",
-                 loc="left", fontweight="bold", fontsize=11)
+    # No in-image title — caption is supplied by the LaTeX \caption{} in the paper.
     save(fig, "fig5_executor_oom_n8_n15")
 
 
